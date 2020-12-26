@@ -30,8 +30,3 @@ anim2 = @animate for j in frames
 end
 gif(anim2, fps=30)
 
-xs2 = -2:0.1:2
-f1(x) = 0 <= x <= 1 ? 1 : 0
-f2(x) = 0 <= x <= 1 ? 2x : 0
-plot(xs2, faltung.(f2, f1, xs2))
-plot!(xs2, faltung.(f2, f1, xs2).^2)
