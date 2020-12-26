@@ -47,22 +47,29 @@ norm, err = quadgk(χ_gen, -2, 2)
 f(x) = abs(x) <= π ? x * cos(x/2) + 0.5 * cos(5x/2) : 0
 
 # ╔═╡ a10c0db0-47b0-11eb-362f-13de0bf9bd52
-x_range = -2π:0.1:2π
-
-# ╔═╡ a70263e0-47b0-11eb-36d7-bbf5ab96a951
-@bind x Slider(x_range, show_value=true)
-
-# ╔═╡ ec8a4440-47b1-11eb-1e17-b51b06b59790
-ϵ_range = 0.0:-0.1:7.0
+x_range = -5π/4:0.1:5π/4
 
 # ╔═╡ ec8b55b0-47b1-11eb-1bda-17bff80e7486
-@bind ϵ Slider(ϵ_range, show_value=true, default=3.0)
+@bind ϵ Slider(-3.7:0.01:2.0, show_value=true, default=2.0)
 
 # ╔═╡ 329d1170-47b1-11eb-18d0-4d6a71f85c64
 begin
-	plot(x_range, f.(x_range), label="f")
-	plot!(x_range, z -> χ.(ϵ, z), label="χ")
-	plot!(x_range, faltung.(f, z -> χ.(ϵ, z), x_range))
+	plot(x_range, f.(x_range), ylims=(-π/2, π/2), label="f", leg=:bottomright)
+	plot!(x_range, z -> χ.(exp(ϵ), z), label="χ")
+	plot!(x_range, faltung.(f, z -> χ.(exp(ϵ), z), x_range), label="faltung")
+end
+
+# ╔═╡ a70263e0-47b0-11eb-36d7-bbf5ab96a951
+@bind x Slider(x_range, show_value=true, default=0.0)
+
+# ╔═╡ e3591c20-47b6-11eb-0aef-57f0bd8d9c0f
+@bind ϵ2 Slider(-3.7:0.01:2.0, show_value=true, default=2.0)
+
+# ╔═╡ 6b589700-47b6-11eb-0434-9518c2a16831
+begin
+	plot(x_range, f.(x_range), label="f", ylims=(-π/2, π/2), leg=:bottomright)
+	plot!(x_range, z -> χ.(exp(ϵ2), z .- x), label="χ")
+	plot!(x_range, modified_faltung.(f, z -> χ.(exp(ϵ2), z), x_range, x), label="lokalisierte faltung")
 end
 
 # ╔═╡ Cell order:
@@ -74,7 +81,8 @@ end
 # ╠═d70da030-47b1-11eb-394f-e36c01fb13ea
 # ╠═8bdb66c0-47b0-11eb-035e-81fbc430f70c
 # ╠═a10c0db0-47b0-11eb-362f-13de0bf9bd52
-# ╠═a70263e0-47b0-11eb-36d7-bbf5ab96a951
-# ╠═ec8a4440-47b1-11eb-1e17-b51b06b59790
 # ╠═ec8b55b0-47b1-11eb-1bda-17bff80e7486
 # ╠═329d1170-47b1-11eb-18d0-4d6a71f85c64
+# ╠═a70263e0-47b0-11eb-36d7-bbf5ab96a951
+# ╠═e3591c20-47b6-11eb-0aef-57f0bd8d9c0f
+# ╠═6b589700-47b6-11eb-0434-9518c2a16831
