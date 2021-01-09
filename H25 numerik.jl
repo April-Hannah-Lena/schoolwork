@@ -75,11 +75,13 @@ g_range = [g([x, y]) for x in x_range[1], y in x_range[2]]
 grid = meshgrid(20) ./ 2 .- [5;5]
 
 anim = @animate for i in 1:length(x_verläufe)
-    p1 = contour(x_range[1], x_range[2], g_range, levels=40, colorbar=false)
+    p1 = contour(x_range[1], x_range[2], g_range, levels=40, 
+                 colorbar=false, title="Himmelblau Funktion")
     p1 = scatter!((x_verläufe[i][1], x_verläufe[i][2]), leg=false)
     p2 = vectorfield2d(Df, grid)
-    p2 = scatter!((x_verläufe[i][1], x_verläufe[i][2]), leg=false)
+    p2 = scatter!((x_verläufe[i][1], x_verläufe[i][2]), 
+                   leg=false, title="Gradient")
 
-    p = plot(p1, p2, layout=2, size=(900, 400))
+    p = plot(p1, p2, layout=2, size=(800, 400))
 end
 gif(anim, fps=6)
