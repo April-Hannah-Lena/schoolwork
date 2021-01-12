@@ -16,7 +16,7 @@ function vectorfield(points, field::Function; arrowscale=0.1)
     quiver(points[1, :], points[2, :], quiver=(vectors[1, :], vectors[2, :]))
 end
 # field is a Function that takes d inputs. d = dimension = 2 (3d not supported by Plots - use Makie.jl)
-# points is an Array of size dx2, each row represents a point in space 
+# points is an Array of size 2xd, each column represents a point in space 
 # vectorfield2d(field::Function, points <: AbstractArray{<:Number,2}, arrowscale::Real=0.1)
 
 function vectorfield!(points, field::Function; arrowscale=0.1)
