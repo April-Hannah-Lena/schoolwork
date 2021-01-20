@@ -1,6 +1,4 @@
-using Plots, PlotThemes
-using ForwardDiff: gradient, hessian
-include("VectorField.jl")
+using VectorField
 
 Df(x, y) = [-x, y]
 u = [Df(x, y)[1] for x in -1:0.5:1, y in -1:0.5:1]
