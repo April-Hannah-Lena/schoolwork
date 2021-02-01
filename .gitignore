@@ -25,6 +25,7 @@ Manifest.toml
 
 *.html
 **/.ipynb_checkpoints
+**/.vscode
 
 .Rproj.user
 **.Rhistory

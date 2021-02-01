@@ -4,7 +4,7 @@ author: "April Herwig"
 date: "1/23/2021"
 header-includes:
    - \usepackage{amsmath}
-output: html_document
+output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
@@ -19,9 +19,9 @@ set.seed(1)
 
 Die Funktion $\mathbb{1}_{(-\infty, x]} (X_i)$ ist äquivalent zu einer Bernoulli verteilten Zufalsvariable $Y_i \sim Bernoulli(F(x)) \in \mathcal{L}^2$. Damit ist für die Summe der unabhängig, identisch verteilten Stichproben: 
 
-$$\begin{align*}
-    &P(|\sum\limits_{i=1}^{n}\mathbb{1}_{(-\infty, x]} (X_i)-F(x)|\geq\epsilon) = P(|\sum\limits_{i=1}^{n} Y_i-F(x)|\geq\epsilon) \rightarrow 0,
-\end{align*}$$
+\begin{align*}
+    &P(|\sum\limits_{i=1}^{n}\mathbb{1}_{(-\infty, x]} (X_i)-F(x)|>\epsilon) = P(|\sum\limits_{i=1}^{n} Y_i-F(x)|>\epsilon) \rightarrow 0,
+\end{align*}
 
 stochastisch nach dem schwachem Gesetz der Großen Zahlen.
 
@@ -30,38 +30,38 @@ stochastisch nach dem schwachem Gesetz der Großen Zahlen.
 
 Es ist: 
 
-$$\begin{align*}
+\begin{align*}
     F_\theta^{-1}(p) \leq x \Leftrightarrow & p \leq F_\theta(x) \\
     & p = F_n(x) \Leftrightarrow F_n(x) \leq F_\theta(x) .
-\end{align*}$$
+\end{align*}
 
 Betrachte also $F_n^{-1}(p) - F_\theta^{-1}(p) > \epsilon$
 
-$$\begin{align*}
-    & \Leftrightarrow F_\theta^{-1}(p) \leq x - \epsilon \leq F_n^{-1}(p) \\
-    & \Leftrightarrow F_n(x) \leq F_\theta(x) \\
+\begin{align*}
+    & \Leftrightarrow F_\theta^{-1}(p) \leq x - \epsilon < F_n^{-1}(p) \\
+    & \Leftrightarrow F_n(x) < F_\theta(x) \\
     & \Leftrightarrow \exists \delta > 0 : F_n(x) - F_\theta(x) > \delta . \\
-\end{align*}$$
+\end{align*}
 
 Dies gilt analog für $F_\theta^{-1}(x) - F_n^{-1}(x) > \epsilon$
 
-$$\begin{align*}
+\begin{align*}
     & \Rightarrow |F_n^{-1}(p) - F_\theta^{-1}(p)| > \epsilon \Leftrightarrow |F_n(x) - F_\theta(x)| > \delta . \\ 
-\end{align*}$$
+\end{align*}
 
 
-Insbesondere ist $\forall\epsilon'>0\exists\delta'>0 :$
+Insbesondere ist $\forall\epsilon'>0\quad\exists\delta'>0 :$
 
-$$\begin{align*}
+\begin{align*}
     & P_\theta^{\otimes n}(|F_n(x) - F_\theta(x)| > \delta') \Rightarrow P_\theta^{\otimes n}(|F_n^{-1}(p) - F_\theta^{-1}(p)| > \epsilon') , \\
-\end{align*}$$
+\end{align*}
 
 da F streng monoton wachsend und rechtsseitig stetig ist, aus dem $\epsilon - \delta$ stetigkeits Kriterium. Insgesamt also:
 
-$$\begin{align*}
+\begin{align*}
     & P_\theta^{\otimes n}(|F_n(x) - F_\theta(x)| > \delta) \rightarrow 0 \\
     & \Rightarrow P_\theta^{\otimes n}(|F_n^{-1}(p) - F_\theta^{-1}(p)| > \epsilon) \rightarrow 0 . \\
-\end{align*}$$
+\end{align*}
 
 
 
