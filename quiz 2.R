@@ -34,3 +34,9 @@ sigma <- matrix(data=c(c(6.0, 1.0, 0.47),
 pmvnorm(lower=c(2.0, 3.0, -Inf), upper=c(Inf, 100.0, 50.0), mean=mu, sigma=sigma)
 
 
+
+
+
+
+qbinom(0.05, size=18, prob=0.6, lower.tail=FALSE)
+pbinom(14, size = 18, prob = 0.7, lower.tail = TRUE)
