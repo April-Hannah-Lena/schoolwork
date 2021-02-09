@@ -36,3 +36,19 @@ results <- data.frame(
 )
 
 print(results)
+
+
+
+c <- qnorm(0.95)
+d <- (26 - 25) / (3 / 7)
+pnorm(c - (2 * 7/3))
+qnorm(0.95) * (7/3) + 27
+
+
+
+g <- function(n) {
+  return( n - 64*(qnorm(0.975)^2) )
+}
+uniroot(g, lower = 1, upper = 1000)
+g(245)
+g(246)
