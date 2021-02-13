@@ -42,8 +42,8 @@ print(results)
 c <- qnorm(0.95)
 d <- (26 - 25) / (3 / 7)
 pnorm(c - (2 * 7/3))
-qnorm(0.95) * (7/3) + 27
-
+fqnorm(0.05) * (3/7) + 27
+qnorm(0.975)
 
 
 g <- function(n) {

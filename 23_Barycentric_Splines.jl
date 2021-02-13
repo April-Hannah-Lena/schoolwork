@@ -15,7 +15,7 @@ function spline(f, n)
     return X, p
 end
 
-
+f(x) = cos(2*π*x) * exp(- x^2 / 2)
 y = -3:0.01:3
 itr = vcat(1:1:8, 10:2:20, 22:10:52)
 anim = @animate for i in itr

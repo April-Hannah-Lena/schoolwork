@@ -8,3 +8,9 @@ betaD <- function(n) {
 uniroot(betaD, lower = 1, upper = 30)
 betaD(7)
 betaD(8)
+
+
+P <- function(p) {
+  return(pbinom(16, 30, p, lower.tail=FALSE) - 0.9)
+}
+uniroot(P, lower=0, upper=1)

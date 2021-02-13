@@ -37,3 +37,8 @@ Manifest.toml
 *.fls
 *.log
 *.synctex.gz
+
+*.cpython-38.pyc
+*.cpython-39.pyc
+*.so
+precompile_plots.jl
