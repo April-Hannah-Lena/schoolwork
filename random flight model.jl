@@ -31,7 +31,9 @@ randomwalks1 = [randomwalk(100) for n in 1:30]
 randomwalks2 = [randomwalk(100) for n in 1:30]
 randomwalks3 = [randomwalk(100) for n in 1:30]
 randomwalks4 = [randomwalk(100) for n in 1:30]
-anim = @animate for j in 1:100
+
+itr = vcat(1:100, ones(Int, 19).*100)
+anim = @animate for j in itr
     p1 = plot(circle(Point2(0), r(100)), 
               fill=true, fillalpha=0.2, leg=false, 
               xlims=(-20, 20), ylims=(-20, 20))
@@ -42,19 +44,19 @@ anim = @animate for j in 1:100
               fill=true, fillalpha=0.2, leg=false, 
               xlims=(-20, 20), ylims=(-20, 20))
     for k in 1:30
-        p2 = plot!(getindex(randomwalks2[k], 1:j))
+        p2 = scatter!(getindex(randomwalks1[k], j))
     end
     p3 = plot(circle(Point2(0), r(100)), 
               fill=true, fillalpha=0.2, leg=false, 
               xlims=(-20, 20), ylims=(-20, 20))
     for k in 1:30
-        p3 = plot!(getindex(randomwalks3[k], 1:j))
+        p3 = plot!(getindex(randomwalks2[k], 1:j))
     end
     p4 = plot(circle(Point2(0), r(100)), 
               fill=true, fillalpha=0.2, leg=false, 
               xlims=(-20, 20), ylims=(-20, 20))
     for k in 1:30
-        p4 = plot!(getindex(randomwalks4[k], 1:j))
+        p4 = scatter!(getindex(randomwalks2[k], j))
     end
 
     plot(p1, p2, p3, p4, layout=(2, 2))
