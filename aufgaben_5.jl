@@ -1,4 +1,5 @@
 using Plots, PlotThemes, LinearAlgebra
+theme(:dark)
 
 const A, fakt = [0 -1; 1 0], sqrt(3)/6
 function koch(p, q, ϵ, fig)
