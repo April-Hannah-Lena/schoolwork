@@ -48,10 +48,10 @@ end
 
 using Plots, PlotThemes
 plotlyjs()
-#theme(:dark)
+theme(:dark)
 
 m = 3
-V = [rand(m) for i in 1:50]
+V = [5 .* randn(m) for i in 1:500]
 E = cluster(V, 1)
 V̄ = [getindex.(V, j) for j in 1:m]
 fig = scatter(V̄..., markeralpha=0.6, leg=false)
@@ -60,3 +60,4 @@ for i in 1:size(E, 1)
     plot!(fig, Ē..., linewidth=4, linealpha=0.8)
 end
 display(fig)
+savefig("cluster-dark.html")
