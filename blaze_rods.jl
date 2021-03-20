@@ -57,10 +57,11 @@ ys = Array{Float64, 2}(undef, 0, length(ns))
 @showprogress 1 "Computing...  " for x in xs
     ys = vcat(ys, pblazerods.(ns, x)')
 end
-plot(xs, [ys[:, n] for n in 1:length(ns)], 
-     title="Probability of getting > n heads after x seconds",
-     xaxis=("seconds, scaled logarithmically", :log10), 
-     yaxis="P(heads flipped > n)", 
-     leg=:bottomright,
-     legendtitle="n",
-     lab=ns')
+fig = plot(xs, [ys[:, n] for n in 1:length(ns)], 
+    title="Probability of getting > n heads after x seconds",
+    xaxis=("seconds, scaled logarithmically", :log10), 
+    yaxis="P(heads flipped > n)", 
+    leg=:bottomright,
+    legendtitle="n",
+    lab=ns')
+savefig(fig, "blaze_rods.png")
