@@ -18,7 +18,7 @@ function dsumunif_discrete(f, y)
     f = Int(floor(f))
     P = Polynomial(ones(5))^y
     c = big.(coeffs(P))
-    c = f ≤ length(c) ? c[f] : 0
+    c = f ≤ length(c) ? c[f] : 0.
     d = big(5.) ^ big(y)
     return Float64(c / d)
 end
@@ -38,4 +38,4 @@ function dblazerods(n, x)
     P = @. dbinom(n, 1:c) * dblazerods_support(x, 1:c)
     return sum(P)
 end
-scatter(1:100, [n -> dblazerods(n, x) for x in 1:50:500])
+scatter(1:100, [n -> dblazerods(n, x) for x in 1:10:1000])
