@@ -65,3 +65,20 @@ fig = plot(xs, [ys[:, n] for n in 1:length(ns)],
     legendtitle="n",
     lab=ns')
 savefig(fig, "blaze_rods.png")
+
+using FastGaussQuadrature, LinearAlgebra
+xs, w = gausslegendre(80)
+a, b = 10, 800
+xs = @. 0.5*(b-a)*(xs+1) + a
+ns = 0:2:10
+ys = Array{Float64, 2}(undef, 0, length(ns))
+@showprogress 1 "Computing...  " for x in xs
+    ys = vcat(ys, x .* dblazerods.(ns, x)')
+end
+E = [w' * ys[:, n] for n in 1:length(ns)]
+E = (b-a) .* E ./ 2
+using DataFrames, CSV
+expected_time_n = DataFrame("nr. of heads" => ns, 
+                            "expected time (s)" => E, 
+                            "expected time (min)" => E./60)
+CSV.write("/u/halle/herwiga/home_at/Documents/schoolwork/blaze_rods.csv", expected_time_n)
