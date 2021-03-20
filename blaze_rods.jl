@@ -26,6 +26,7 @@ scatter(1:250, [f -> dsumunif_discrete(f, y) for y in 1:5:100])
 
 dbinom(n, f) = pdf(Binomial(f, 0.5), n)
 scatter(1:75, [n -> dbinom(n, f) for f in 1:5:100])
+pbinom(n, f) = ccdf(Binomial(f, 0.5), n)
 
 function dblazerods_support(x, f)
     z = (x-10)/30
@@ -38,4 +39,28 @@ function dblazerods(n, x)
     P = @. dbinom(n, 1:c) * dblazerods_support(x, 1:c)
     return sum(P)
 end
-scatter(1:100, [n -> dblazerods(n, x) for x in 1:10:1000])
+using ProgressMeter
+xs = 10:10:500; ns = 0:2:10
+ys = Array{Float64, 2}(undef, 0, length(ns))
+@showprogress 1 "Computing...  " for x in xs
+    ys = vcat(ys, dblazerods.(ns, x)')
+end
+plot(xs, [ys[:, n] for n in 1:length(ns)], leg=false, xaxis=:log10)
+
+function pblazerods(n, x)
+    c = Int.(floor.(2 * x / 5))
+    P = @. pbinom(n, 1:c) * dblazerods_support(x, 1:c)
+    return sum(P)
+end
+xs = 10:10:500; ns = 0:2:10
+ys = Array{Float64, 2}(undef, 0, length(ns))
+@showprogress 1 "Computing...  " for x in xs
+    ys = vcat(ys, pblazerods.(ns, x)')
+end
+plot(xs, [ys[:, n] for n in 1:length(ns)], 
+     title="Probability of getting > n heads after x seconds",
+     xaxis=("seconds, scaled logarithmically", :log10), 
+     yaxis="P(heads flipped > n)", 
+     leg=:bottomright,
+     legendtitle="n",
+     lab=ns')
