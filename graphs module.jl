@@ -1,8 +1,10 @@
-using LinearAlgebra, ProgressMeter
-using Pipe: @pipe
-import Base: show, display, sort!, size
-
 module Graphs
+
+import LinearAlgebra: norm
+import ProgressMeter: Progress, next!
+import Base: show, display, sort!, size
+import Plots: plot, plot!, scatter, scatter!
+export AbstractGraph, Digraph, Graph, size, δ, neighbors, show, display, sort!, connected_vertices, adjacency_matrix, add_edge, spantree, cluster, plot
 
 abstract type AbstractGraph end
 
@@ -18,7 +20,7 @@ Digraph(G::Dict{T, Array{T,1}}) where T<:Any = begin
     E = vcat(E...)
     Digraph(V, E)
 end
-Digraph(V::Array{T,1}, A::Array{Bool,2}) where T<:Any = begin
+Digraph(V::Array{T,1}, A::B) where T<:Any where B <: Union{Array{Bool,2},BitArray{2}} = begin
     E = Array{Tuple{T, T}, 1}(undef, 0)
     i, j = 0, 0
     for ci in CartesianIndices(A)
@@ -40,8 +42,8 @@ Graph(G::Dict{T, Array{T,1}}) where T<:Any = begin
     E = vcat(E...)
     Graph(V, E)
 end
-Graph(V::Array{T,1}, A::Array{Bool,2}) where T<:Any = begin
-    A[A .!= A'] .= 1
+Graph(V::Array{T,1}, A::B) where T<:Any where B <: Union{Array{Bool,2},BitArray{2}} = begin
+    A[A .!= A'] .= true
     E = Array{Tuple{T, T}, 1}(undef, 0)
     i, j = 0, 0
     for ci in CartesianIndices(A)
@@ -74,19 +76,19 @@ adjacency_matrix(g::G) where G <: AbstractGraph = vcat([[w ∈ neighbors(v, g) f
 function add_edge(e, g::G) where G <: AbstractGraph
     E_new = vcat(g.E, e)
     V_new = vcat(g.V, connected_vertices(E_new))
-    typeof(g)(g_new.V, g_new.E)
+    typeof(g)(V_new, E_new)
 end
 
 function spantree(g::G; kwargs...) where G <: AbstractGraph
-    edges = sort!(g; kwargs...)
-    F = F_new = typeof(g)(Dict{eltype(g.V), Array{eltype(g.V),1}}())
+    edges = sort!(g; kwargs...) |> copy
+    F = F_new = typeof(g)(Array{eltype(g.V),1}(undef, 0), Array{Tuple{eltype(g.V), eltype(g.V)},1}(undef, 0))
     k, n = 1, size(connected_vertices(g), 1)
     p = Progress(n, 1)
-    while size(F, 1) < n
+    while size(F, 1) < n && size(edges, 1) > 0
         F_new = add_edge(edges[k], F)
         if size(F_new, 1) == size(F_new, 2) + 1
             F = F_new
-            filter!(e -> e != edges[k], edges)
+            edges = filter(e -> !(e in [edges[k], reverse(edges[k])]), edges)
             next!(p)
             k = 1
         elseif k < size(edges, 1)
@@ -103,5 +105,16 @@ function cluster(g::G, n; kwargs...) where G <: AbstractGraph
     T = spantree(g; kwargs...)
     T = typeof(g)(T.V, T.E[1:n])
 end
+
+function plot(g::G; kwargs...) where G <: AbstractGraph
+    V = [getindex.(g.V, j) for j in eachindex(g.V[1])]
+    fig = scatter(V..., markeralpha=0.6, leg=false, kwargs...)
+    for e in g.E
+        e = [getindex.(e, j) for j in eachindex(e[1])]
+        plot!(fig, e..., linewidth=4, linealpha=0.6, kwargs...)
+    end
+    return fig
+end
+
 
 end
