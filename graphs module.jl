@@ -1,10 +1,19 @@
 module Graphs
 
-import LinearAlgebra: norm
+import LinearAlgebra: norm, UpperTriangular
 import ProgressMeter: Progress, next!
 import Base: show, display, sort!, size
+import Core: Array
 import Plots: plot, plot!, scatter, scatter!
-export AbstractGraph, Digraph, Graph, size, δ, neighbors, show, display, sort!, connected_vertices, adjacency_matrix, add_edge, spantree, cluster, plot
+export AbstractGraph, Digraph, Graph, size, δ, neighbors, show, display, sort!, connected_vertices, adjacency_matrix, add_edge, spantree, cluster, plot, unidirectional_Digraph, Array
+
+Array(e::Tuple{T, T}) where T<:Any = begin
+    e0 = Array{eltype(e),1}(undef, 0)
+    for v in e
+        e0 = push!(e0, v)
+    end
+    return e0
+end
 
 abstract type AbstractGraph end
 
@@ -102,19 +111,36 @@ function spantree(g::G; kwargs...) where G <: AbstractGraph
 end
 
 function cluster(g::G, n; kwargs...) where G <: AbstractGraph
-    T = spantree(g; kwargs...)
-    T = typeof(g)(T.V, T.E[1:n])
+    T = spantree(g; kwargs...) |> unidirectional_Digraph
+    T = typeof(g)(T.V, T.E[1 : size(T, 1) - n])
 end
 
-function plot(g::G; kwargs...) where G <: AbstractGraph
+function unidirectional_Digraph(g::Graph{T}) where T<:Any
+    A = g |> adjacency_matrix |> UpperTriangular |> Matrix
+    return Digraph(g.V, A)
+end
+
+function plot(g::Digraph{T}; kwargs...) where T<:Any
+    e0 = []
     V = [getindex.(g.V, j) for j in eachindex(g.V[1])]
     fig = scatter(V..., markeralpha=0.6, leg=false, kwargs...)
     for e in g.E
-        e = [getindex.(e, j) for j in eachindex(e[1])]
-        plot!(fig, e..., linewidth=4, linealpha=0.6, kwargs...)
+        e0 = [getindex.(Array(e), j) for j in eachindex(e[1])]
+        fig = plot!(fig, e0..., linewidth=4, linealpha=0.6, kwargs...)
     end
     return fig
 end
+function plot(g::Graph{T}; kwargs...) where T<:Any
+    g0 = unidirectional_Digraph(g); e0 = []
+    V = [getindex.(g0.V, j) for j in eachindex(g0.V[1])]
+    fig = scatter(V..., markeralpha=0.6, leg=false, kwargs...)
+    for e in g0.E
+        e0 = [getindex.(Array(e), j) for j in eachindex(e[1])]
+        fig = plot!(fig, e0..., linewidth=4, linealpha=0.6, kwargs...)
+    end
+    return fig
+end
+
 
 
 end
