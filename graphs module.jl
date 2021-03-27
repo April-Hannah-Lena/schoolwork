@@ -20,7 +20,10 @@ abstract type AbstractGraph end
 mutable struct Digraph{T<:Any} <: AbstractGraph
     V :: Array{T, 1}
     E :: Array{Tuple{T, T}, 1}
-    Digraph{T}(V, E) where T<:Any = new(unique!(V), unique!(E))
+    Digraph{T}(V, E) where T<:Any = begin 
+        V, E = unique!.([V, E])
+        new(V, E)
+    end
 end
 Digraph(V::Array{T,1}, E::Array{Tuple{T,T},1}) where T<:Any = Digraph{T}(V, E)
 Digraph(G::Dict{T, Array{T,1}}) where T<:Any = begin
@@ -42,7 +45,10 @@ end
 mutable struct Graph{T<:Any} <: AbstractGraph
     V :: Array{T, 1}
     E :: Array{Tuple{T, T}, 1}
-    Graph{T}(V, E) where T<:Any = new(unique!(V), unique!(vcat(E, reverse.(E))))
+    Graph{T}(V, E) where T<:Any = begin
+        V, E = unique!.([V, vcat(E, reverse.(E))])
+        new(V, E)
+    end
 end
 Graph(V::Array{T,1}, E::Array{Tuple{T,T},1}) where T<:Any = Graph{T}(V, E)
 Graph(G::Dict{T, Array{T,1}}) where T<:Any = begin
