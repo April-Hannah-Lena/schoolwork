@@ -5,7 +5,7 @@ import ProgressMeter: Progress, next!
 import Base: show, display, sort!, size
 import Core: Array
 import Plots: plot, plot!, scatter, scatter!
-export AbstractGraph, Digraph, Graph, size, δ, neighbors, show, display, sort!, connected_vertices, adjacency_matrix, add_edge, spantree, cluster, plot, unidirectional_Digraph, Array
+export AbstractGraph, Digraph, Graph, size, δ, neighbors, show, display, sort!, connected_vertices, adjacency_matrix, add_edge, spantree, cluster, plot, unidirectional_Digraph, Array, shortest_path
 
 Array(e::Tuple{T, T}) where T<:Any = [v for v in e]
 
@@ -141,6 +141,35 @@ function plot(g::Graph{T}; kwargs...) where T<:Any
     return fig
 end
 
-
+function shortest_path(g::G, s; by=e->1) where G <: AbstractGraph
+    d = Dict(s=>0, [v=>Inf for v in filter(u -> u != s, g.V)]...)
+    p = Dict([v=>[] for v in g.V]...)
+    v, w, δ, V, R, E = s, s, Inf, g.V, [], []
+    while size(V, 1) > 0
+        v = V[argmin(map(u -> d[u], V))]
+        R = push!(R, v)
+        V = filter(u -> !(u in R), V)
+        E = filter(e -> e[1] == v && e[2] in V, g.E)
+        for e in E
+            w = e[2]
+            δ = d[v] + by(e)
+            if d[w] > δ
+                d[w] = δ
+                p[w] = v
+            end
+        end
+    end
+    return d, p
+end
+function shortest_path(g::G, s, t; by=e->1) where G <: AbstractGraph
+    d, p = shortest_path(g, s; by)
+    d[t] < Inf ? nothing : error("no path from $s to $t")
+    v, path = t, [t]
+    while v != s
+        path = pushfirst!(path, p[v])
+        v = path[1]
+    end
+    return path
+end
 
 end
