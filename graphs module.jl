@@ -7,12 +7,8 @@ import Core: Array
 import Plots: plot, plot!, scatter, scatter!
 export AbstractGraph, Digraph, Graph, size, δ, neighbors, show, display, sort!, connected_vertices, adjacency_matrix, add_edge, spantree, cluster, plot, unidirectional_Digraph, Array
 
-Array(e::Tuple{T, T}) where T<:Any = begin
-    e0 = Array{eltype(e),1}(undef, 0)
-    for v in e
-        e0 = push!(e0, v)
-    end
-    return e0
+Array(e::Tuple{T, T}) where T<:Any = begin 
+    e = [v for v in e]
 end
 
 abstract type AbstractGraph end
