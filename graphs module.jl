@@ -92,13 +92,13 @@ function spantree(g::G; kwargs...) where G <: AbstractGraph
     edges = sort!(g; kwargs...) |> copy
     F = F_new = typeof(g)(Array{eltype(g.V),1}(undef, 0), Array{Tuple{eltype(g.V), eltype(g.V)},1}(undef, 0))
     k, n = 1, size(connected_vertices(g), 1)
-    p = Progress(n, 1)
+    prog = Progress(n, 1)
     while size(F, 1) < n && size(edges, 1) > 0
         F_new = add_edge(edges[k], F)
         if size(F_new, 1) == size(F_new, 2) + 1
             F = F_new
             edges = filter(e -> !(e in [edges[k], reverse(edges[k])]), edges)
-            next!(p)
+            next!(prog)
             k = 1
         elseif k < size(edges, 1)
             k += 1
@@ -120,23 +120,23 @@ function unidirectional_Digraph(g::Graph{T}) where T<:Any
     return Digraph(g.V, A)
 end
 
-function plot(g::Digraph{T}; kwargs...) where T<:Any
+function plot(g::Digraph{T}; markeralpha=0.6, leg=false, linewidth=4, linealpha=0.6, kwargs...) where T<:Any
     e0 = []
     V = [getindex.(g.V, j) for j in eachindex(g.V[1])]
-    fig = scatter(V..., markeralpha=0.6, leg=false, kwargs...)
+    fig = scatter(V..., markeralpha=markeralpha, leg=leg, kwargs...)
     for e in g.E
         e0 = [getindex.(Array(e), j) for j in eachindex(e[1])]
-        fig = plot!(fig, e0..., linewidth=4, linealpha=0.6, kwargs...)
+        fig = plot!(fig, e0..., linewidth=linewidth, linealpha=linealpha, kwargs...)
     end
     return fig
 end
-function plot(g::Graph{T}; kwargs...) where T<:Any
+function plot(g::Graph{T}; markeralpha=0.6, leg=false, linewidth=4, linealpha=0.6, kwargs...) where T<:Any
     g0 = unidirectional_Digraph(g); e0 = []
     V = [getindex.(g0.V, j) for j in eachindex(g0.V[1])]
-    fig = scatter(V..., markeralpha=0.6, leg=false, kwargs...)
+    fig = scatter(V..., markeralpha=markeralpha, leg=leg, kwargs...)
     for e in g0.E
         e0 = [getindex.(Array(e), j) for j in eachindex(e[1])]
-        fig = plot!(fig, e0..., linewidth=4, linealpha=0.6, kwargs...)
+        fig = plot!(fig, e0..., linewidth=linewidth, linealpha=linealpha, kwargs...)
     end
     return fig
 end
@@ -145,6 +145,7 @@ function shortest_path(g::G, s; by=e->1) where G <: AbstractGraph
     d = Dict(s=>0, [v=>Inf for v in filter(u -> u != s, g.V)]...)
     p = Dict([v=>[] for v in g.V]...)
     v, w, δ, V, R, E = s, s, Inf, g.V, [], []
+    prog = Progress(size(V, 1), 1)
     while size(V, 1) > 0
         v = V[argmin(map(u -> d[u], V))]
         R = push!(R, v)
@@ -158,6 +159,7 @@ function shortest_path(g::G, s; by=e->1) where G <: AbstractGraph
                 p[w] = v
             end
         end
+        next!(prog)
     end
     return d, p
 end
