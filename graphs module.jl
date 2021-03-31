@@ -2,10 +2,10 @@ module Graphs
 
 import LinearAlgebra: norm, UpperTriangular
 import ProgressMeter: Progress, next!
-import Base: show, display, sort!, size
+import Base: show, display, sort, size, similar
 import Core: Array
 import Plots: plot, plot!, scatter, scatter!
-export AbstractGraph, Digraph, Graph, size, δ, neighbors, show, display, sort!, connected_vertices, adjacency_matrix, add_edge, spantree, cluster, plot, unidirectional_Digraph, Array, shortest_path
+export AbstractGraph, Digraph, Graph, size, δ, neighbors, show, display, sort, connected_vertices, adjacency_matrix, add_edge, spantree, cluster, plot, unidirectional_Digraph, Array, shortest_path, similar
 
 Array(e::Tuple{T, T}) where T<:Any = [v for v in e]
 
@@ -77,10 +77,11 @@ function display(g::G) where G <: AbstractGraph
     end
 end
 
-sort!(g::G; kwargs...) where G <: AbstractGraph = sort!(g.E; kwargs...)
+sort(g::G; kwargs...) where G <: AbstractGraph = sort(g.E; kwargs...)
 connected_vertices(g::G) where G <: AbstractGraph = vcat(getindex.(g.E, 1), getindex.(g.E, 2)) |> unique!
 connected_vertices(E::Array{Tuple{T,T},1}) where T<:Any = vcat(getindex.(E, 1), getindex.(E, 2)) |> unique!
 adjacency_matrix(g::G) where G <: AbstractGraph = vcat([[w ∈ neighbors(v, g) for w in g.V]' for v in g.V]...)
+similar(g::G) where G <: AbstractGraph = typeof(g)(Array{eltype(g.V),1}(undef, 0), Array{Tuple{eltype(g.V), eltype(g.V)},1}(undef, 0))
 
 function add_edge(e, g::G) where G <: AbstractGraph
     E_new = vcat(g.E, e)
@@ -89,8 +90,8 @@ function add_edge(e, g::G) where G <: AbstractGraph
 end
 
 function spantree(g::G; kwargs...) where G <: AbstractGraph
-    edges = sort!(g; kwargs...) |> copy
-    F = F_new = typeof(g)(Array{eltype(g.V),1}(undef, 0), Array{Tuple{eltype(g.V), eltype(g.V)},1}(undef, 0))
+    edges = sort(g; kwargs...)
+    F = F_new = similar(g)
     k, n = 1, size(connected_vertices(g), 1)
     prog = Progress(n, 1)
     while size(F, 1) < n && size(edges, 1) > 0
@@ -103,10 +104,11 @@ function spantree(g::G; kwargs...) where G <: AbstractGraph
         elseif k < size(edges, 1)
             k += 1
         else
+            @warn "Graph is not connected"
             break
         end
     end
-    F.E = sort!(F; kwargs...)
+    F.E = sort(F; kwargs...)
     return F
 end
 
