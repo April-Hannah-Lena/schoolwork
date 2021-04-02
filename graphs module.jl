@@ -5,7 +5,7 @@ import ProgressMeter: Progress, next!
 import Base: show, display, sort, size, similar
 import Core: Array
 import Plots: plot, plot!, scatter, scatter!
-export AbstractGraph, Digraph, Graph, size, δ, neighbors, show, display, sort, connected_vertices, adjacency_matrix, add_edge, spantree, cluster, plot, unidirectional_Digraph, Array, shortest_path, similar
+export AbstractGraph, Digraph, Graph, size, δ, neighbors, show, display, sort, connected_vertices, adjacency_matrix, add_edge, spantree, cluster, plot, unidirectional_Digraph, Array, shortest_path, similar, is_connected
 
 Array(e::Tuple{T, T}) where T<:Any = [v for v in e]
 
@@ -174,6 +174,10 @@ function shortest_path(g::G, s, t; by=e->1) where G <: AbstractGraph
         v = path[1]
     end
     return path
+end
+function is_connected(g::G) where G <: AbstractGraph
+    d, p = shortest_path(g, g.V[1])
+    return Inf in values(d)
 end
 
 end

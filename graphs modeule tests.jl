@@ -22,7 +22,7 @@ A = rand(n, n) + I
 A = A .< 0.05
 g = Graph(V, A)
 plot(g)
-d, p = shortest_path(g, g.V[end-1]; by=e -> norm(e[1] - e[2]))
+d, p = shortest_path(g, g.V[1]; by=e -> norm(e[1] - e[2]))
 g0 = spantree(g, by=e -> norm(e[1]-e[2]))
 plot(g0)
 u = g.V[argmax(map(v -> norm(v - zeros(3)), g.V))]; w = g.V[argmax(map(v -> norm(v - u), g.V))]
