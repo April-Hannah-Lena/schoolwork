@@ -30,3 +30,11 @@ path = shortest_path(g0, u, w; by=e -> norm(e[1] - e[2]))
 scatter([getindex.(g.V, j) for j in eachindex(g.V[1])]..., markeralpha=0.6, leg=false)
 plot!([getindex.(path, j) for j in eachindex(path[1])]..., linewidth=8, linealpha=0.9)
 savefig("shortest path.html")
+
+V = [randn(3) for i in 1:10]
+A = ones(10, 10) - I |> UpperTriangular |> Array |> x -> Bool.(x)
+g = Digraph(V, A)
+c(e) = 1.0
+V, E, s, t = g.V, g.E, g.V[1], g.V[end]
+Network(V, E, s, t)
+g2 = Network(g, e->norm(e[1]-e[2]), g.V[1], g.V[end])

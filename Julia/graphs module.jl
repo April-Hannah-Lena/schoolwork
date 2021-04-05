@@ -5,7 +5,7 @@ import ProgressMeter: Progress, next!
 import Base: show, display, sort, size, similar
 import Core: Array
 import Plots: plot, plot!, scatter, scatter!
-export AbstractGraph, Digraph, Graph, size, δ, neighbors, show, display, sort, connected_vertices, adjacency_matrix, add_edge, spantree, cluster, plot, unidirectional_Digraph, Array, shortest_path, similar, is_connected
+export AbstractGraph, Digraph, Graph, size, δ, neighbors, show, display, sort, connected_vertices, adjacency_matrix, add_edge, spantree, cluster, plot, unidirectional_Digraph, Array, shortest_path, similar, is_connected, Network
 
 Array(e::Tuple{T, T}) where T<:Any = [v for v in e]
 
@@ -179,5 +179,25 @@ function is_connected(g::G) where G <: AbstractGraph
     d, p = shortest_path(g, g.V[1])
     return Inf in values(d)
 end
+
+
+mutable struct Network{T<:Any, N<:Any}
+    V :: Array{T, 1}
+    E :: Array{Tuple{T, T}, 1}
+    c :: Dict{Tuple{T, T}, N}
+    s :: T
+    t :: T
+    Network{T, N}(V, E, c, s, t) where T<:Any where N<:Any = begin
+        s in V && t in V ? nothing : @error "source or sink not within set of edges"
+        V, E = unique!.([V, E])
+        new(V, E, c, s, t)
+    end
+end
+Network{T, N}(V, E, c::F, s, t) where F<:Function where T<:Any where N<:Any = begin
+    c_dict = Dict([e=>c(e) for e in E]...)
+    Network{T, N}(V, E, c_dict, s, t)
+end
+Network(V::Array{T,1}, E::Array{Tuple{T,T},1}, c::F, s::T, t::T) where F<:Union{Dict{Tuple{T,T},N} where N<:Any, Function} where T<:Any = Network{T, N}(V, E, c, s, t)
+Network(G::Digraph{T}, c::F, s::T, t::T) where F<:Union{Dict{Tuple{T,T},N} where N<:Any, Function} where T<:Any = Network{T, N}(G.V, G.E, c, s, t)
 
 end
