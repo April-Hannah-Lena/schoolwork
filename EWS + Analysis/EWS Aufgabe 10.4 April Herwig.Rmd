@@ -1,0 +1,59 @@
+---
+title: "EWS Aufgabe 10.4"
+author: "April Herwig"
+date: "1/23/2021"
+header-includes:
+   - \usepackage{amsmath}
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+```{r}
+set.seed(1)
+```
+
+
+#### *a)*
+a) Für das Poisson-produktmodell gilt: 
+
+$$\begin{align*}
+    l : \Theta \rightarrow \mathbb{R} , \theta \rightarrow ln(\rho_\theta(x_1,...,x_n)) & = \prod\limits_{i=1}^{n} e^{-\theta} \frac{\theta^{x_i}}{x_i !} \\
+    & = -n\theta + \sum\limits_{i=1}^{n}x_i ln(\theta) - ln(x_i !) . \\
+    l'(\theta) = -n + \sum\limits_{i=1}^{n} \frac{x_i}{\theta} \overset{!}{=} 0 \\
+    \Rightarrow \theta = \frac{1}{n}\sum\limits_{i=1}^{n}x_i . \\
+\end{align*}$$
+
+$E[X_1]=\theta<\infty$ für alle $\theta$ da $\theta\in\Theta=(0, \infty)$ 
+
+$\Rightarrow$ das empirische Mittel is konsistent auf das Produktmodell. 
+
+```{r}
+xi <- rpois(100, lambda = 3)
+stichprobe <- tibble(x=xi)
+l <- function(theta, probe) {
+  summe <- sum(probe)
+  logsumme <- sum(log(factorial(probe)))
+  n <- length(probe)
+  return(-n*theta + log(theta)*summe -logsumme)
+}
+
+ggplot(data=stichprobe, aes(x=x)) + 
+  #geom_line(stat="density") + 
+  stat_function(fun=l, args=list(xi)) + 
+  coord_cartesian(xlim=c(0.0, 5.0), ylim=c(-1000.0, 0.0)) + 
+  geom_vline(xintercept = 3, color = "green") +
+  geom_vline(xintercept = mean(xi), color= "red")
+```
+
+```{r}
+ggplot(data=stichprobe, aes(x=x)) + 
+  #geom_line(stat="density") + 
+  stat_function(fun=l, args=list(xi)) + 
+  coord_cartesian(xlim=c(2.8, 3.2), ylim=c(-250.0, -150.0)) + 
+  geom_vline(xintercept = 3, color="green") +
+  geom_vline(xintercept = mean(xi), color="red")
+```
+

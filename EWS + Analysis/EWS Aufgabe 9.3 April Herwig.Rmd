@@ -1,0 +1,102 @@
+---
+title: "EWS Aufgabe 9.3"
+author: "April Herwig"
+date: "1/19/2021"
+header-includes:
+   - \usepackage{amsmath}
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+#### *a)* 
+
+$$
+\begin{equation*}
+E[T_1] = E[\frac{1}{n} \sum\limits_{i=1}^{n} X_i] = \frac{1}{n}\sum\limits_{i=1}^n E[X_i] = \frac{1}{n} n \theta
+\end{equation*}
+$$
+
+$$
+\begin{equation*}
+E[T_2] = E[\frac{1}{n+2} \left( \sum\limits_{i=1}^{n}X_i + 1 \right) ] = \frac{1}{n+2} n E[X_i] + \frac{1}{n+2} = \frac{1}{n+2}(n\theta + 1)
+\end{equation*}
+$$
+
+
+
+
+#### *b)*
+
+$$
+\begin{equation*}
+    \begin{split}
+        MSE_\theta(T_1) & = Var(T_1) \quad\leftarrow\quad T_1 \quad ist \quad erwartungstreu \\
+        & = Var\left(\frac{1}{n}\sum\limits_{i=1}^{n}X_i\right) = \frac{1}{n^2}\sum\limits_{i=1}^{n} Var(X_i) = \frac{1}{n}\theta(1-\theta) \\
+        \\
+        MSE_\theta(T_2) & = Var(T_2) + B(T_2)^2 \\
+        & = Var\left(\frac{1}{n+2}\left(\sum\limits_{i=1}^{n} X_i + 1\right)\right) + \left(\frac{n\theta+1}{n+2}-\theta\right)^2 \\
+        *\quad\rightarrow\quad& = \frac{n}{(n+2)^2}(\theta-\theta^2) + \left(\frac{n\theta+1}{n+2}\right)^2 - 2\theta\frac{n\theta+1}{n+2} + \theta^2 \\
+        & = \frac{n-4}{(n+2)^2}\theta(1-\theta)
+    \end{split}
+\end{equation*}
+$$
+
+\* Hier wird benutzt dass die Varianz translationsinvariant ist, und dass alle $X_i$ identish verteilt sind. 
+
+
+#### *c)*
+
+```{r}
+MSE_T1 <- function(n, theta) {
+  e1 <- 1/n
+  return(e1*(theta - theta^2))
+}
+
+MSE_T2 <- function(n, theta) {
+  e1 <- (n-4)/((n+2)^2)
+  return(e1*(theta - theta^2))
+}
+```
+
+```{r}
+MSE1 <- tibble(
+  theta = rep(c(1:100)*0.01, 3),
+  n = c(rep("10", 100),
+        rep("60", 100),
+        rep("100", 100)
+        )
+)
+
+MSE1 <- MSE1 %>%
+  mutate(MSE = MSE_T1(as.numeric(n), theta))
+
+MSE2 <- tibble(
+  theta = rep(c(1:100)*0.01, 3),
+  n = c(rep("10", 100),
+        rep("60", 100),
+        rep("100", 100)
+        )
+)
+
+MSE2 <- MSE2 %>%
+  mutate(MSE = MSE_T2(as.numeric(n), theta))
+MSE2
+```
+
+```{r}
+ggplot(data=MSE1, mapping=aes(x=theta, y=MSE, color=n)) + 
+  geom_line()
+```
+
+Der Maximale $MSE_\theta$ liegt immer bei $\theta=0.5$. Von dem Plot ist auch leicht intuitiv zu sehen, dass die Folge $(T_1)_n$ eine konsistente Schätzfolge ist. Die triviale Fälle $\theta = 0, \theta = 1$ sind die einzigen Fälle wo $MSE_\theta=0$, trotzdem ist der error $MSE_\theta(T_1)\leq \frac{1}{4n}$ akzeptabel. 
+
+```{r}
+ggplot(data=MSE2, mapping=aes(x=theta, y=MSE, color=n)) + 
+  geom_line()
+```
+
+Das $MSE_\theta(T_2)$ ist auch symmetrisch um den Punkt $\theta = 0.5$ und konvergiert auch linear zu $0$ - ist also auch ein konsistente Schätzfolge. Allerdings ist der Error für jedes $n$ und jedes $\theta$ kleiner als bei $T_1$, es erfüllt nämlich $MSE_\theta(T_2)\leq \frac{n-4}{4(n+2)^2}$, also fast die Hälfte des maximalem Error von $T_1$ für n klein. Nach $n\approx 100$ ist der Error jedoch vergleichbarer. 

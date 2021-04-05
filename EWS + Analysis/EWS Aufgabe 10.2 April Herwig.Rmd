@@ -1,0 +1,86 @@
+---
+title: "EWS Aufgabe 10.2"
+author: "April Herwig"
+date: "1/23/2021"
+header-includes:
+   - \usepackage{amsmath}
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+```{r}
+set.seed(1)
+```
+#### *a)* 
+
+Die Funktion $\mathbb{1}_{(-\infty, x]} (X_i)$ ist äquivalent zu einer Bernoulli verteilten Zufalsvariable $Y_i \sim Bernoulli(F(x)) \in \mathcal{L}^2$. Damit ist für die Summe der unabhängig, identisch verteilten Stichproben: 
+
+\begin{align*}
+    &P(|\sum\limits_{i=1}^{n}\mathbb{1}_{(-\infty, x]} (X_i)-F(x)|>\epsilon) = P(|\sum\limits_{i=1}^{n} Y_i-F(x)|>\epsilon) \rightarrow 0,
+\end{align*}
+
+stochastisch nach dem schwachem Gesetz der Großen Zahlen.
+
+
+#### *b)* 
+
+Es ist: 
+
+\begin{align*}
+    F_\theta^{-1}(p) \leq x \Leftrightarrow & p \leq F_\theta(x) \\
+    & p = F_n(x) \Leftrightarrow F_n(x) \leq F_\theta(x) .
+\end{align*}
+
+Betrachte also $F_n^{-1}(p) - F_\theta^{-1}(p) > \epsilon$
+
+\begin{align*}
+    & \Leftrightarrow F_\theta^{-1}(p) \leq x - \epsilon < F_n^{-1}(p) \\
+    & \Leftrightarrow F_n(x) < F_\theta(x) \\
+    & \Leftrightarrow \exists \delta > 0 : F_n(x) - F_\theta(x) > \delta . \\
+\end{align*}
+
+Dies gilt analog für $F_\theta^{-1}(x) - F_n^{-1}(x) > \epsilon$
+
+\begin{align*}
+    & \Rightarrow |F_n^{-1}(p) - F_\theta^{-1}(p)| > \epsilon \Leftrightarrow |F_n(x) - F_\theta(x)| > \delta . \\ 
+\end{align*}
+
+
+Insbesondere ist $\forall\epsilon'>0\quad\exists\delta'>0 :$
+
+\begin{align*}
+    & P_\theta^{\otimes n}(|F_n(x) - F_\theta(x)| > \delta') \Rightarrow P_\theta^{\otimes n}(|F_n^{-1}(p) - F_\theta^{-1}(p)| > \epsilon') , \\
+\end{align*}
+
+da F streng monoton wachsend und rechtsseitig stetig ist, aus dem $\epsilon - \delta$ stetigkeits Kriterium. Insgesamt also:
+
+\begin{align*}
+    & P_\theta^{\otimes n}(|F_n(x) - F_\theta(x)| > \delta) \rightarrow 0 \\
+    & \Rightarrow P_\theta^{\otimes n}(|F_n^{-1}(p) - F_\theta^{-1}(p)| > \epsilon) \rightarrow 0 . \\
+\end{align*}
+
+
+
+#### *c)*
+
+```{r}
+probe <- rnorm(1000)
+
+stichproben <- tibble(
+proben=c(probe[1:50], probe[1:100], probe[1:500], probe),
+n=c(rep("50", 50), rep("100", 100), rep("500", 500), rep("1000", 1000))
+)
+```
+
+```{r}
+ggplot(data=stichproben, mapping=aes(x=proben, color=n)) +
+    stat_ecdf() + stat_function(fun=pnorm, color="red") + 
+    facet_wrap(vars(n), nrow=2, scales="free")
+```
+
+
+

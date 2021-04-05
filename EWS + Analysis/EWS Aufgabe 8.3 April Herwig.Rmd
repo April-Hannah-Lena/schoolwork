@@ -1,0 +1,92 @@
+---
+title: "EWS Aufgabe 8.3"
+author: "April Herwig"
+date: "1/10/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+```{r}
+set.seed(3)
+```
+
+
+```{r}
+stichprobe_chisq <- tibble(
+  probe=c(rchisq(100, 5), 
+          rchisq(100, 10), 
+          rchisq(100, 50)
+        ),
+  df=c(rep("5", 100), 
+       rep("10", 100), 
+       rep("50", 100)
+     )
+)
+```
+
+```{r}
+ggplot(data=stichprobe_chisq, mapping=aes(x=probe, color=df)) + 
+  geom_line(aes(x=probe, color=df), stat="density") + 
+  labs(title=expression(paste(chi[n]^2,"-Stichproben")))
+```
+
+```{r}
+ggplot(data=stichprobe_chisq, aes(sample=probe, color=df)) + 
+  stat_qq() + 
+  stat_qq_line() + 
+  labs(title=expression(paste(chi[n]^2,"-qq Plot")))
+```
+
+```{r}
+ggplot(data=stichprobe_chisq, aes(sample=probe, color=df)) + 
+  stat_qq() + 
+  stat_qq_line() + 
+  labs(title=expression(paste(chi[n]^2,"-qq Plot   -   zoom"))) + 
+  coord_cartesian(xlim=c(-1.5, 1.5), ylim=c(-1, 15))
+```
+
+Das theoretical 0 $\approx 5, 10, 50$ für $df = 5, 10, 50$, repektive. Dies entspricht theoretische Normalverteilungen mit $\mu = 5, 10, 50$. Der absolute Fehler ist - logischerweise - größtens bei $df=50$, allerdings ist der relative Fehler kleinstens bei $df=10$. Dies ergibt Sinn, denn bei $df$ groß ist $f_{n, 2}(x)$ groß für mehr x als bei $df$ klein. Allerdings ist bei $df$ klein jede Abweichung zu merken, selbst wenn die Abweichung auch klein ist. 
+
+
+
+```{r}
+stichprobe_rt <- tibble(
+  probe=c(rt(100, 2), 
+          rt(100, 5), 
+          rt(100, 20), 
+          rt(100, Inf)
+        ),
+  df=c(rep("2", 100), 
+       rep("5", 100), 
+       rep("20", 100),
+       rep("Inf", 100)
+     )
+)
+```
+
+```{r}
+ggplot(data=stichprobe_rt, mapping=aes(x=probe, color=df)) + 
+  geom_line(aes(x=probe, color=df), stat="density") + 
+  coord_cartesian(xlim=c(-10, 10)) + 
+  labs(title=expression(paste(t[n],"-Stichproben")))
+```
+
+```{r}
+ggplot(data=stichprobe_rt, aes(sample=probe, color=df)) + 
+  stat_qq() + 
+  stat_qq_line() + 
+  labs(title=expression(paste(t[n],"-qq Plot")))
+```
+
+```{r}
+ggplot(data=stichprobe_rt, aes(sample=probe, color=df)) + 
+  stat_qq() + 
+  stat_qq_line() + 
+  coord_cartesian(xlim=c(-1.5, 1.5), ylim=c(-1.5, 1.5)) + 
+  labs(title=expression(paste(t[n],"-qq Plot   -   zoom")))
+```
+
+Sofort zu sehen ist dass die $t_n$ Verteilungen alle Erwartungswert $\mu = 0$ haben. Die Stichproben weichen sehr stark ab bei $df=2$, aber werden kleiner proportional zu $df$. Der Gradient bei qq_line konvergiert auch gegen 1, was zu erwarten ist. Allerdings ist $\mu \geq 0$ für $df = \infty$, wegen eine leichte Abweichung des Peaks. Dies ist im Stichproben-Plot am leichtesten zu sehen. 
