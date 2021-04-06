@@ -52,3 +52,8 @@ g <- function(n) {
 uniroot(g, lower = 1, upper = 1000)
 g(245)
 g(246)
+
+n <- 10000
+c <- qnorm(0.975, mean=0, sd=0.5)
+c_lower <- 0.5 - ( c / sqrt(n) )
+c_upper <- 0.5 + ( c / sqrt(n) )

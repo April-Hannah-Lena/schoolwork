@@ -23,6 +23,7 @@ docs/site/
 # environment.
 Manifest.toml
 quick_notes.jl
+quick_notes.py
 
 *.html
 **/.ipynb_checkpoints
@@ -42,4 +43,5 @@ quick_notes.jl
 *.cpython-38.pyc
 *.cpython-39.pyc
 *.so
+__pycache__
 precompile_plots.jl
