@@ -167,7 +167,7 @@ function shortest_path(g::G, s; by=e->1) where G <: AbstractGraph
 end
 function shortest_path(g::G, s, t; by=e->1) where G <: AbstractGraph
     d, p = shortest_path(g, s; by)
-    d[t] < Inf ? nothing : error("no path from $s to $t")
+    d[t] == Inf && error("no path from $s to $t")
     v, path = t, [t]
     while v != s
         path = pushfirst!(path, p[v])
@@ -188,7 +188,7 @@ mutable struct Network{T<:Any, N<:Any}
     s :: T
     t :: T
     Network{T, N}(V, E, c, s, t) where T<:Any where N<:Any = begin
-        s in V && t in V ? nothing : @error "source or sink not within set of edges"
+        !( s in V && t in V ) && @error "source or sink not within set of edges"
         V, E = unique!.([V, E])
         new(V, E, c, s, t)
     end
@@ -197,7 +197,56 @@ Network{T, N}(V, E, c::F, s, t) where F<:Function where T<:Any where N<:Any = be
     c_dict = Dict([e=>c(e) for e in E]...)
     Network{T, N}(V, E, c_dict, s, t)
 end
-Network(V::Array{T,1}, E::Array{Tuple{T,T},1}, c::F, s::T, t::T) where F<:Union{Dict{Tuple{T,T},N} where N<:Any, Function} where T<:Any = Network{T, N}(V, E, c, s, t)
-Network(G::Digraph{T}, c::F, s::T, t::T) where F<:Union{Dict{Tuple{T,T},N} where N<:Any, Function} where T<:Any = Network{T, N}(G.V, G.E, c, s, t)
+Network(V::Array{T,1}, E::Array{Tuple{T,T},1}, c::F, s::T, t::T) where F<:Dict{Tuple{T,T},N} where N<:Any where T<:Any = Network{T, N}(V, E, c, s, t)
+Network(V::Array{T,1}, E::Array{Tuple{T,T},1}, c::F, s::T, t::T) where F<:Function where T<:Any = begin
+    N = typeof(c(E[1]))
+    Network{T, N}(V, E, c, s, t)
+end
+Network(G::Digraph{T}, c::F, s::T, t::T) where F<:Union{Dict{Tuple{T,T},N} where N<:Any, Function} where T<:Any = Network(G.V, G.E, c, s, t)
+
+size(g::Network) = (length(g.V), length(g.E))
+size(g::Network, d::Core.Integer) = size(g)[d]
+δ(v, g::Network) = filter(e->e[1]==v, g.E)
+neighbors(v, g::Network) = getindex.(δ(v, g), 2)
+
+function display(g::Network)
+    println(typeof(g), " with $(size(g, 1)) vertices and $(size(g, 2)) edges:")
+    println("")
+    println("Source: $(g.s)")
+    println("")
+    println("Sink: $(g.t)")
+    println("")
+    for v in g.V
+        println("$v => $(neighbors(v, g))")
+    end
+end
+
+function AugmentationNetwork(g::Network{T, N}, f::Dict{Tuple{T,T}, N}) where T<:Any where N<:Any
+    E1, E2 = [e for e in g.E if f[e] < g.c[e]], [reverse(e) for e in g.E if 0 < f[e]]
+    c_new = Dict([e => g.c[e] - f[e] for e in E1]..., [e => f[e] for e in E2]...)
+    return Network(g.V, vcat(E1, E2), c_new, g.s, g.t)
+end
+shortest_path(g::Network; by=e->1, TOL=sqrt(eps())) = shortest_path(Digraph(g.V, g.E), g.s, g.t; by=by)
+function max_flow(g::Network{T, N}; by=e->1) where T<:Any where N<:Any
+    f = Dict(e => zero(N) for e in g.E)
+    g_new = g
+    γ = Inf
+    while abs(γ) > TOL
+        g_new = AugmentationNetwork(g, f)
+        try
+            path = shortest_path(g_new)
+        catch err
+            break
+        end
+        γ = filter(e -> e.first in path, g_new.c) |> values |> minimum
+        for e in path
+            e in g.E && f[e] = f[e] + γ
+            reverse(e) in g.E && f[e] = f[e] - γ
+        end
+    end
+    return f
+end
+
+
 
 end
