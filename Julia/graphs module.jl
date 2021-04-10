@@ -1,7 +1,7 @@
 module Graphs
 
 import LinearAlgebra: norm, UpperTriangular
-import ProgressMeter: Progress, next!
+import ProgressMeter: Progress, ProgressThresh, next!, update!
 import Base: show, display, sort, size, similar
 import Core: Array
 import Plots: plot, plot!, scatter, scatter!
@@ -147,7 +147,7 @@ function shortest_path(g::G, s; by=e->1) where G <: AbstractGraph
     d = Dict(s=>0, [v=>Inf for v in filter(u -> u != s, g.V)]...)
     p = Dict([v=>[] for v in g.V]...)
     v, w, δ, V, R, E = s, s, Inf, g.V, [], []
-    prog = Progress(size(V, 1), 1)
+    prog = Progress(size(V, 1); dt=1 desc="Computing shortest path... ")
     while size(V, 1) > 0
         v = V[argmin(map(u -> d[u], V))]
         R = push!(R, v)
@@ -188,7 +188,7 @@ mutable struct Network{T<:Any, N<:Any}
     s :: T
     t :: T
     Network{T, N}(V, E, c, s, t) where T<:Any where N<:Any = begin
-        !( s in V && t in V ) && @error "source or sink not within set of edges"
+        !( s in V && t in V ) && @error "source or sink not within set of vertices"
         V, E = unique!.([V, E])
         new(V, E, c, s, t)
     end
@@ -213,7 +213,6 @@ function display(g::Network)
     println(typeof(g), " with $(size(g, 1)) vertices and $(size(g, 2)) edges:")
     println("")
     println("Source: $(g.s)")
-    println("")
     println("Sink: $(g.t)")
     println("")
     for v in g.V
@@ -226,11 +225,12 @@ function AugmentationNetwork(g::Network{T, N}, f::Dict{Tuple{T,T}, N}) where T<:
     c_new = Dict([e => g.c[e] - f[e] for e in E1]..., [e => f[e] for e in E2]...)
     return Network(g.V, vcat(E1, E2), c_new, g.s, g.t)
 end
-shortest_path(g::Network; by=e->1, TOL=sqrt(eps())) = shortest_path(Digraph(g.V, g.E), g.s, g.t; by=by)
-function max_flow(g::Network{T, N}; by=e->1) where T<:Any where N<:Any
+shortest_path(g::Network; by=e->1) = shortest_path(Digraph(g.V, g.E), g.s, g.t; by=by)
+function max_flow(g::Network{T, N}; by=e->1, TOL=sqrt(eps())) where T<:Any where N<:Rational
     f = Dict(e => zero(N) for e in g.E)
     g_new = g
     γ = Inf
+    prog = ProgressThresh(TOL; dt=1, desc="Minimizing γ... ")
     while abs(γ) > TOL
         g_new = AugmentationNetwork(g, f)
         try
@@ -239,6 +239,7 @@ function max_flow(g::Network{T, N}; by=e->1) where T<:Any where N<:Any
             break
         end
         γ = filter(e -> e.first in path, g_new.c) |> values |> minimum
+        update!(prog, γ)
         for e in path
             e in g.E && f[e] = f[e] + γ
             reverse(e) in g.E && f[e] = f[e] - γ
