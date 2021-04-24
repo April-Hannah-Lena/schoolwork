@@ -1,0 +1,65 @@
+---
+title: "ML Problem 4 R"
+author: "April Herwig"
+date: "4/17/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+```{r}
+## 1)
+n <- 1000
+x <- runif(n)
+eps <- rnorm(n, sd=0.5)
+y <- x + eps
+p <- order(x)
+x <- x[p]
+y <- y[p]
+ggplot(mapping=aes(x=x, y=y)) + 
+  geom_point()
+```
+
+```{r}
+## 2)
+f <- function(a) {
+  return( sum((x*a - y)^2) )
+}
+Df <- function(a) {
+  return( sum(2*x * (x*a - y)) )
+}
+DDf <- sum(2 * x^2)
+
+a <- 0.5
+h <- 0.0
+f_old <- Inf
+f_new <- f(a)
+
+while (f_old - f_new > .Machine$double.eps) { 
+  h <- -Df(a)/DDf
+  a <- a + h
+  f_old <- f_new
+  f_new <- f(a)
+}
+
+ggplot(mapping=aes(x=x, y=y)) + 
+  geom_point() + 
+  geom_line(mapping=aes(x=x, y=a * x), size=2, color="red")
+```
+
+```{r}
+## 4)
+eps <- rnorm(n, sd=0.1)
+y <- 30 * (x - 0.25)^2 * (x - 0.75)^2 + eps
+X <- cbind(x^0, x^1, x^2, x^3, x^4)
+a <- solve(t(X) %*% X, t(X) %*% y)
+y2 <- a[1] + a[2]*x + a[3]*x^2 + a[4]*x^3 + a[5]*x^4
+
+ggplot(mapping=aes(x=x, y=y)) + 
+  geom_point() + 
+  geom_line(mapping=aes(x=x, y=y2), size=2, color="red")
+```
+

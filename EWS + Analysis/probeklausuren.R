@@ -54,6 +54,7 @@ g(245)
 g(246)
 
 n <- 10000
-c <- qnorm(0.975, mean=0, sd=0.5)
+c <- qnorm(0.975, mean=0, sd=1/sqrt(2))
 c_lower <- 0.5 - ( c / sqrt(n) )
 c_upper <- 0.5 + ( c / sqrt(n) )
+c(c_lower, c_upper)
