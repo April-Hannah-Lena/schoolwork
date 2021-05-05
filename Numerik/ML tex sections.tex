@@ -1,0 +1,40 @@
+\documentclass[draft]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\setlength{\parindent}{0pt}
+
+\title{EWS Blatt 10}
+\author{April Herwig}
+
+\begin{document}
+
+\maketitle
+
+$\mathbb{E}\left[ \left( \hat{h}(x) - \mathbb{E}\left[ \hat{h}(x) \right] \right) ^2 \right]$
+$ \tilde{X} = [1\quad X], \quad\tilde{y}^T = [1\quad y^T] $
+$ \theta ^{*} = \text{argmin}_\theta\  \| \tilde{y} - \tilde{X}\theta \| + \lambda\left(\| \tilde{I}\theta \|^2 \right)  $
+\[
+    \tilde{I}=\begin{bmatrix}
+        0 & & & \\
+        & 1 & & \\
+        & & \ddots & \\
+        & & & 1
+    \end{bmatrix} = I - \begin{bmatrix}
+        1 & & & \\
+        & 0 & & \\
+        & & \ddots & \\
+        & & & 0 
+    \end{bmatrix}
+\]
+\begin{align*}
+    \hat{\theta} &= \text{argmin}_\theta\ R(\theta) \\
+    &= \text{argmin}_\theta\ \| \tilde{y} - \tilde{X}\theta \|^2 + \lambda\| \tilde{I}\theta \| ^2 \\
+    &= \langle \tilde{y} - \tilde{X}\theta,\ \tilde{y} - \tilde{X}\theta \rangle + \lambda\langle\tilde{I}\theta,\ \tilde{I}\theta\rangle \\
+    &= \tilde{y}^T \tilde{y} +\theta^T\tilde{X}^T\tilde{X}\theta - 2\theta^T\tilde{X}^T\tilde{y} + \lambda\theta^T\tilde{I}^T\tilde{I}\theta \\
+\end{align*}
+$ \left(\tilde{X}^T\tilde{X} + \tilde{I}^T\tilde{I}\right)\hat{\theta} = \tilde{X}^T\tilde{y} $
+$ \tilde{X}^T\tilde{X} $
+
+
+\end{document}
