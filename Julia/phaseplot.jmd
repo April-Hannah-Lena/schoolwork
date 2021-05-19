@@ -1,0 +1,11 @@
+```julia
+using ComplexPortraits, Plots
+@ComplexPortraits.import_normal
+f(z) = exp(z) - z
+abs_f(x, y) = abs(f(x + y*im))
+
+fig1 = phaseplot(-2.0+2.0im, 2.0-2.0im, f)
+fig2 = contour(-1:0.05:1, -2:0.1:2, abs_f, levels=[1.1], linewidth=4)
+fig2 = contour!(-1:0.05:1, -2:0.1:2, abs_f, levels=0:0.1:1.5)
+fig = plot(fig1, fig2, layout=2, size=(1000, 400))
+```

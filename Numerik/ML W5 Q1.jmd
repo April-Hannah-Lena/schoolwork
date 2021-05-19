@@ -1,0 +1,50 @@
+```julia; echo=false; results="hidden"
+using Weave
+weave("C:\\Users\\april\\Documents\\schoolwork\\Numerik\\ML W5 Q1.jmd", out_path="C:\\Users\\april\\Documents\\schoolwork\\Pictures + Demos", doctype="md2html")
+```
+
+# Problem 1
+
+```julia; results="hidden"
+using LinearAlgebra, Plots
+```
+
+```julia; results="hidden"
+b = [4.5, 6]
+norm_b = norm(b)
+f(x) = norm(x - b)
+∇f(x) = (x - b) ./ f(x) 
+x = [0, 0]
+```
+
+```julia; results="hidden"
+# 2)
+x = x - ∇f(x)
+```
+
+After 7 steps with constant step size 1, x reaches $\binom{4.2}{5.6}$. 
+Since $\nabla f(x) = \frac{x - b}{\| x - b \|}$, $x^k - \nabla f(x^k)$ always takes steps of size 1 directly towards b. 
+$\| x^7 - b \| = 0.5 < 1$, so the sequence cannot converge. 
+
+```julia; results="hidden"
+# 3)
+x = x - ∇f(x) .* (5/6)^k
+```
+
+$\| x^0 - b \| = 7.5 > 6 = \frac{1}{1 - 5/6} = \sum_{k = 0}^{\infty} (5/6)^k$. 
+Therefore, it is impossible for the sequence to converge, the steps reduce in size too quickly. 
+
+```julia
+# 4)
+error = [1.0]
+x, k = [0, 0], 0
+while error[end] > 0.01
+    x = x - ∇f(x) ./ (k+1)
+    error_2 = push!(error, f(x) / norm_b)
+    k += 1
+end
+
+fig = plot(error, leg=false, 
+           yaxis=("error", :log10), xaxis="no. of steps")
+```
+
