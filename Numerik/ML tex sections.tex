@@ -44,4 +44,14 @@ $ \sum_{k = 0}^{\infty} (5/6)^k  $
     test
 \end{verbatim*}
 
+$ Q_\epsilon^k = \{z : \frac{(2k-1)\pi}{2} + \epsilon \leq Re(z) \leq \frac{(2k-1)\pi}{2} + \epsilon, \quad |Im(z)| \leq \epsilon \} $ 
+$ N_f(0, Q_\epsilon^k) - N_f(\infty, Q_\epsilon^k) = \frac{1}{2\pi i} \int_{dQ_\epsilon^k} \frac{f'(z)}{f(z)} \,dz $
+$ =  \frac{1}{2\pi i} \int_{dQ_\epsilon^k} \frac{sec^2(z)-1}{tan(z)-z} \,dz = res_{z = \frac{(2k+1)\pi}{2}} \frac{sec^2(z)-1}{tan(z)-z} = -1$ 
+
+1. Relabel s.d. $a \leq b$\newline
+2. $a = 0\quad\Rightarrow\quad$  return b\newline
+3. rechne $b = ka+r$, \newline
+4. setzte $b = r$, repeat
+
+
 \end{document}
