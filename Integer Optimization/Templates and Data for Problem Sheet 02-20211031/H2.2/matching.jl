@@ -1,8 +1,58 @@
-using JuMP, GLPK  # replace GLPK with the name of your solver package if necessary (e.g. Gurobi)
+using JuMP, Gurobi  # replace GLPK with the name of your solver package if necessary (e.g. Gurobi)
 using DelimitedFiles, Graphs
 include("matching_helper.jl")
 
 function max_matching(graph::Graph)
+
+    Adj = adjacency_matrix(graph)
+    n = size(Adj, 1)
+    
+    model = Model(Gurobi.Optimizer)
+    @variable(model, A[1:n, 1:n], Symmetric, Bin) 
+    #@constraint(model, adj_matrix[i=1:n, j=1:n], A[i, j] == A[j, i])
+    @constraint(model, edge_existence[i=1:n, j=1:n], A[i, j] <= Adj[i, j])
+    @constraint(model, matching[i=1:n], sum(A[i, :]) <= 1)
+
+    @objective(model, Max, sum(A))
+
+    optimize!(model)
+    Adj .= value.(A)
+    matching = [(i, j) for i in 1:n, j in 1:n if Adj[i, j] == 1]
+
+    return  Adj, matching
+end
+
+
+# read adjacency matrix ...
+cd("C:\\Users\\april\\Documents\\schoolwork\\Integer Optimization\\Templates and Data for Problem Sheet 02-20211031\\H2.2")
+adj_matrix = readdlm("adj-7.txt", Bool)  # select test instance by replacing filename here
+
+# ... and construct graph from it
+graph = Graph(adj_matrix)
+
+# count vertices and edges
+n = nv(graph)
+m = ne(graph)
+println("constructed a graph with $(n) vertices and $(m) edges")  # Note: everything inside $(...) will be replaced with its actual value
+
+# iterate over the vertices and their neighbors ...
+for v in vertices(graph)
+    println("vertex $(v) has neighbors ", neighbors(graph, v))
+end
+# ... and over the edges
+for e in edges(graph)
+    i, j = src(e), dst(e)
+    println("edge between $(i) and $(j)")
+end
+
+
+# find a maximum matching
+Adj, matching = max_matching(graph)
+#gplot(Graph(Adj))
+# plot graph (and solution)
+plot_bip_graph(graph, solution=matching)
+
+
     #=
         TOOD: 
         Find a maximum matching in the input graph and 
@@ -49,39 +99,9 @@ function max_matching(graph::Graph)
         or
             @objective(model, Max, sum(v[i,j] for i=1:10, j=1:5 if i <= 2))
     =#
-    
-    return []  #= TODO: Replace with correct return value.
+
+    #= TODO: Replace with correct return value.
         For a vector of variables z,
             value.(z)
         returns the values (as a vector again) that the variables z take in the optimal solution.
     =#
-end
-
-
-# read adjacency matrix ...
-adj_matrix = readdlm("adj-4.txt", Bool)  # select test instance by replacing filename here
-
-# ... and construct graph from it
-graph = Graph(adj_matrix)
-
-# count vertices and edges
-n = nv(graph)
-m = ne(graph)
-println("constructed a graph with $(n) vertices and $(m) edges")  # Note: everything inside $(...) will be replaced with its actual value
-
-# iterate over the vertices and their neighbors ...
-for v in vertices(graph)
-    println("vertex $(v) has neighbors ", neighbors(graph, v))
-end
-# ... and over the edges
-for e in edges(graph)
-    i, j = src(e), dst(e)
-    println("edge between $(i) and $(j)")
-end
-
-
-# find a maximum matching
-matching = max_matching(graph)
-
-# plot graph (and solution)
-plot_bip_graph(graph, solution=matching)

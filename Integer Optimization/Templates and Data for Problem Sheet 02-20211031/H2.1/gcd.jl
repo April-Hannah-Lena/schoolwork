@@ -1,8 +1,8 @@
 using JuMP
-using GLPK  # replace GLPK with the name of your solver package if necessary (e.g. Gurobi)
+using Gurobi  # replace GLPK with the name of your solver package if necessary (e.g. Gurobi)
 
 function gcd(a::Int, b::Int)
-    model = Model(GLPK.Optimizer)  # replace Gurobi with the name of your solver package if necessary (e.g. Gurobi)
+    model = Model(Gurobi.Optimizer)  # replace Gurobi with the name of your solver package if necessary (e.g. Gurobi)
     
     #= 
         TODO for part (a):
@@ -46,7 +46,13 @@ function gcd(a::Int, b::Int)
         or
             @objective(model, Min, -3 x1 - 2 y2)
     =#
-    
+
+    @variable(model, x1, Int)
+    @variable(model, x2, Int)
+    @constraint(model, a*x1 + b*x2 >= 1)
+    @objective(model, Min, a*x1 + b*x2)
+    set_optimizer_attribute(model, "OutputFlag", 0)
+
     # pretty-print the model ...
     print(model)
     
@@ -54,13 +60,37 @@ function gcd(a::Int, b::Int)
     optimize!(model)
     
     # retrieve and print objective value
+    obj_val = round(Int, objective_value(model))
     println()
     println("====== SOLUTION ======")
-    println("gcd($(a), $(b)) = ", round(Int, objective_value(model)))  # Note: everything inside $(...) will be replaced with its actual value
+    println("gcd($(a), $(b)) = ", obj_val)  # Note: everything inside $(...) will be replaced with its actual value
     
     #=
         TODO for part (c):
         Retrieve solution. Access the value that variable x1 takes in the optimal solution by
             value(x1)
     =#
+    println(
+            "coefficients:  x1 = ", 
+            round(Int, value(x1)), 
+            ", ($(value(x1)))",
+            ",\nx2 = ", 
+            round(Int, value(x2)),
+            ", ($(value(x2)))"
+    )
+    println(""); println("")
+    return obj_val
 end
+
+a = [13, 8265, 918, 2021, 36, 150, -20]
+b = [2, 24, 2781, -31, 81, 35, -96]
+
+obj_vals = gcd.(a, b)
+println(obj_vals)   
+#   [1, 3, 27, 1, 9, 5, 4]
+
+gcd(314159, 2718)
+#   ====== SOLUTION ======
+#   gcd(314159, 2718) = 1
+#   coefficients:  x1 = 0, x2 = 0
+#   ???
