@@ -1,4 +1,4 @@
-using JuMP, Gurobi  # replace GLPK with the name of your solver package if necessary (e.g. Gurobi)
+using JuMP, Gurobi
 include("./queens_helper.jl")
 
 function queens(n::Int)
