@@ -1,0 +1,79 @@
+\documentclass[a4paper, draft]{article}
+\usepackage{amsmath}
+\usepackage{parskip}
+
+\begin{document}
+
+
+\textbf{Question 1 } Observe the following polyhedron $P^{\leq}(A, b)$ with 
+
+\begin{equation*} 
+    A = \begin{pmatrix}
+        1 & \cdot & \cdot & \cdot & \cdot & \cdot & \cdot \\
+        \cdot & 1 & \cdot & \cdot & \cdot & \cdot & \cdot \\
+        \cdot & \cdot & 1 & \cdot & \cdot & \cdot & \cdot \\
+        \cdot & \cdot & \cdot & 1 & \cdot & \cdot & \cdot \\
+        \cdot & \cdot & \cdot & \cdot & 1 & 1 & 1 \\
+        \cdot & \cdot & \cdot & \cdot & 2 & 2 & 2 \\
+        \cdot & \cdot & \cdot & \cdot & 3 & 3 & 3 
+    \end{pmatrix}
+    , \quad b = \begin{pmatrix}
+        2 \\
+        4 \\
+        6 \\
+        1 \\
+        2 \\
+        8 \\
+        1 
+    \end{pmatrix}.
+\end{equation*}
+\textit{a)} Determine $lineal(P)$.
+
+\textit{b)} What is the affine dimension of a minimal face in $P$? \newline\newline
+
+\textit{Solution} 
+\begin{equation*}
+    lineal(P) = ker(A) = \text{span}\{
+    \begin{pmatrix}
+        \cdot \\
+        \cdot \\
+        \cdot \\
+        \cdot \\
+        1 \\
+        -1 \\
+        \cdot 
+    \end{pmatrix}, \begin{pmatrix}
+        \cdot \\
+        \cdot \\
+        \cdot \\
+        \cdot \\
+        1 \\
+        \cdot \\
+        -1
+    \end{pmatrix}\}
+\end{equation*}
+
+For a minimal face $F$ we have $F = x + lineal(P)$ for any $x \in F$. Since $lineal(P)$ has dimension 2, a minimal face will have affine dimension 2. \newpage
+
+\textbf{Question 2 } A Hamilton cycle is a cycle in a graph $G$ that visits every vertex. 
+
+Formulate an integer program for a given graph $G = (V, E)$ to determine if the graph contains a hamilton cycle. 
+
+\textit{Hint: A graph is connected if for any bipartition of the vertices, there must be an edge running between the bipartition.} \newline\newline
+
+\textit{Solution } We wish to find a subset of edges that form a Hamilton cycle, so we define our variable $x \in \{0, 1\}^E$. This is a viability problem, so the objective function is unimportant. A Hamilton cycle must satisfy two constraints:
+\begin{itemize}
+    \item The induced graph must be a cycle. For a given vertex, exactly one edge must "enter" the vertex, and one must "exit" it. To model this:
+    \begin{equation*}
+        \sum_{e\, =\, (v, w)} x_e = 2, \quad \forall\, v \in V,
+    \end{equation*}
+    \item The induced graph must be connected. For any bipartition of the vertices, there must be edges that run between the bipartition. As with H4.2:
+    \begin{equation*}
+        \sum_{\substack{e\, =\, (v, w) \\ v \in S \\ w \notin S}} x_e \geq 2, \quad \forall\, S \subset V,\ S \notin \{ \emptyset , V \}.
+    \end{equation*}
+\end{itemize}
+
+This model does cause the same issue as in H4.2, which is that it can require an exponential number of constraints. 
+
+
+\end{document}
