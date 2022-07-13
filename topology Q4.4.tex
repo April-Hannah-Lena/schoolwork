@@ -1,0 +1,159 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Please keep your source code to 80 characters per line.                      %
+                                                                               %
+\documentclass{article}                                                        %
+                                                                               %
+                                                                               %
+% basic packages:                                                              %
+\usepackage{amsmath, amssymb, mathtools}                                       %
+\usepackage{hyperref}                                                          %
+\usepackage{enumitem}                                                          %
+                                                                               %
+                                                                               %
+%% Here you can add additional packages.                                       %
+% Please add comments explaining why those packages are necessary.             %
+% For example:
+% \usepackage{tikz-cd}% to typeset commutative diagrams
+
+%% End of additional packages                                                  %
+                                                                               %
+                                                                               %
+                                                                               %
+% produces a dummy solution environment,                                       %
+% which will have more functionality in the assembled solution document.       %
+\newtheorem{loesung}{Solution}                                                 %
+                                                                               %
+                                                                               %
+\begin{document}                                                               %
+                                                                               %
+\begin{loesung}                                                                %
+  [April Herwig]% please fill in your name
+  {4.4}% fill in sheet-number & exercise-number (e.g. 3.14).
+                                                                               %
+  %% Start writing your solution here.                                         %
+
+  \textit{a)} Let $Y = \prod\limits_{n\in\mathbb{N}} X_i$. For each 
+  $n\in\mathbb{N}$ define $\delta_n (x,y) = \rho \circ d_{X_n} (x,y)$ where
+  $d_{X_n}$ is the metric on $X_n$ and $\rho$ is a monotone increasing 
+  homeomorphism $\rho : [0,\infty) \rightarrow [0,1)$, eg. 
+  $x \mapsto \frac{x}{1+x}$. Define the metric on $Y$ as 
+
+  \begin{equation*}
+    d : Y \times Y \rightarrow [0,\infty),\ 
+    (x,y) \mapsto \sum\limits_{n\in\mathbb{N}}\frac{1}{2^n}\,\delta_n (x,y)\,.
+  \end{equation*}
+
+  This clearly satisfies the conditions for a metric since each $d_{X_n}$ is a 
+  metric and $\rho$ is monotone increasing. We will show that this metric
+  induces the same topology as the product topology.
+
+  Let $U \subseteq Y$ be open in the product topology, ie. 
+  \begin{equation*}
+    U = \prod\limits_{n\in\mathbb{N}} U_n,\quad 
+    U_n\ \text{open},\quad 
+    \exists\, N\in\mathbb{N}\,:\, U_m = X_m\ \forall m > N\,.
+  \end{equation*}
+
+  For $x\in U$, each space $X_n,\ n\in\mathbb{N}$ has an $\epsilon_n > 0$ with
+  $B_{\epsilon_n} (x_n) \subseteq U_n$. Define 
+
+  \begin{equation*}
+    \epsilon = \text{min}
+    \left\{
+      \frac{1}{2^n}\rho(\epsilon_n) \vert n \leq N
+    \right\}\,.
+  \end{equation*}
+  
+  Then $\epsilon$ satisfies $x \in B_\epsilon (x) \subseteq U$ since for 
+  $y \neq x$ we have
+
+  \begin{equation*}
+    d_{X_n} (y_n,x_n) > \epsilon_n \ \Leftrightarrow \ 
+    \frac{1}{2^n}\delta_n (y_n,x_n) > \frac{1}{2^n}\rho(\epsilon_n)\,.
+  \end{equation*}
+
+  Hence $U$ is open in the metric topology.
+
+  Now let $x \in Y,\ U = B_\epsilon (x) \subseteq Y,\ y \in U$. Set
+  $N = \lceil \log(\frac{4}{2+\epsilon}) \rceil $ and consider
+
+  \begin{equation*}
+    V = \prod\limits_{n \leq N} B_{\epsilon / 2} (y_n)\ 
+    \times\ 
+    \prod\limits_{m > N} X_m\,.  
+  \end{equation*}
+  
+  $V$ is open in the product topology and $y \in V$. Finally, we will show 
+  $V \subseteq U$ and hence $U$ is a neighborhood of all its points, so open.
+
+  \begin{gather*}
+    \underbrace{
+      \sum\limits_{n=1}^{N} \frac{1}{2^n}\frac{\epsilon}{2}
+    }_{
+      \leq \frac{\epsilon}{2}
+    }
+    \ + \underbrace{
+      \sum\limits_{m=N+1}^{\infty} \frac{1}{2^n}
+    }_{
+      = 1 - 2(1 - 2^{-N})
+    }
+    \overset{!}{<} \epsilon \\
+    1 - 2(1 - 2^{-N}) < \frac{\epsilon}{2}
+    \quad\Leftrightarrow\quad
+    N > \frac{\log(\frac{4}{2+\epsilon})}{\log(2)}\,.
+  \end{gather*}
+
+  \textit{b)} Let $X = \left\{ 0,1 \right\}$ equipped with the discrete
+  topology. $X$ is trivially metrizable. Consider 
+
+  \begin{equation*}
+    Y = X^{\mathbb{R}} 
+    = \prod\limits_{x\in\mathbb{R}} \left\{ 0,1 \right\}
+    = \left\{ f : \mathbb{R} \rightarrow X \vert  \right\}\,.
+  \end{equation*}
+  
+  Let $f_0 \equiv 0$ the zero function. A neighborhood basis of $f_0$ is given
+  by
+
+  \begin{equation*}
+    \mathcal{B}_{f_0} = 
+    \bigcup\limits_{\substack{K \subseteq \mathbb{R} \\ \text{finite}}}
+    \underbrace{
+      \left\{ f \in Y 
+      \ \vert\ f(x) = 0\ \forall x \in \mathbb{R}
+      \setminus K \right\}
+    }_{
+      =:\ U_K
+    }\,.
+  \end{equation*}
+
+  Assume $Y$ is metrizable. Then it is homeomorphic to a metric space, and since
+  metric spaces are first countable, Y is first countable. It follows that there
+  exists a countable subset  
+  $\left\{ U_{K_i} \right\}_{i\in\mathbb{N}} \subseteq  \mathcal{B}_{f_0}$
+  which is still a neighborhood basis of $f_0$. In particular, 
+  $\bigcup\limits_{i\in\mathbb{N}} K_i$ is countable. 
+  $$\Rightarrow\ \exists\, \bar{x} \in \mathbb{R} \setminus 
+  \bigcup\limits_{i\in\mathbb{N}} K_i \neq \emptyset\,.$$ Finally, consider 
+
+  \begin{gather*}
+    U_{\left\{ \bar{x} \right\}} = 
+    \left\{ f \in Y\ \vert\ f(\bar{x}) = 0 \right\}
+    \in \mathcal{N}_{f_0}\,, \\
+    \bigcap\limits_{i\in\mathbb{N}} U_{K_i} = 
+    \left\{ f \in Y\ \vert\ f(x) = 0\ 
+    \forall x \in \bigcup\limits_{i\in\mathbb{N}} K_i \right\}\,.
+  \end{gather*}
+  
+  Then $U_{\left\{ \bar{x} \right\}}$ is an open neighborhood of of $f_0$, but
+  $$\bigcap\limits_{i\in\mathbb{N}} U_{K_i} 
+  \not\subseteq U_{\left\{ \bar{x} \right\}}$$ which implies no $U_{K_i}$ is 
+  a subset of $U_{\left\{ \bar{x} \right\}}$, a contradiction to 
+  $\left\{ U_{K_i} \right\}_{i\in\mathbb{N}}$ being a neighborhood basis.
+
+  %% End of your solution.                                                     %
+                                                                               %
+\end{loesung}                                                                  %
+                                                                               %
+\end{document}                                                                 %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

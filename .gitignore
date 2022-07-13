@@ -39,6 +39,7 @@ quick_notes.py
 *.fls
 *.log
 *.synctex.gz
+*.xml
 
 *.cpython-38.pyc
 *.cpython-39.pyc

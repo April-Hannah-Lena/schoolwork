@@ -1,0 +1,257 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% writeLaTeX Example: A quick guide to LaTeX
+%
+% Source: Dave Richeson (divisbyzero.com), Dickinson College
+% 
+% A one-size-fits-all LaTeX cheat sheet. Kept to two pages, so it 
+% can be printed (double-sided) on one piece of paper
+% 
+% Feel free to distribute this example, but please keep the referral
+% to divisbyzero.com
+% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% How to use writeLaTeX: 
+%
+% You edit the source code here on the left, and the preview on the
+% right shows you the result within a few seconds.
+%
+% Bookmark this page and share the URL with your co-authors. They can
+% edit at the same time!
+%
+% You can upload figures, bibliographies, custom classes and
+% styles using the files menu.
+%
+% If you're new to LaTeX, the wikibook is a great place to start:
+% http://en.wikibooks.org/wiki/LaTeX
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[10pt,landscape]{article}
+\usepackage{amssymb,amsmath,amsthm,amsfonts}
+\usepackage{multicol,multirow}
+\usepackage{calc}
+\usepackage{ifthen}
+\usepackage{xcolor}
+\usepackage[landscape]{geometry}
+\usepackage[colorlinks=true,citecolor=blue,linkcolor=blue]{hyperref}
+\usepackage{lmodern}
+\usepackage[fontsize=8pt]{scrextend}
+
+
+\ifthenelse{\lengthtest { \paperwidth = 11in}}
+    { \geometry{top=.5in,left=.5in,right=.5in,bottom=.5in} }
+	{\ifthenelse{ \lengthtest{ \paperwidth = 297mm}}
+		{\geometry{top=1cm,left=1cm,right=1cm,bottom=1cm} }
+		{\geometry{top=1cm,left=1cm,right=1cm,bottom=1cm} }
+	}
+\pagestyle{empty}
+\makeatletter
+\renewcommand{\section}{\@startsection{section}{1}{0mm}%
+                                {-1ex plus -.5ex minus -.2ex}%
+                                {0.5ex plus .2ex}%x
+                                {\normalfont\large\bfseries}}
+\renewcommand{\subsection}{\@startsection{subsection}{2}{0mm}%
+                                {-1explus -.5ex minus -.2ex}%
+                                {0.5ex plus .2ex}%
+                                {\normalfont\normalsize\bfseries}}
+\renewcommand{\subsubsection}{\@startsection{subsubsection}{3}{0mm}%
+                                {-1ex plus -.5ex minus -.2ex}%
+                                {1ex plus .2ex}%
+                                {\normalfont\small\bfseries}}
+\makeatother
+\setcounter{secnumdepth}{0}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt plus 0.6ex}
+\renewcommand{\baselinestretch}{1.0}
+% -----------------------------------------------------------------------
+
+\title{Cheat Sheet}
+
+\begin{document}
+
+\raggedright
+\footnotesize
+
+%\begin{center}
+%     \Large{\textbf{A quick guide to \LaTeX}} \\
+%\end{center}
+\begin{multicols}{4}
+\setlength{\premulticols}{1pt}
+\setlength{\postmulticols}{1pt}
+\setlength{\multicolsep}{1pt}
+\setlength{\columnsep}{2pt}
+
+\section{ODEs - General}
+\subsubsection*{Picard Lindelöf}
+\textcolor{blue}{f locally L-continuous wrt x} $\exists$ unique soln that extends to boundary of $\Omega$
+
+\subsubsection{Gronwall}
+\textcolor{blue}{$\phi, \psi : [a,b] \rightarrow [0,\infty)\ \text{continuous},\ \rho \geq 0,\ \psi (t) \leq \rho + \int_{a}^{b}\phi (s) \psi (s) ds$} $\psi (s) \leq \rho\ \text{exp}\left( \int_{a}^{b} \phi (s) ds \right)$
+
+\subsubsection{consistency error}
+$\epsilon (t, \tau, x) = \Phi^{t+\tau, t}x - \Psi^{t+\tau, t}x$
+
+\subsubsection{consisency order}
+\textcolor{blue}{$\epsilon (t, \tau, x) = O(\tau^{p+1})$}
+
+\subsubsection{convergence order}
+\textcolor{blue}{$x_\Delta:\Delta\rightarrow\mathbb{R},\ x:I\rightarrow\mathbb{R},\ \Delta_n with \tau_n \rightarrow 0,\ \|\epsilon_{\Delta_n}\| = \max_{t\in\Delta_n} \| x(t) - x_{\Delta_n}(t)\| = O(\tau^p)$}
+
+\subsubsection{convergence theorem}
+\textcolor{blue}{$\psi$ scheme with consisency order p, $\psi$ locally L-continuous wrt x} $\psi$ has convergence order p
+
+\subsubsection{$\dot{x} = Ax$ stability}
+\textcolor{blue}{$Re\lambda \leq 0,\ Re\lambda = 0 \Rightarrow i(\lambda) = 1\ \forall \lambda\in \sigma(A)$}
+
+\subsubsection{$x_{k+1} = Mx_k$ stability}
+\textcolor{blue}{$\rho(M) \leq 1,\ |\lambda| = 1 \Rightarrow i(\lambda) = 1\ \forall \lambda\in\sigma(M)$}
+
+\subsubsection{Leibnitz rule}
+$\frac{d}{dx}\int_{a(x)}^{b(x)} f(t, x) dt = b'(x)f(b(x), x) - a'(x)f(a(x), x) + \int_{a(x)}^{b(x)}\frac{d}{dx} f(t,x) dt$
+
+\section{Runge Kutta Schemes}
+\subsubsection{Form of RK schemes}
+$k_i = f\left( t + c_i \tau,\ x + \sum_{j=1}^{s} a_{ij}k_j \right),$ 
+
+$\Psi^{t+\tau, t}x = x + \tau\sum_{i=1}^{s}b_i k_i$
+
+\subsubsection{consistent}
+\textcolor{blue}{$\sum_{i=1}^{s}b_i = 1$}
+
+\subsubsection{invariant under autonomization}
+\textcolor{blue}{$\sum_{j=1}^{s} a_{ij} = c_i$}
+
+\subsubsection{max order}
+\textcolor{blue}{explicit} $\Rightarrow \leq s$, \textcolor{blue}{implicit} $\Rightarrow \leq 2s$
+
+\subsubsection{Rooted trees}
+\textcolor{blue}{$f:\mathbb{R}^{\textcolor{violet}{d}}\rightarrow\mathbb{R}^{\textcolor{violet}{d}}$ autonomous}
+
+$f^\beta = f^n \cdot (f^{\beta_1},\dots, f^{\beta_n}),$
+
+$f^{[\,]} = f(x),$ 
+
+$\#\beta = \#\beta_1 + \dots + \#\beta_n + 1,$ 
+
+$\beta! = \#\beta \cdot \beta_1 ! \dots \beta_n !,$ 
+
+$[\,]! = 1$
+
+\subsubsection{Taylor expansions (!!autonomous)}
+$\Phi^\tau x = x + \sum_{\#\beta\leq p} \frac{\tau^{\#\beta}}{\beta!}\alpha f^\beta (x) + O(\tau^{p+1})$ \vspace*{0.8ex}
+
+\textcolor{violet}{$\alpha_\beta = \frac{\delta_\beta}{n!}\alpha_{\beta_1}\dots\alpha_{\beta_n},\ \delta_\beta = $ nr of orderings of \beta} \vspace*{1ex}
+
+$\Psi^\tau x = x + \sum_{\#\beta \leq p}\tau^{\#\beta}\alpha_\beta b^T A^\beta f^\beta (x) + O(\tau^{p+1})$ \vspace*{1ex}
+
+\textcolor{violet}{$\left( A^\beta \right)_i = \left( A\cdot A^{\beta_1} \right)_i \dots \left( A\cdot A^{\beta_n} \right)_i,\quad A^{[\,]} = \mathbf{1}\in\mathbb{R}^s$}
+
+\subsubsection{Butcher}
+RK has order p $\forall f \in \mathcal{C}^p \quad \Leftrightarrow \quad b^T A^\beta = 1/\beta!\ \forall\#\beta \leq p$
+
+\textcolor{violet}{order 1 $\Leftrightarrow$ consistent}
+
+\textcolor{violet}{order 2 $\Leftrightarrow$ $\sum_{i=1}^{s}c_i b_i = 1/2$}
+
+\textcolor{violet}{order 3 $\Leftrightarrow$ $\sum_{i=1}^{s} b_i c_i^2 = 1/3 \ \wedge\ Ac = 1/6$}
+
+\subsubsection{Adaptive Schemes}
+Use higher order scheme $\hat{\Psi}$, use max $\tau$ with $[\epsilon] = \Psi^\tau x - \hat{\Psi}^\tau x$ has norm $\leq$ TOL
+
+\subsubsection{Embedded Schemes}
+Given $\hat{\Psi} = (\hat{b}, \hat{A})$, construct $\Psi = (b, A)$ with order $p < \hat{p}$ to reduce number of $f$ evals
+
+\subsubsection{Stability function}
+\textcolor{blue}{$\dot{x} = Ax\ \Rightarrow\ \Psi^\tau x = R(\tau A) x$}
+$R(z) = 1 + z b^T(I - zA)^{-1}\mathbf{1}$
+
+\subsubsection{Stability domain}
+\textcolor{blue}{$S_R = \left\{ z \in \mathbb{C}\ :\ |R(z)| \leq 1 \right\}$}
+
+\subsubsection{$A(\alpha)$ stable}
+\textcolor{blue}{$\left\{ z \in \mathbb{C}\ :\ |arg(z)| \leq \alpha \right\} \subset S_R$}
+
+\subsubsection{L stable}
+\textcolor{blue}{$\lim_{|z| \rightarrow \infty} |R(z)| = 0$}
+
+\subsubsection{RK method stability}
+\textcolor{blue}{$\tau\lambda \in S_R\ \forall \lambda \in \sigma (A),\ |\tau\lambda| = 1\ \Rightarrow\ i(\tau\lambda) = 1\ \forall \lambda \in \sigma (A)$}
+
+\subsubsection{Collocation}
+\textcolor{blue}{Given $0 \leq c_1 \leq \dots \leq c_s \leq 1$,} \vspace*{0.8ex}
+
+\textcolor{blue}{$a_{ij} = \int_{0}^{c_i} L_j (\theta) d\theta,\quad b_j = \int_{0}^{1} L_j (\theta) d\theta$} \vspace*{0.8ex}
+
+$\Psi^\tau x_0 = u(\tau),\ \dot{u} (c_i \tau) = f(u(c_i \tau))$ with $u$ as interpolation polynomial
+
+\textcolor{violet}{$L_j (x) = \prod_{k \neq j} \frac{x - x_k}{x_j - x_k}$}
+
+Gauß schemes $\Rightarrow$ Gauß nodes, $p=2s$, A-stable
+
+Radau schemes $\Rightarrow$ interpolation nodes hits the grid, $p=2s-1$, L-stable
+
+\section{Multistep Schemes}
+
+\subsubsection{MSS}
+\textcolor{blue}{$\rho(z) = \alpha_0 + \dots \alpha_k z^k,\ \sigma(z) = \beta_0 + \dots \beta_k z^k,\ (Ex)(t) = x(t+\tau),\ Ex_j = x_{j+1}$} \vspace*{0.8ex}
+
+$\rho(E) x_\tau (t) = \tau \sigma (E) f (t, x_\tau (t))$
+
+\subsubsection{MSS Consistency order}
+\textcolor{blue}{$L(x, t, \tau) = \rho(E)x(t) - \tau\sigma(E)\dot{x}(t) = O(\tau^{p+1})$}
+
+$\Leftrightarrow\quad L(Q, 0, \tau) = 0$
+
+$\Leftrightarrow\quad L(\text{exp}, 0, \tau) = O(\tau^{p+1})$\vspace*{0.8ex}
+
+$\Leftrightarrow\quad \sum_{j=0}^{k}\alpha_j j^l = l \sum_{j=0}^{k}\beta_j j^{l-1}\quad \forall l = 0,\dots,p$\vspace*{0.8ex}
+
+$\rho(1) = 0,\ \rho'(1) = \sigma(1) \quad \Rightarrow \quad$consistent
+
+\subsubsection{MSS on $\dot{x} = 0$ stability}
+\textcolor{blue}{$\rho(E)x_\tau = 0$ is stable} $\Leftrightarrow$ $|\lambda| \leq 1,\ |\lambda| = 1 \ \Rightarrow\ \lambda$ is a simple root of $\rho$
+
+\subsubsection{MSS Convergence order}
+$\forall$ IVPs with unique soln: 
+
+$\| x_\tau(t) - x(t) \| = O(\tau^p)\ \forall t \in \Delta_\tau \cap [t_0, T]$
+
+$\| x_j - x_0 \| = O(\tau^p)\ \forall j = 0,\dots,k-1$
+
+\subsubsection{MSS Convergence theorem}
+stability \& consisteny order p $\Leftrightarrow$ convergence order p
+
+\subsubsection{Stability domain}
+\textcolor{blue}{$S = \left\{ z\in\mathbb{C}\ :\ \left( \rho(E) - x\sigma(E) \right) x_\tau = 0\ \text{is stable} \right\}$}
+
+\subsubsection{Root locus curve}
+$S \subset \text{int}\left( \left\{ \frac{\rho(e^{i\phi})}{\sigma(e^{i\phi})}\ :\ \phi\in [0, 2\pi] \right\} \right)$
+
+\subsubsection{Adams Bashford Schemes}
+\textcolor{blue}{$x_{j+1} = x_{j+k-1} + \tau\sum_{i=0}^{\textcolor{violet}{k-1}}f_{j+i}\beta_i$ \textcolor{violet}{(or  if implicit)}}\vspace*{0.8ex}
+
+\textcolor{blue}{$\beta_i = \int_{0}^{1}L_{\textcolor{violet}{k-1}-i}(\theta)d\theta$}
+
+$u(t_{j+i}) = f_\tau(t_{j+i}, x_{j+i})$, order k+1
+
+\subsubsection{BDF Schemes}
+\textcolor{blue}{$\rho(z) = \sum_{i=0}^{k}L_{k-i}'(0)z^i,\ \sigma(z)=z^k$}
+
+$u(t_{j+i}) = x_{j+i}\ \forall i=0,\dots,k,\ \dot{u}(t_{j+k})=f_\tau(t_{j+k}, x_{j+k})$
+
+BDF scheme is stable $\Leftrightarrow$ $k \leq 6$
+
+\subsubsection{Max rder of MSS}
+\textcolor{blue}{explicit} $\Rightarrow\ \leq 2k-1$, \textcolor{blue}{implicit} $\Rightarrow\ \leq 2k$,
+
+stable $\leq$ 
+$\begin{cases}
+    &k,\ \beta_k / \alpha_k = 0 \\
+    &k+1,\ \text{k odd} \\
+    &k+2,\ \text{k even} \\
+\end{cases}$
+
+
+\end{multicols}
+
+\end{document}

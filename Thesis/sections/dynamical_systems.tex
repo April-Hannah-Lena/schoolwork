@@ -1,0 +1,157 @@
+% -------------------------------------------------------------------------------------- %
+
+\subsection{Motivation}
+
+Our goal is to investigate the qualitative, long-term behavior of systems in which a given 
+function describes the trajectory of a point in an ambient space. Such dynamical systems 
+are used in modelling physcial phenomena, economic forecasting, differential equations, etc. 
+We wish to construct topological \emph{closed covers} of sets which describe the infinite 
+dynamics of some portions of the system, as well as statistical \emph{invariant measures} 
+which describe much larger sets in the space, but with less information. \\
+
+The algorithms described in the present paper have been previously implemented in the 
+statistical programming language \texttt{matlab} \cite*{oldGAIO}, but is now being fully refactored and
+reimplemented in the open-source, composable language \texttt{julia} \cite*{julia}. The reason for this 
+change is julia's high-level abstraction capabilities, just-in-time compilation, and 
+in-built set-theoretical functions, which create short, elegant code which is nonetheless 
+more performant.
+
+\subsection{Definitions}
+
+This section should be treated as an index of definitions, to be referred back to as 
+necessary during reading. In the following, we assume $M$ is a compact or a smooth manifold 
+in $\mathbb{R}^d$, endowed with a metric $d$, and the 
+map $f: M \rightarrow M$ is at least $\mathcal{C}^0$. Our setting is a 
+\emph{discrete, autonomous dynamical system}, that is, a system of the form:
+
+\begin{equation}
+    x_{k+1} = f(x_k), \quad k = 0,\ 1,\ 2,\ \dotsc
+\end{equation}
+
+A continuous dynamical system $\dot{x} = F(x)$ can be \emph{discretized} by, for example,
+considering the \emph{Poincaré time-$t$ map} over some $d-1$ dimensional hyperplane,
+or by setting one "step" of the system as integrating $F$ for a set time $t$. \\
+
+We begin by giving a set of topological definitinos of sets we wish to approximate.
+
+\begin{definition}[(Forward-, Backward-) Invariant]
+    \cite*{algGAIO} A set $A$ is called \emph{forward-invariant} if $f(A) \subset A$, 
+    \emph{backward-invariant} if $f^{-1}(A) \subset A$, and \emph{invariant} if it is
+    both forward- and backward-invariant.
+\end{definition}
+
+\begin{definition}[Attracting Set]
+    \cite*{subalg} An invariant set $A$ is called \emph{attracting} with \emph{fundamental neighborhood}
+    $U$ if for every open set $V \supset A$ there is an $N \in \mathbb{N}$ such that the tail
+
+    \begin{equation}
+        \left\{ f^k(U)\ \vert\ k \geq N \right\}    
+    \end{equation}
+    
+    lies entirely within $A$, ie $f^k(U) \subset A\ \forall\, k \geq N$. The attracting 
+    set is also called \emph{global} if the \emph{basin of attraction} 
+    
+    \begin{equation}
+        B(A) = \bigcap\limits_{k \geq 0} f^{-k}(U)
+    \end{equation}
+
+    is the whole of $\mathbb{R}^n$.
+\end{definition}
+
+The basin of attraction acts in some sense as the set for which all points eventually arrive
+in $A$. Since the map $f$ is smooth, then the closure $\bar{A}$ is invariant too. With continuity 
+it becomes clear that
+
+\begin{equation}
+    A = \bigcap\limits_{k \geq 0} f^k(U).
+\end{equation}
+
+The global attractor is maximal in the sense that it contains all backward-invariant 
+sets within the system. In particular, it contains all unstable manifolds.
+
+\begin{definition}[Stable and Unstable Manifolds]
+    \cite*{dynbook} Let $\bar{x}$ be a fixed point of the diffeomorphism $f$, and $U$ a neighborhood of $x$. 
+    Then the \emph{local unstable manifold} is given by
+
+    \begin{equation}
+        W^u(\bar{x}, U) = \left\{x \in U\ \vert\ \lim\limits_{k \rightarrow \infty} 
+        d(f^{-k}(x),\ \bar{x}) = 0\ and \ f^{-k}(x) \in U\ \forall\, k \geq 0\right\}.
+    \end{equation}
+
+    The \emph{global unstable manifold} is given by
+
+    \begin{equation}
+        W^u(\bar{x}) = \bigcup\limits_{k \geq 0} f^k(\,W^u(\bar{x}, U)\,).
+    \end{equation}
+
+    The dual definition of the \emph{(local) stable manifold} is obtained by reversing the 
+    sign of $k$ in the above equations.
+\end{definition}
+
+\begin{figure}[h]
+    \ctikzfig{unstablemanifold}
+    \caption{\cite*{dynskript} Stable and unstable manifolds, local and global}
+    \label{fig:manifold}    
+\end{figure}
+
+\begin{definition}[Pseudoperiodic]
+    \cite*{dynbook} Let $n\in \mathbb{N}$. A set 
+    $\left\{ x_k\ \vert\ k \in \left\{ 1,\ \dotsc ,\ n \right\} \right\}$ 
+    is called \emph{$\epsilon$-pseudoperiodic} if for any $k$
+
+    \begin{equation}
+        d(x_k,\ x_{k + 1\, \text{mod}\, n}) < \epsilon.
+    \end{equation}
+
+\end{definition}
+
+As the name suggests, an $\epsilon$-pseudoperiodic orbit is "almost" periodic inthe sense 
+that it represents a "small" perturbation of a theoretically periodic orbit. In practice,
+such direct orbits may not be known, but it will preresent a naturally useful definition
+in our approximations.
+
+\begin{figure}[h]
+    \ctikzfig{pseudoperiodic}
+    \caption{\cite*{dynbook} A $0.1$-pseudoperiodic orbit of the map $f(x,y) = (y,\ 0.05\, (1 - x^2)\, y - x)$}
+    \label{fig:pseudoperiodic}
+\end{figure}
+
+\begin{definition}[Chain Recurrent]
+    \cite*{dynbook} The point $\bar{x} \in M$ is called \emph{chain recurrent} if for any $\epsilon > 0$ 
+    there exists an $\epsilon$-pseudoperiodic orbit. The \emph{chain recurrent set} $R_M(f)$ 
+    is the set of all chain recurrent points in $M$.
+\end{definition}
+
+As shown in \cite*{algGAIO} we have the inclusion $R_M(f) \subset \bigcap\limits_{k \geq 0} f^k(M)$,
+which also shows that $R_M(f)$ is an invariant set. \\
+
+We finish with a measure-theoretical definition for types of measures we wish to approximate.
+
+\begin{definition}[Perron-Frobeniuns Operator, Invariant Measure]
+    \cite*{attr} Let $\mathcal{M}$ be the set of probability measures on $M$. We define the
+    \emph{Perron-Frobenius operator} $P:\mathcal{M} \rightarrow \mathcal{M}$ pointwise
+    on the level of sets as
+
+    \begin{equation}
+        (P\mu)(A) = \mu \circ f^{-1}(A).
+    \end{equation}
+
+    A measure $\mu$ is called \emph{invariant} if it is an eigenmeasure of $P$ with
+    eigenvalue $1$, ie $P\mu = \mu$.
+\end{definition}
+
+\begin{remark}
+    The Perron-Frobenius operator is often also called \emph{transfer operator} or
+    \emph{pushforward operator}. 
+\end{remark}
+
+An invariant measure can be used to understand the global behavior of a dynamical 
+system, with more $\mu$-mass assigned to regions which are visited frequently over long
+trajectories, and less $\mu$-mass to regions visited less frequently. \\
+
+An eigenvalue of $1$ is not the only object of interest when considering the operator $P$.
+Suppose instead we have a finite (complex valued) measure with $P \nu = \lambda \nu$ for a 
+$\lambda = -1$. Then, using finiteness and borel measurability, we can find 
+a partition of M in two disjoint subsets $A_1, A_2$ such that $\nu (A_1) = - \nu (A_2)$.
+In particular, this implies that $f$ maps $A_1$ to $A_2$, and $A_2$ to $A_1$ 
+(since $P^2 \nu = \nu$). This paritition forms a \emph{two-cycle}.
