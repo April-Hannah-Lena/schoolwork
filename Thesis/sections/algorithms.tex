@@ -1,34 +1,10 @@
 % -------------------------------------------------------------------------------------- %
 
-The basic technique of all the topological algorithms is to split the compact set $Q$ into 
-a partition $\mathcal{P}$ of \emph{boxes} - that is, generalized rectangles, each with 
-center vector $r$ and componentwise radii $r$. The algorithms will begin with a set of boxes 
-$\mathcal{B}$, and then repeatedly subdivide each box in $\mathcal{B}$ into two (or more) 
-smaller boxes, examine the dynamics of the subdivided boxes, and refine the box set to 
-include only the boxes we are interested in. \\
-
-\begin{definition}[Image of a Box Set]
-    For a partition $\mathcal{P}$ of $Q$ into boxes, and a subset 
-    $\mathcal{B} \subset \mathcal{P}$, we will call the \emph{image of $\mathcal{B}$ under f}
-    as the set of boxes which intersect with the image $f(B)$, for at least one 
-    $B \in \mathcal{B}$. More precisely, it is
-    
-    \begin{equation}
-        f (\mathcal{B}) = \left\{
-            B \in \mathcal{P} \quad \vert \quad 
-            \exists\ \tilde{B} \in \mathcal{B},\ x \in \tilde{B}\ :\ 
-            f(x) \in B 
-        \right\}
-    \end{equation}
-
-
-\end{definition}
-
 \subsection{Relative Attractor}
 
 The construction of a fundamental neighborhood $U$ for a global attractor $A$ is
-relatively difficult, but the above description lends to a natural \emph{ansatz} for its 
-approximation using a compact subdomain $Q \subset M$. \\
+relatively difficult, but the description $A = \bigcap_{k \geq 0} f^k(U)$ lends to 
+a natural \emph{ansatz} for its approximation using a compact subdomain $Q \subset M$. \\
 
 \begin{definition}[Realtive Global Attractor]
     Let $Q$ be compact. Then we define the \emph{attractor relative to $A$} as
@@ -64,7 +40,7 @@ predefined number of steps $n$.
         \State \Return $\mathcal{B}_n$ 
 
         \LComment{Optionally, the set 
-        $\left\{ \mathcal{B}_i\ \vert\ i \in \left\{ 0,\ \dotsc,\ n \right\} \right\}$
+        $\left\{ \mathcal{B}_0,\ \mathcal{B}_1,\ \dotsc,\ \mathcal{B}_n \right\}$
         can be returned instead}
         %\EndProcedure
     \end{algorithmic}
@@ -72,21 +48,22 @@ predefined number of steps $n$.
 
 \begin{remark}
     The precise technique for subdivision can be tuned depending on the situation. In 
-    \texttt{GAIO.jl} \cite*{GAIO}, boxes are bisected evenly along one dimension 
+    \texttt{GAIO.jl}, boxes are bisected evenly along one dimension 
     $k \in \left\{1,\ \dotsc,\ d\right\}$. The dimension $k$ along which to bisect is 
     cycled through during the steps. \\
 \end{remark}
 
 \begin{proposition}
-    \cite*{algGAIO,subalg} Set 
-    $\mathcal{B}_\infty = \bigcap\limits_{n \geq 1} \bigcup\limits_{B \in \mathcal{B}_i} B$.
+    \cite*{algGAIO,subalg} Set $Q_i = \bigcup\limits_{B \in \mathcal{B}_i} B$. For all 
+    $i$ we have
 
     \begin{enumerate}
-        \item $A_Q \subset \bigcup\limits_{B \in \mathcal{B}_i} B$ for all 
-        $i \in \left\{ 0,\ \dotsc,\ n \right\}$
-        \item $A_Q = \mathcal{B}_\infty$
+        \item $Q_{i+1} \subset Q_i$
+        \item $A_Q \subset Q_i$ 
     \end{enumerate}
 
-    In particular, this shows that $\mathcal{B}_\infty$ is backward-invariant. 
+    Further, if we set $Q_\infty = \bigcap\limits_{n \geq 1} Q_n$, then 
+    $A_Q = Q_\infty$. In particular, this shows that $\mathcal{B}_\infty$ 
+    is backward-invariant. 
 \end{proposition}
 

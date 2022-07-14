@@ -9,7 +9,7 @@
 \usepackage{graphicx}
 \usepackage{geometry}
 \usepackage[utf8]{inputenc}
-\usepackage[sorting=none]{biblatex}
+\usepackage{biblatex}
 \usepackage{fontspec}
 \usepackage{setspace}
 \usepackage{algpseudocodex}
@@ -41,6 +41,7 @@
 \input{colors.tikzstyles}
 
 \numberwithin{figure}{section}
+\numberwithin{equation}{section}
 
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}[section]
@@ -84,7 +85,7 @@
 \section{Parallelization using the GPU}
 \import{sections/}{gpu.tex}
 
-%\printbibliography
+\printbibliography
 
 \end{document}
 

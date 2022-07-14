@@ -163,7 +163,7 @@
     </bcf:option>
     <bcf:option type="singlevalued">
       <bcf:key>sortingtemplatename</bcf:key>
-      <bcf:value>none</bcf:value>
+      <bcf:value>nty</bcf:value>
     </bcf:option>
     <bcf:option type="singlevalued">
       <bcf:key>sortsets</bcf:key>
@@ -2344,34 +2344,71 @@
     <bcf:datasource type="file" datatype="bibtex" glob="false">main.bib</bcf:datasource>
   </bcf:bibdata>
   <bcf:section number="0">
-    <bcf:citekey order="1">oldGAIO</bcf:citekey>
+    <bcf:citekey order="1">matlab</bcf:citekey>
     <bcf:citekey order="2">julia</bcf:citekey>
-    <bcf:citekey order="3">algGAIO</bcf:citekey>
-    <bcf:citekey order="4">subalg</bcf:citekey>
-    <bcf:citekey order="5">dynbook</bcf:citekey>
-    <bcf:citekey order="6">dynskript</bcf:citekey>
+    <bcf:citekey order="3">oldGAIO</bcf:citekey>
+    <bcf:citekey order="4">GAIO</bcf:citekey>
+    <bcf:citekey order="5">algGAIO</bcf:citekey>
+    <bcf:citekey order="6">subalg</bcf:citekey>
     <bcf:citekey order="7">dynbook</bcf:citekey>
-    <bcf:citekey order="8">dynbook</bcf:citekey>
+    <bcf:citekey order="8">dynskript</bcf:citekey>
     <bcf:citekey order="9">dynbook</bcf:citekey>
-    <bcf:citekey order="10">algGAIO</bcf:citekey>
-    <bcf:citekey order="11">attr</bcf:citekey>
-    <bcf:citekey order="12">GAIO</bcf:citekey>
-    <bcf:citekey order="13">algGAIO</bcf:citekey>
-    <bcf:citekey order="13">subalg</bcf:citekey>
-    <bcf:citekey order="14">oldGAIO</bcf:citekey>
-    <bcf:citekey order="15">julia</bcf:citekey>
-    <bcf:citekey order="16">algGAIO</bcf:citekey>
+    <bcf:citekey order="10">dynbook</bcf:citekey>
+    <bcf:citekey order="11">dynbook</bcf:citekey>
+    <bcf:citekey order="12">algGAIO</bcf:citekey>
+    <bcf:citekey order="13">attr</bcf:citekey>
+    <bcf:citekey order="14">attr</bcf:citekey>
+    <bcf:citekey order="15">attr</bcf:citekey>
+    <bcf:citekey order="16">attr</bcf:citekey>
+    <bcf:citekey order="17">algGAIO</bcf:citekey>
     <bcf:citekey order="17">subalg</bcf:citekey>
-    <bcf:citekey order="18">dynbook</bcf:citekey>
-    <bcf:citekey order="19">dynskript</bcf:citekey>
-    <bcf:citekey order="20">attr</bcf:citekey>
+    <bcf:citekey order="18">matlab</bcf:citekey>
+    <bcf:citekey order="19">julia</bcf:citekey>
+    <bcf:citekey order="20">oldGAIO</bcf:citekey>
     <bcf:citekey order="21">GAIO</bcf:citekey>
+    <bcf:citekey order="22">algGAIO</bcf:citekey>
+    <bcf:citekey order="23">subalg</bcf:citekey>
+    <bcf:citekey order="24">dynbook</bcf:citekey>
+    <bcf:citekey order="25">dynskript</bcf:citekey>
+    <bcf:citekey order="26">attr</bcf:citekey>
   </bcf:section>
   <!-- SORTING TEMPLATES -->
-  <bcf:sortingtemplate name="none">
+  <bcf:sortingtemplate name="nty">
     <bcf:sort order="1">
-      <bcf:sortitem order="1">citeorder</bcf:sortitem>
+      <bcf:sortitem order="1">presort</bcf:sortitem>
+    </bcf:sort>
+    <bcf:sort order="2" final="1">
+      <bcf:sortitem order="1">sortkey</bcf:sortitem>
+    </bcf:sort>
+    <bcf:sort order="3">
+      <bcf:sortitem order="1">sortname</bcf:sortitem>
+      <bcf:sortitem order="2">author</bcf:sortitem>
+      <bcf:sortitem order="3">editor</bcf:sortitem>
+      <bcf:sortitem order="4">translator</bcf:sortitem>
+      <bcf:sortitem order="5">sorttitle</bcf:sortitem>
+      <bcf:sortitem order="6">title</bcf:sortitem>
+    </bcf:sort>
+    <bcf:sort order="4">
+      <bcf:sortitem order="1">sorttitle</bcf:sortitem>
+      <bcf:sortitem order="2">title</bcf:sortitem>
+    </bcf:sort>
+    <bcf:sort order="5">
+      <bcf:sortitem order="1">sortyear</bcf:sortitem>
+      <bcf:sortitem order="2">year</bcf:sortitem>
+    </bcf:sort>
+    <bcf:sort order="6">
+      <bcf:sortitem order="1">volume</bcf:sortitem>
+      <bcf:sortitem literal="1" order="2">0</bcf:sortitem>
     </bcf:sort>
   </bcf:sortingtemplate>
   <!-- DATALISTS -->
+  <bcf:datalist section="0"
+                name="nty/global//global/global"
+                type="entry"
+                sortingtemplatename="nty"
+                sortingnamekeytemplatename="global"
+                labelprefix=""
+                uniquenametemplatename="global"
+                labelalphanametemplatename="global">
+  </bcf:datalist>
 </bcf:controlfile>
