@@ -50,13 +50,8 @@ We begin by giving a set of topological definitions of sets we wish to approxima
 
 \begin{definition}[Attracting Set]
     \cite*{subalg} An invariant set $A$ is called \emph{attracting} with \emph{fundamental neighborhood}
-    $U$ if for every open set $V \supset A$ there is an $N \in \mathbb{N}$ such that the tail
-
-    \begin{equation}
-        \left\{ f^k(U)\ \vert\ k \geq N \right\}    
-    \end{equation}
-    
-    lies entirely within $A$, ie $f^k(U) \subset A\ \forall\, k \geq N$. The attracting 
+    $U$ if for every open set $V \supset A$ there is an $N \in \mathbb{N}$ such that the tail 
+    $\bigcup_{k \geq N} f^k(U)$ lies entirely within $A$. The attracting 
     set is also called \emph{global} if the \emph{basin of attraction} 
     
     \begin{equation}
@@ -75,7 +70,7 @@ it becomes clear that
 \end{equation}
 
 The global attractor is maximal in the sense that it contains all backward-invariant 
-sets within the system. In particular, it contains all unstable manifolds.
+sets within the system. In particular, it contains local unstable manifolds.
 
 \begin{definition}[Stable and Unstable Manifolds]
     \cite*{dynbook} Let $\bar{x}$ be a fixed point of the diffeomorphism $f$, and $U$ a neighborhood of $x$. 
@@ -83,7 +78,7 @@ sets within the system. In particular, it contains all unstable manifolds.
 
     \begin{equation}
         W^u(\bar{x}, U) = \left\{x \in U\ \vert\ \lim\limits_{k \to \infty} 
-        d(f^{-k}(x),\ \bar{x}) = 0\ and \ f^{-k}(x) \in U\ \forall\, k \geq 0\right\}.
+        d(f^{-k}(x),\ \bar{x}) = 0\ \text{and}\ f^{-k}(x) \in U\ \forall\, k \geq 0\right\}.
     \end{equation}
 
     The \emph{global unstable manifold} is given by
@@ -104,9 +99,9 @@ sets within the system. In particular, it contains all unstable manifolds.
 
 \begin{definition}[Pseudoperiodic]
     \cite*{dynbook} Let $n\in \mathbb{N}$. A set 
-    $\left\{ x_k\ \vert\ k \in \left\{ 1,\ \dotsc ,\ n \right\} \right\}$ 
-    is called \emph{$\epsilon$-pseudoperiodic} if for any $k$,
-    $d(x_k,\ x_{k + 1\, \text{mod}\, n}) < \epsilon$.
+    $\left\{ x_k\ \vert\ k \in \left\{ 0,\ \dotsc ,\ n \right\} \right\}$ 
+    is called \emph{$\epsilon$-pseudoperiodic} if for any
+    $k, \quad d(x_{k\, \text{mod}\, n},\ x_{k + 1\, \text{mod}\, n}) < \epsilon$.
 \end{definition}
 
 As the name suggests, an $\epsilon$-pseudoperiodic orbit is "almost" periodic inthe sense 
@@ -243,11 +238,17 @@ Finally, we set some notation for convenience.
     \begin{equation}
         f(\mathcal{B}) = \left\{
             R \in \mathcal{P} \quad \vert \quad
-            \exists\ B \in \mathcal{B}\ \text{and}\ x \in B\ :\ f(x) \in R.
-        \right\}
+            \exists\ B \in \mathcal{B}\ \text{and}\ x \in B\ :\ f(x) \in R
+        \right\}.
     \end{equation}
 
-    Hence if we remove one box $\bar{B}$ from $f(\mathcal{B})$, then there exists an 
-    $x \in \bar{B}$ which maps outside of the created box set.
+    Hence if we remove one box $R$ from $f(\mathcal{B})$, then there exists an 
+    $x \in \bigcup_{B \in \mathcal{B}} B$ which maps outside of the created box set.
 
 \end{proof}
+
+\begin{figure}[ht]
+    \ctikzfig{boximage}
+    \caption{Image of the simple box set $\mathcal{B} = \left\{ B \right\}$}
+    \label{fig:boximage}
+\end{figure}

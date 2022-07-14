@@ -22,7 +22,7 @@ a natural \emph{ansatz} for its approximation using a compact subdomain $Q \subs
 
 The idea to approximate the relative gloabl attractor is in two steps: first, we subdivide 
 each of the boxes and second, discard all those boxes which do not intersect with the 
-previous box set. The algorithm accepts the map $f$, the box set $\mathcal{B}$, and a 
+previous box set. The algorithm requires a map $f$, a box set $\mathcal{B}$, and a 
 predefined number of steps $n$. 
 
 \begin{algorithm}
@@ -38,19 +38,20 @@ predefined number of steps $n$.
         \EndFor
 
         \State \Return $\mathcal{B}_n$ 
-
-        \LComment{Optionally, the set 
-        $\left\{ \mathcal{B}_0,\ \mathcal{B}_1,\ \dotsc,\ \mathcal{B}_n \right\}$
-        can be returned instead}
         %\EndProcedure
     \end{algorithmic}
 \end{algorithm}
 
-\begin{remark}
-    The precise technique for subdivision can be tuned depending on the situation. In 
-    \texttt{GAIO.jl}, boxes are bisected evenly along one dimension 
-    $k \in \left\{1,\ \dotsc,\ d\right\}$. The dimension $k$ along which to bisect is 
-    cycled through during the steps. \\
+\begin{remark}\
+    \begin{itemize}
+        \item Optionally, the set 
+        $\left\{ \mathcal{B}_0,\ \mathcal{B}_1,\ \dotsc,\ \mathcal{B}_n \right\}$
+        can be returned instead. This will be true for all algorithms of this type.
+        \item The precise technique for subdivision can be tuned depending on the situation. 
+        In \texttt{GAIO.jl}, boxes are bisected evenly along one dimension 
+        $k \in \left\{1,\ \dotsc,\ d\right\}$. The dimension $k$ along which to bisect is 
+        cycled through during the steps. \\
+    \end{itemize}
 \end{remark}
 
 \begin{proposition}
@@ -66,4 +67,58 @@ predefined number of steps $n$.
     $A_Q = Q_\infty$. In particular, this shows that $\mathcal{B}_\infty$ 
     is backward-invariant. 
 \end{proposition}
+
+% -------------------------------------------------------------------------------------- %
+
+\subsection{Unstable Manifold}
+
+From the definition of the local unstable manifold $W^u(\bar{x}, U)$ we see that the 
+relative gloabl attractor $R_Q(f)$ contains the local unstable manifold, and, provided the 
+set $Q$ is sufficiently small, $W^u(\bar{x}, U)$ coincides with $R_Q(f)$. For further 
+details, see \cite*{manifold, geodynbook}. \\
+
+Using this knowledge, we can approximate the global unstable manifold $W^u(\bar{x})$: first, we 
+replace the calculation of the local unstable manifold with the calculation of the relative
+attractor for a small set $Q'$ surrounding the fixed point $\bar{x}$, using algorithm
+\ref{alg:relativeattractor}. We then repeat the following \emph{continuation step}: we map 
+the current box set forward one iteration, and note any new boxes which are hit. These new 
+boxes get added to the box set. The algorithm requires a map $f$, a box set $\mathcal{B}$, 
+and a number of steps $n$.\\
+
+\begin{algorithm}
+    \caption{Continuation Step}
+    \label{alg:manifold}
+    \begin{algorithmic}[1]
+        \State $\mathcal{B}_0 \gets \mathcal{B}$
+
+        \For{$i = \left\{ 1,\ \dotsc,\ n \right\}$}
+            \State $\mathcal{B}' \gets f(\,\mathcal{B}'\,)$
+            \State $\mathcal{B}' \gets \mathcal{B}' \setminus \mathcal{B}_{i-1}$ 
+            \label{alg:manifold:rem}
+            \State $\mathcal{B}_i \gets \mathcal{B}' \cup \mathcal{B}_{i-1}$
+            %\State $\mathcal{B}_i \gets \mathcal{B}_{i-1} \cup f(\,\mathcal{B}_{i-1}\,)$
+        \EndFor
+
+        \State \Return $\mathcal{B}_{n}$
+    \end{algorithmic}
+\end{algorithm}
+
+\begin{remark}\ 
+    \begin{itemize}
+        \item To avoid having to repeat mapping the same boxes over and over again, 
+        the algorithm maps only the "new" boxes found in the last iteration. This is what 
+        line \ref{alg:manifold:rem} achieves. A simpler version of the algorithm might simply run 
+        $\mathcal{B}_i \gets \mathcal{B}_{i-1} \cup f(\,\mathcal{B}_{i-1}\,)$
+        in each iteration.
+        \item \cite*{manifold} The algorithm in general cannot guarantee covering of the 
+        entire unstable manifold, nor can it guarantee coverng of the entirety of 
+        $W^u(\bar{x}) \cap Q$. This is because $W^u(\bar{x})$ could in theory exit $Q$, 
+        but return at another point. The algorithm can however guarantee convergence 
+        to the connected component of $W^u(\bar{x}) \cap Q$ which contains $\bar{x}$.
+    \end{itemize}
+\end{remark}
+
+% -------------------------------------------------------------------------------------- %
+
+\subsection{Chain Recurrent Set}
 
