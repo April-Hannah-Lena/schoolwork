@@ -30,7 +30,7 @@
 \setlength{\parindent}{0pt}
 %\setlength{\parskip}{\baselineskip}
 
-%\setlength{\textheight}{235mm}
+\setlength{\textheight}{225mm}
 \setlength{\footskip}{20mm}
 \setlength{\headsep}{50pt}
 \setlength{\headheight}{0pt}
@@ -55,12 +55,9 @@
 \theoremstyle{remark}
 \newtheorem*{example}{Example}
 
-\makeatletter
-\newcommand*{\defeq}{\mathrel{\rlap{%
-                     \raisebox{0.3ex}{$\m@th\cdot$}}%
-                     \raisebox{-0.3ex}{$\m@th\cdot$}}%
+\newcommand*{\defeq}{\mathrel{\vcenter{\baselineskip0.5ex \lineskiplimit0pt
+                     \hbox{\scriptsize.}\hbox{\scriptsize.}}}%
                      =}
-\makeatother
 
 \begin{document}
 

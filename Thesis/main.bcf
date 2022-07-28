@@ -2365,17 +2365,19 @@
     <bcf:citekey order="18">manifold</bcf:citekey>
     <bcf:citekey order="18">geodynbook</bcf:citekey>
     <bcf:citekey order="19">manifold</bcf:citekey>
-    <bcf:citekey order="20">matlab</bcf:citekey>
-    <bcf:citekey order="21">julia</bcf:citekey>
-    <bcf:citekey order="22">oldGAIO</bcf:citekey>
-    <bcf:citekey order="23">GAIO</bcf:citekey>
-    <bcf:citekey order="24">algGAIO</bcf:citekey>
-    <bcf:citekey order="25">subalg</bcf:citekey>
-    <bcf:citekey order="26">dynbook</bcf:citekey>
-    <bcf:citekey order="27">dynskript</bcf:citekey>
-    <bcf:citekey order="28">attr</bcf:citekey>
-    <bcf:citekey order="29">manifold</bcf:citekey>
-    <bcf:citekey order="30">geodynbook</bcf:citekey>
+    <bcf:citekey order="20">chain</bcf:citekey>
+    <bcf:citekey order="21">matlab</bcf:citekey>
+    <bcf:citekey order="22">julia</bcf:citekey>
+    <bcf:citekey order="23">oldGAIO</bcf:citekey>
+    <bcf:citekey order="24">GAIO</bcf:citekey>
+    <bcf:citekey order="25">algGAIO</bcf:citekey>
+    <bcf:citekey order="26">subalg</bcf:citekey>
+    <bcf:citekey order="27">dynbook</bcf:citekey>
+    <bcf:citekey order="28">dynskript</bcf:citekey>
+    <bcf:citekey order="29">attr</bcf:citekey>
+    <bcf:citekey order="30">manifold</bcf:citekey>
+    <bcf:citekey order="31">geodynbook</bcf:citekey>
+    <bcf:citekey order="32">chain</bcf:citekey>
   </bcf:section>
   <!-- SORTING TEMPLATES -->
   <bcf:sortingtemplate name="nty">
