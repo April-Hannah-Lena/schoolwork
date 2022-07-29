@@ -5,6 +5,7 @@
 \usepackage{amsthm}
 \usepackage{amsfonts}
 \usepackage{float}
+\usepackage{hyperref}
 \usepackage{multicol}
 \usepackage{graphicx}
 \usepackage{geometry}
@@ -40,20 +41,32 @@
 
 \input{colors.tikzstyles}
 
+%\def\autorefname
+\def\algorithmautorefname{Algorithm}
+\def\figureautorefname{Fig.}
+
 \numberwithin{figure}{section}
 \numberwithin{equation}{section}
+\def\equationautorefname{Eq.}
 
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}[section]
+\def\definitionautorefname{Definition}
 
 \newtheorem{theorem}{Theorem}[section]
+\def\theoremautorefname{Theorem}
 \newtheorem{proposition}{Proposition}[section]
+\def\propositionautorefname{Proposition}
+\newtheorem{corollary}{Corollary}[section]
+\def\corollaryautorefname{Corollary}
 
 \theoremstyle{remark}
 \newtheorem*{remark}{Remark}
+\def\remarkautorefname{Remark}
 
 \theoremstyle{remark}
-\newtheorem*{example}{Example}
+\newtheorem{example}{Example}
+\def\exampleautorefname{Example}
 
 \newcommand*{\defeq}{\mathrel{\vcenter{\baselineskip0.5ex \lineskiplimit0pt
                      \hbox{\scriptsize.}\hbox{\scriptsize.}}}%
@@ -71,15 +84,10 @@
 \pagenumbering{arabic}
 \pagestyle{headings}
 
-\section{Dynamical Systems}
 \import{sections/}{dynamical_systems.tex}
-\section{Algorithms}
 \import{sections/}{algorithms.tex}
-\section{Julia}
 \import{sections/}{julia.tex}
-\section{Parallelization using the CPU}
 \import{sections/}{cpu.tex}
-\section{Parallelization using the GPU}
 \import{sections/}{gpu.tex}
 
 \printbibliography

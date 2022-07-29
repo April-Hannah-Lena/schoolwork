@@ -1,12 +1,14 @@
+\section{Algorithms}
+
 % -------------------------------------------------------------------------------------- %
 
 \subsection{Relative Attractor}
 
 The construction of a fundamental neighborhood $U$ for a global attractor $A$ is
-relatively difficult, but the description \ref{eq:globattr} lends to 
+relatively difficult, but the description \autoref{eq:globattr} lends to 
 a natural \emph{ansatz} for its approximation using a compact subdomain $Q \subset M$. \\
 
-\begin{definition}[Realtive Global Attractor]
+\begin{definition}[Relative Global Attractor]
     Let $Q$ be compact. Then we define the \emph{attractor relative to $A$} as
 
     \begin{equation}
@@ -55,18 +57,18 @@ predefined number of steps $n$.
     \end{itemize}
 \end{remark}
 
-\begin{proposition}
-    \cite*{algGAIO,subalg} Set $Q_i = \bigcup\limits_{B \in \mathcal{B}_i} B$. For all 
-    $i$ we have
+\begin{proposition}\label{thm:cover}
+    \cite*{algGAIO,subalg} Set 
+    $Q_i = \bigcup_{B \in \mathcal{B}_i} B,\quad Q_\infty = \bigcap_{n \geq 1} Q_n$. 
+    For all $i$ we have
 
     \begin{enumerate}
         \item $Q_{i+1} \subset Q_i$
         \item $A_Q \subset Q_i$ 
+        \item $A_Q = Q_\infty$
     \end{enumerate}
 
-    Further, if we set $Q_\infty = \bigcap\limits_{n \geq 1} Q_n$, then 
-    $A_Q = Q_\infty$. In particular, this shows that $\mathcal{B}_\infty$ 
-    is backward-invariant. 
+    In particular, this shows that $Q_\infty$ is backward-invariant. 
 \end{proposition}
 
 % -------------------------------------------------------------------------------------- %
@@ -82,8 +84,8 @@ global unstable manifold $W^u(\bar{x})$:
 \begin{enumerate}
     \item first, we perform an \emph{initialiation step}: replace the calculation of 
     the local unstable manifold with the calculation of the relative
-    attractor for a small set $Q'$ surrounding the fixed point $\bar{x}$, using algorithm
-    \ref{alg:relativeattractor}. 
+    attractor for a small set $Q'$ surrounding the fixed point $\bar{x}$, using 
+    \autoref{alg:relativeattractor}. 
     \item Second, we repeat the following \emph{continuation step}: map 
     the current box set forward one iteration, and note any new boxes which are hit. These 
     new boxes get added to the box set. Repeat until there are no new boxes
@@ -123,16 +125,180 @@ global unstable manifold $W^u(\bar{x})$:
 The algorithm to compute the chain recurrent set is first due to \cite*{chain}. The idea 
 is to construct a directed graph whose vertices are the box set $\mathcal{B}$, and for 
 which edges are drawn from $B_1$ to $B_2$ if $f$ maps any part of $B_1$ into $B_2$. 
-Call this graph $G$, and call $\bar{d}$ the maximum \emph{diameter} of a box in our 
-partition, ie 
+Call this graph \textproc{graph}$(\mathcal{B})$, and call $\bar{d}$ the maximum 
+\emph{diameter} of a box in our partition, ie 
 $\bar{d} = \max_{\substack{B\, \in\, \mathcal{P},\\ x,\, y\, \in\, B}} d(x, y)$.\\ 
 
-We can now ask for a subset of the vertices, for which each vertex is part of a cycle. 
-Then this subset contains all points for which there exists a $\bar{d}$-pseudoperiodic orbit.
+We can now ask for a subset of the vertices, for which each vertex is part of a directed cycle. 
+We can equivalently characterize this set as follows:
 
 \begin{definition}[Strongly Connected]
     For a directed graph $G = (V, E)$, a subset $H \subset V$ of vertices is called 
-    \emph{strongly connected} if for all $u,\, v\, in H$ there exist paths in both 
-    directions between $v$ and $u$. The strongly connected component 
-    \textproc{scc}$(G,\, u)$ is the strongly connected subgraph which includes $v$.
+    \emph{strongly connected} if for all $u,\, v\, \in\, H$ there exist paths in both 
+    directions between $v$ and $u$. Denote by \textproc{scc}$(G, v)$ the strongly connected
+    subgraph which includes $v$, and by 
+    \textproc{sccs}$(G) = \bigcup_{v \in V}\,$\textproc{scc}$(G, v)$ 
+    the subgraph induced by union of strongly connected components.
 \end{definition}
+
+\begin{algorithm}
+    \caption{Chain Recurrrent Set}
+    \label{alg:chain}
+
+    \begin{algorithmic}[1]
+        \State $\mathcal{B}_0 \gets \mathcal{B}$
+
+        \For{$i = \left\{ 1,\ \dotsc,\ n \right\}$}
+            \State $\mathcal{B}_i \gets$ \Call{subdivide}{$\,\mathcal{B}_{i-1}\,$}
+            \State $G\, \gets$ \Call{graph}{$\mathcal{B}_{i-1}$}
+            \State $\mathcal{B}_i \gets$ \Call{sccs}{$G$}
+        \EndFor
+
+        \State \Return $\mathcal{B}_n$
+    \end{algorithmic}
+\end{algorithm}
+
+\begin{proposition}
+    A cycle $\left\{ B_0,\ B_1,\ \ldots,\ B_{n-1} \right\}$ exists in $G$
+    of and only if there exists an $\epsilon$-pseudoperiodic orbit 
+    $\left\{ x_0,\ x_1,\ \ldots,\ x_{n-1} \right\}$ with $x_i \in B_i$.
+    In particular, the vertices of $G$ form a covering of the chain recurrent set with 
+    Hausdorff distance at most $\bar{d}$.
+\end{proposition}
+
+\begin{proof}
+    Consider now a cycle in $G$. Then by construction, for each edge $(B_i, B_{i+1})$ in the 
+    cycle we can find a point $x_i \in B_i$ which gets mapped to $B_{i+1}$. Doing this for all
+    edges we get a set $\left\{ x_0,\ x_1,\ \ldots,\ x_{n-1} \right\}$ which satisfies 
+    $d(x_{i\, \text{mod}\, n},\ x_{i+1\, \text{mod}\, n}) \leq \bar{d}$, ie a 
+    $\bar{d}$-pseudoperiodic orbit. \\
+
+    Conversely, consider an $\epsilon$-pseudoperiodic orbit 
+    $\left\{ x_0,\ x_1,\ \ldots,\ x_{n-1} \right\}$, $\epsilon \leq \bar{d}$. Then each $x_i$ is in
+    a box $B_i$, and since $d(x_{i\, \text{mod}\, n},\ x_{i+1\, \text{mod}\, n}) \leq \bar{d}$, 
+    there is an edge $(B_i, B_{i+1})$ in $G$. Hence 
+    $\left\{ B_0,\ B_1,\ \ldots,\ B_{n-1} \right\}$ is a cycle in $G$. \\
+\end{proof}
+
+\begin{corollary}
+    \autoref{thm:cover} holds for \autoref{alg:chain}. For further details, 
+    see \cite*{chain}.
+\end{corollary}
+
+% -------------------------------------------------------------------------------------- %
+
+\subsection{Invariant Measure}
+
+We shift focus to approximating invariant measures for the Perron-Frobenius operator $P$.
+For simplicity we will work only with measures absolutely continuous with respect to the 
+Lebesque measure on $M$, ie measures for which there exists a \emph{kernel} $k$ with 
+
+\begin{equation}
+    p(x, A) = \int_A k(x, y)\, dy.
+\end{equation}
+
+In this case we can define $P: L^1 \to L^1$ as 
+
+\begin{equation}
+    (P \phi)(y) = \int \phi (x)\, k(x, y)\, dx.
+\end{equation}
+
+Note that an invariant measure $\mu$ of $P$ can be constructed from a fixed point $\phi$ as 
+
+\begin{equation}
+    \mu (A) = \int_A \, \phi (x)\, dx.
+\end{equation}
+
+We will use a Galerkin approximation for $P$ which maintains the eigenvalues and cyclic 
+behavior of $P$. Let $\mathcal{P}$ be a partition of the compact set $Q$ into equally 
+sized, (up to Lebesque null sets) disjoint closed sets. Then we project to a subspace 
+$\chi_{\mathcal{P}}$ generated by the basis $\left\{ \chi_B\ \vert\ B \in \mathcal{P} \right\}$ 
+of indicator functions on the boxes of our partition. For 
+$\mathcal{P} = \left\{ B_1,\ B_2,\ \ldots,\ B_n \right\}$ we define the matrix
+
+\begin{equation}
+    P_{ij} = \frac{\mathcal{L}\left(B_j \cap f(B_i)\right)}{\mathcal{L}(B_j)}, 
+    \quad i,\, j = 1, \ldots, n,
+\end{equation}
+
+as well as a linear operator $Q_n P : \chi_{\mathcal{P}} \to \chi_{\mathcal{P}}$ as 
+
+\begin{equation}
+    (Q_n P)\, \chi_{B_i} = \sum_{j = 1}^n P_{ij}\, \chi_j.
+\end{equation}
+
+To realize this approximation, we need to calculate $P_{ij}$. For this there are two 
+techniques discussed in \cite*{algGAIO}. Currently the only technique built into 
+\texttt{GAIO.jl} is a Monte Carlo approach. Namely, we choose a fixed number $r$ of 
+test points in $B_i$, and set $P_{ij}$ as the fraction of test points which land in $B_j$:
+
+\begin{algorithm}
+    \caption{Invariant Measure}
+    \label{alg:measure}
+    \begin{spacing}{1.2}
+        \begin{algorithmic}[1]
+
+            \For{$i,j \in \left\{ 1,\ \ldots,\ n \right\}$}
+                \State $p\ \ \gets $ Choose $\left\{ p_1,\ \ldots,\ p_r \right\}$ randomly from a uniform distribution on $B_i$
+                \State $P_{ij} \gets \left. |\ B_j \cap f(p)\ | \ \middle/\ |\ p\ | \right.$
+            \EndFor
+    
+            \State $v \gets $ Find a fixed point of $P$
+            \label{alg:measure:fix}
+            \State $\phi_n \gets \sum_{i=1}^n\: v_i\, \chi_{B_i}$
+            \State \Return $\phi_n$
+        \end{algorithmic}
+    \end{spacing}
+\end{algorithm}
+
+\begin{remark}\ 
+    \begin{itemize}
+        \item In practice the test points are only generated once from the unit cube $[-1,1]^d$, 
+        and then scaled to fit inside the box $B_i$.
+        \item Line~\ref{alg:measure:fix} is acheived using the Fortran library ARPACK \cite*{ARPACK}, 
+        which has been wrapped in julia by the creators of Arpack.jl \cite*{Arpack.jl}. Recently, the 
+        underlying algorithm (known as implicitly restarted Arnoldi method) has been 
+        implemented in pure julia under the package name ArnoldiMethod.jl \cite*{ArnoldiMethod.jl}.
+    \end{itemize}
+\end{remark}
+
+\begin{proposition}
+    \cite*{lasota}
+    Let $p(x, A)$ be a transition function with globally lipschitz continuous kernel $k$. 
+    Then the operator $P$ is compact. Further, if $k$ is strictly positive, $P$ has
+    a unique fixed point $\phi \in L^1$. 
+\end{proposition}
+
+\begin{proposition}
+    \cite*{attr, measure, algGAIO, perturbationsbook, perturbationsart} 
+    Suppose the transition function $p = p_\epsilon$ converges in the weak* sense to the 
+    dirac measure, ie 
+
+    \begin{equation}
+        p_\epsilon (x, \cdot) \overset{\ast}{\rightharpoonup} \delta_{f(x)} 
+        \quad\text{as}\quad \epsilon \to 0.
+    \end{equation}
+
+    (An example of this would be \autoref{ex:q} for a sequence of partitions 
+    $\mathcal{P}_\epsilon$ with diameters
+    $\bar{d}_\epsilon = \max_{\substack{B\, \in\, \mathcal{P}_\epsilon,\\ x,\, y\, \in\, B}} d(x, y) \to 0$).
+    Suppose further that the diffeomorphism $f$ has a hyperbolic attracting set $A$ with
+    and an open set $U \supset A$ such that for the kernels we have
+
+    \begin{equation}
+        k_\epsilon (f(x), y) = 0 \quad\text{if}\quad x \in \overline{U},\ y \notin U.
+    \end{equation}
+
+    Let $P_\epsilon$ be the Perron-Frobenius operator for the transition function 
+    $p_\epsilon$. Then there exist unique fixed points $\phi_\epsilon^n$ of $Q_n P_\epsilon$, 
+    and the sequence of fixed points converge to the fixed point $\phi$ of the true 
+    operator $P$, ie
+
+    \begin{equation}
+        \phi_\epsilon^n \overset{\ast}{\rightharpoonup} \phi 
+        \quad\text{as}\quad n \to \infty,\ \epsilon \to 0.
+    \end{equation}
+\end{proposition}
+
+% -------------------------------------------------------------------------------------- %
+
