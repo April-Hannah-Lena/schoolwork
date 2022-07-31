@@ -100,13 +100,13 @@ global unstable manifold $W^u(\bar{x})$:
         \State $\mathcal{B}_0 \gets \mathcal{B}$
         \State $\mathcal{B}_1 \gets \mathcal{B}$
 
-        \While{$\mathcal{B}_0 \neq \emptyset$}
-            \State $\mathcal{B}_0 \gets f(\,\mathcal{B}_0\,)$
-            \State $\mathcal{B}_0 \gets \mathcal{B}_0\, \setminus\, \mathcal{B}_1$
-            \State $\mathcal{B}_1 \gets \mathcal{B}_1\, \cup\, \mathcal{B}_0$
+        \While{$\mathcal{B}_1 \neq \emptyset$}
+            \State $\mathcal{B}_1 \gets f(\,\mathcal{B}_1\,)$
+            \State $\mathcal{B}_1 \gets \mathcal{B}_1\, \setminus\, \mathcal{B}_0$
+            \State $\mathcal{B}_0 \gets \mathcal{B}_1\, \cup\, \mathcal{B}_0$
         \EndWhile
 
-        \State \Return $\mathcal{B}_1$
+        \State \Return $\mathcal{B}_0$
     \end{algorithmic}
 \end{algorithm}
 
@@ -181,7 +181,7 @@ We can equivalently characterize this set as follows:
 \end{proof}
 
 \begin{corollary}
-    \autoref{thm:cover} holds for \autoref{alg:chain}. For further details, 
+    Proposition \ref{thm:cover} holds for \autoref{alg:chain}. For further details, 
     see \cite*{chain}.
 \end{corollary}
 
@@ -203,11 +203,8 @@ In this case we can define $P: L^1 \to L^1$ as
     (P \phi)(y) = \int \phi (x)\, k(x, y)\, dx.
 \end{equation}
 
-Note that an invariant measure $\mu$ of $P$ can be constructed from a fixed point $\phi$ as 
-
-\begin{equation}
-    \mu (A) = \int_A \, \phi (x)\, dx.
-\end{equation}
+Note that $\phi$ is the density of an invariant measure 
+$\mu_\phi (A) = \int_A\, \phi(x)\, dx$. \\
 
 We will use a Galerkin approximation for $P$ which maintains the eigenvalues and cyclic 
 behavior of $P$. Let $\mathcal{P}$ be a partition of the compact set $Q$ into equally 
@@ -224,7 +221,7 @@ $\mathcal{P} = \left\{ B_1,\ B_2,\ \ldots,\ B_n \right\}$ we define the matrix
 as well as a linear operator $Q_n P : \chi_{\mathcal{P}} \to \chi_{\mathcal{P}}$ as 
 
 \begin{equation}
-    (Q_n P)\, \chi_{B_i} = \sum_{j = 1}^n P_{ij}\, \chi_j.
+    (Q_n P)\, \chi_{B_i} = \sum_{j = 1}^n P_{ij}\, \chi_{B_j}.
 \end{equation}
 
 To realize this approximation, we need to calculate $P_{ij}$. For this there are two 
@@ -271,15 +268,15 @@ test points in $B_i$, and set $P_{ij}$ as the fraction of test points which land
 
 \begin{proposition}
     \cite*{attr, measure, algGAIO, perturbationsbook, perturbationsart} 
-    Suppose the transition function $p = p_\epsilon$ converges in the weak* sense to the 
+    Suppose the transition function $p = p_\epsilon$ converges weakly to the 
     dirac measure, ie 
 
     \begin{equation}
-        p_\epsilon (x, \cdot) \overset{\ast}{\rightharpoonup} \delta_{f(x)} 
+        p_\epsilon (x, \cdot) \rightharpoonup \delta_{f(x)} 
         \quad\text{as}\quad \epsilon \to 0.
     \end{equation}
 
-    (An example of this would be \autoref{ex:q} for a sequence of partitions 
+    (An example of this would be Ex. \ref{ex:q} for a sequence of partitions 
     $\mathcal{P}_\epsilon$ with diameters
     $\bar{d}_\epsilon = \max_{\substack{B\, \in\, \mathcal{P}_\epsilon,\\ x,\, y\, \in\, B}} d(x, y) \to 0$).
     Suppose further that the diffeomorphism $f$ has a hyperbolic attracting set $A$ with
@@ -295,10 +292,9 @@ test points in $B_i$, and set $P_{ij}$ as the fraction of test points which land
     operator $P$, ie
 
     \begin{equation}
-        \phi_\epsilon^n \overset{\ast}{\rightharpoonup} \phi 
+        \phi_\epsilon^n \rightharpoonup \phi 
         \quad\text{as}\quad n \to \infty,\ \epsilon \to 0.
     \end{equation}
 \end{proposition}
 
 % -------------------------------------------------------------------------------------- %
-

@@ -1,7 +1,173 @@
 \section{Julia}
 
-\subsection{Introduction to the Julia Language}
+% -------------------------------------------------------------------------------------- %
+
+\subsection{A (Very) Brief Introduction to the Julia Language}
+
+The julia language GitHub page decribes julia as "a high-level, high-performance dynamic 
+language for technical computing" \cite*{juliarepo}. Its creators come from Matlab, Python,
+Lisp among others, and they desired a langauge as syntactically simple as Python, as 
+powerful for linear algebra as Matlab, and as fast as C \cite*{julia}. To achieve this,
+julia is just-in-time compiled using LLVM to generate native machine code. Further, "julia uses 
+multiple dispatch as a paradigm, which makes it easy to express many object-oriented and
+functional programming patterns" \cite*{juliamain}. As a brief example of multiple dispatch,
+consider a simple user defined type \jlinl{2dBox} (similar to the implementation in 
+\texttt{GAIO.jl}):
 
 \begin{jllisting}[language=julia, style=jlcodestyle]
-    print("Here's some placeholder code")
+    struct 2dBox
+        center::Tuple{Float64,Float64}
+        radius::Tuple{Float64,Float64}
+    end
 \end{jllisting}
+
+Then we can create a \jlinl{2dBox} by calling \jlinl{b = 2dBox((0.0, 0.0), (1.0, 1.0))}. 
+A natural question to ask is whether the vector \jlinl{x = [0.5, 0.6]} lies within 
+\jlinl{b}. To do this, we can \emph{overload} the function \jlinl{in} from julia base:
+
+\begin{jllisting}[language=julia, style=jlcodestyle]
+    function Base.in(x::Vector, b::2dBox)
+        b.center .- b.radius .≤ x .≤ b.center .+ b.radius
+    end
+\end{jllisting}
+
+This function uses julia's \emph{dot-syntax} to vectorize operations, eg. \jlinl{+}
+by writing \jlinl{.+}. We can now call the base function \jlinl{in} or its unicode alias
+\jlinl{∈}:
+
+\begin{jllisting}[language=julia, style=jlcodestyle]
+    x = [0.5, 0.6]
+    b = 2dBox((0.0, 0.0), (1.0, 1.0))
+
+    x ∈ b           # returns true
+    x .- 2 ∈ b      # returns false
+    x .- 2 ∉ b      # returns true
+\end{jllisting}
+
+The above example demonstrates the syntactical simplicity of julia. 
+It should be noted that despite this simplicity, julia can generate highly performant 
+machine code. For further illustration, consider the algorithm for the global unstable 
+manifold (see \autoref{alg:manifold}) implemented in matlab and in julia. The julia 
+code is one third as long, mirrors the pseudocode much more closely, 
+and still runs faster than the matlab code.
+
+\begin{jllisting}[language=matlab, style=jlcodestyle, label=lst:gum:matlab, caption=Unstable manifold algorithm in matlab]
+    function gum(t, f, X, depth)
+
+    dim = t.dim;
+    none = 0; ins = 2; expd = 4;             % defining flags
+    nb0 = 0;  nb1 = t.count(depth);          % bookkeeping the no. of boxes
+    tic; j = 1;
+    t.set_flags('all', ins, depth);
+    while nb1 > nb0                          % while new boxes nonempty
+    t.change_flags('all', ins, expd);        % mark inserted boxes
+    b = t.boxes(depth); M = size(b,2);       % get the geometry of the boxes
+    flags = b(2*dim+1, :); 
+    I = find(bitand(flags,expd));            % find boxes to expand
+    b = b(:,I); N = size(b,2);
+    S = whos('X'); l = floor(5e7/S.bytes);
+    for k = 0:floor(N/l),                    % split in chunks of size l
+        K = k*l+1:min((k+1)*l,N);
+        c = b(1:dim,K);                      % center ...
+        r = b(dim+1:2*dim,1);                % ... and radii of the boxes
+        n = size(c,2); E = ones(n,1);
+        P = kron(E,X)*diag(r) + ...          % sample points in all boxes
+            kron(c',ones(size(X,1),1));
+        t.insert(f(P)', depth, ins, none);   % map sample points, insert boxes
+    end
+    t.unset_flags('all', expd);              % unflag recently expanded boxes
+    nb0 = nb1; nb1 = t.count(depth);
+    j = j+1;
+    end
+\end{jllisting}
+
+\begin{jllisting}[language=julia, style=jlcodestyle, label=lst:gum:julia, caption=Unstable manifold algorithm in julia]
+    function unstable_set(F::BoxMap, B::BoxSet)
+        B₀ = B
+        B₁ = B
+        while B₁ ≠ ∅
+            B₁ = F(B₁)
+            B₁ = B₁ \ B₀
+            B₀ = B₁ ∪ B₀
+        end
+        return B₀
+    end
+\end{jllisting}
+
+% -------------------------------------------------------------------------------------- %
+
+\iffalse
+
+\subsection{GAIO.jl}
+
+This section is meant for those interested in the inner structure and implementation of 
+\texttt{GAIO.jl}. All descriptions here can also be found in the docstrings, eg. by typing 
+\jlinl{julia> ? Box} into the julia REPL.
+
+The package is built off of the base structures \jlinl{Box, BoxPartition, BoxMap}:
+
+\begin{jllisting}[language=julia, style=jlcodestyle]
+    struct Box{N,T <: AbstractFloat}
+        center::SVector{N,T}
+        radius::SVector{N,T}
+
+        function Box{N,T}(center, radius) where {N,T}
+
+            if !( N == length(radius) == length(center) )
+                throw(DimensionMismatch("Center vector and radius vector must have same length ($N)"))
+            end
+
+            if any(≤(0), radius)
+                throw(DomainError(radius, "radius must be positive in every component"))
+            end
+
+            return new{N,T}(SVector{N,T}(center), SVector{N,T}(radius))
+        end
+    end
+\end{jllisting}
+
+$ A Box is a half-open, generalized rectangle, that is, product of half-open intervals
+$[a_1, b_1) \times [a_2, b_2) \times \ldots \times [a_d, b_d)$. We now need to represent 
+a partition $\mathcal{P}$ of boxes:
+
+\begin{jllisting}[language=julia, style=jlcodestyle]
+    struct BoxPartition{N,T,I<:Integer} <: AbstractBoxPartition{Box{N,T}}
+        domain::Box{N,T}
+        left::SVector{N,T}
+        scale::SVector{N,T}
+        dims::SVector{N,I}
+        dimsprod::SVector{N,I}
+    end
+\end{jllisting}
+
+Instead of keeping track of positions for each individual box, we use integer indices 
+for a box grid and only store the dimensions of the grid:
+
+\texttt{
+          1st dim →
+        * — * — * — *
+    2nd | 1 | 2 | 3 |
+    dim * — * — * — *
+    ↓   | 4 | 5 | 6 |
+        * — * — * — *
+}
+
+Finally, we need a way to convert a map
+$f$ defined on $Q$ to a map \jlinl{F} defined on boxes of a \jlinl{BoxPartition}:
+
+\begin{jllisting}[language=julia, style=jlcodestyle]
+    struct SampledBoxMap{A,N,T,F,D,I} <: BoxMap
+        map::F
+        domain::Box{N,T}
+        domain_points::D
+        image_points::I
+        acceleration::A
+    end
+\end{jllisting}
+
+When a \jlinl{SampledBoxMap} is initialized, we require a function to calculate test 
+points that are mapped by the given function $f$. This is \jlinl{domain_points}.
+
+\fi
+
+% -------------------------------------------------------------------------------------- %
