@@ -22,7 +22,7 @@ consider a simple user defined type \jlinl{2dBox} (similar to the implementation
 \end{jllisting}
 
 Then we can create a \jlinl{2dBox} by calling \jlinl{b = 2dBox((0.0, 0.0), (1.0, 1.0))}. 
-A natural question to ask is whether the vector \jlinl{x = [0.5, 0.6]} lies within 
+A natural question to ask is whether a vector, say \jlinl{x = [0.5, 0.6]}, lies within 
 \jlinl{b}. To do this, we can \emph{overload} the function \jlinl{in} from julia base:
 
 \begin{jllisting}[language=julia, style=jlcodestyle]
@@ -53,7 +53,6 @@ and still runs faster than the matlab code.
 
 \begin{jllisting}[language=matlab, style=jlcodestyle, label=lst:gum:matlab, caption=Unstable manifold algorithm in matlab]
     function gum(t, f, X, depth)
-
     dim = t.dim;
     none = 0; ins = 2; expd = 4;             % defining flags
     nb0 = 0;  nb1 = t.count(depth);          % bookkeeping the no. of boxes
@@ -96,37 +95,22 @@ and still runs faster than the matlab code.
 
 % -------------------------------------------------------------------------------------- %
 
-\iffalse
-
 \subsection{GAIO.jl}
 
-This section is meant for those interested in the inner structure and implementation of 
-\texttt{GAIO.jl}. All descriptions here can also be found in the docstrings, eg. by typing 
-\jlinl{julia> ? Box} into the julia REPL.
+This section is meant as an introduction to the most important concepts in the implementation of 
+\texttt{GAIO.jl}. For more information see the respective docstrings, eg. by typing 
+\jlinl{julia> ? Box} into the julia REPL.\\
 
-The package is built off of the base structures \jlinl{Box, BoxPartition, BoxMap}:
+The package is built off of three base structures \jlinl{Box, BoxPartition, BoxMap}:
 
 \begin{jllisting}[language=julia, style=jlcodestyle]
     struct Box{N,T <: AbstractFloat}
         center::SVector{N,T}
         radius::SVector{N,T}
-
-        function Box{N,T}(center, radius) where {N,T}
-
-            if !( N == length(radius) == length(center) )
-                throw(DimensionMismatch("Center vector and radius vector must have same length ($N)"))
-            end
-
-            if any(≤(0), radius)
-                throw(DomainError(radius, "radius must be positive in every component"))
-            end
-
-            return new{N,T}(SVector{N,T}(center), SVector{N,T}(radius))
-        end
     end
 \end{jllisting}
 
-$ A Box is a half-open, generalized rectangle, that is, product of half-open intervals
+A Box is a half-open generalized rectangle, that is, a product of half-open intervals
 $[a_1, b_1) \times [a_2, b_2) \times \ldots \times [a_d, b_d)$. We now need to represent 
 a partition $\mathcal{P}$ of boxes:
 
@@ -141,19 +125,13 @@ a partition $\mathcal{P}$ of boxes:
 \end{jllisting}
 
 Instead of keeping track of positions for each individual box, we use integer indices 
-for a box grid and only store the dimensions of the grid:
+for an equidistant \emph{box grid} and only store the dimensions of the grid using 
+the attribute \jlinl{dims}. The attributes \jlinl{left, scale, dimsprod} are used to 
+quickly calculate box indices from a given point (see \jlinl{point_to_key, key_to_box} 
+in \texttt{GAIO.jl}).\\
 
-\texttt{
-          1st dim →
-        * — * — * — *
-    2nd | 1 | 2 | 3 |
-    dim * — * — * — *
-    ↓   | 4 | 5 | 6 |
-        * — * — * — *
-}
-
-Finally, we need a way to convert a map
-$f$ defined on $Q$ to a map \jlinl{F} defined on boxes of a \jlinl{BoxPartition}:
+Finally, we need a way to convert a map $f$ defined on $Q$ to a map \jlinl{F} defined on 
+boxes of a \jlinl{BoxPartition}:
 
 \begin{jllisting}[language=julia, style=jlcodestyle]
     struct SampledBoxMap{A,N,T,F,D,I} <: BoxMap
@@ -166,8 +144,15 @@ $f$ defined on $Q$ to a map \jlinl{F} defined on boxes of a \jlinl{BoxPartition}
 \end{jllisting}
 
 When a \jlinl{SampledBoxMap} is initialized, we require a function to calculate test 
-points that are mapped by the given function $f$. This is \jlinl{domain_points}.
+points that are mapped by the given function $f$. This is \jlinl{domain_points}. These test 
+points are then mapped forward by $f$, and the boxes which are hit become the image set.\\
 
-\fi
+Tha \jlinl{acceleration} attribute is what we will concern ourselves with for the remainder 
+of the present paper. Naturally, if an increase in accuracy is required, a larger set of 
+test points may be chosen. This leads to a dilemma: the more accurate we wish our 
+approximation \jlinl{F} to be, the more we need to map very similar test points forward,
+causing a considerable slow down for complicated dynamical systems. However, the process of
+mapping each test point forward is completely independent on other test points. This means 
+we do not need to perform each calculation sequentially; we can \emph{parallelize!}
 
 % -------------------------------------------------------------------------------------- %

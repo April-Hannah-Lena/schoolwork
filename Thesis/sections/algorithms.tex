@@ -125,7 +125,7 @@ global unstable manifold $W^u(\bar{x})$:
 The algorithm to compute the chain recurrent set is first due to \cite*{chain}. The idea 
 is to construct a directed graph whose vertices are the box set $\mathcal{B}$, and for 
 which edges are drawn from $B_1$ to $B_2$ if $f$ maps any part of $B_1$ into $B_2$. 
-Call this graph \textproc{graph}$(\mathcal{B})$, and call $\bar{d}$ the maximum 
+Call this graph \textproc{graph}$(f,\ \mathcal{B})$, and call $\bar{d}$ the maximum 
 \emph{diameter} of a box in our partition, ie 
 $\bar{d} = \max_{\substack{B\, \in\, \mathcal{P},\\ x,\, y\, \in\, B}} d(x, y)$.\\ 
 
@@ -150,8 +150,8 @@ We can equivalently characterize this set as follows:
 
         \For{$i = \left\{ 1,\ \dotsc,\ n \right\}$}
             \State $\mathcal{B}_i \gets$ \Call{subdivide}{$\,\mathcal{B}_{i-1}\,$}
-            \State $G\, \gets$ \Call{graph}{$\mathcal{B}_{i-1}$}
-            \State $\mathcal{B}_i \gets$ \Call{sccs}{$G$}
+            \State $G\, \gets$ \Call{graph}{$\,f,\ \mathcal{B}_{i-1}\,$}
+            \State $\mathcal{B}_i \gets$ \Call{sccs}{$\,G\,$}
         \EndFor
 
         \State \Return $\mathcal{B}_n$
