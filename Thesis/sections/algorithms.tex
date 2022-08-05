@@ -194,6 +194,7 @@ For simplicity we will work only with measures absolutely continuous with respec
 Lebesque measure on $M$, ie measures for which there exists a \emph{kernel} $k$ with 
 
 \begin{equation}
+    \label{eq:kernel}
     p(x, A) = \int_A k(x, y)\, dy.
 \end{equation}
 
@@ -268,11 +269,11 @@ test points in $B_i$, and set $P_{ij}$ as the fraction of test points which land
 
 \begin{proposition}
     \cite*{attr, measure, algGAIO, perturbationsbook, perturbationsart} 
-    Suppose the transition function $p = p_\epsilon$ converges weakly to the 
+    Suppose the transition function $p = p_\epsilon$ converges in the weak* sense to the 
     dirac measure, ie 
 
     \begin{equation}
-        p_\epsilon (x, \cdot) \rightharpoonup \delta_{f(x)} 
+        p_\epsilon (x, \cdot) \overset{*}{\rightharpoonup} \delta_{f(x)} 
         \quad\text{as}\quad \epsilon \to 0.
     \end{equation}
 
@@ -292,9 +293,67 @@ test points in $B_i$, and set $P_{ij}$ as the fraction of test points which land
     operator $P$, ie
 
     \begin{equation}
-        \phi_\epsilon^n \rightharpoonup \phi 
+        \phi_\epsilon^n \to \phi 
         \quad\text{as}\quad n \to \infty,\ \epsilon \to 0.
     \end{equation}
 \end{proposition}
+
+% -------------------------------------------------------------------------------------- %
+
+\subsection{Almost Invariant Sets (and Cycles)}
+
+Our final algorithm is quite analogous to the algorithm for invariant measures of $P$. We 
+begin with a theorem about the convergence our discretized operator.
+
+\begin{theorem}
+    \label{thm:QnP}
+    \cite*{attr}
+    Suppose our transition function $p$ has a kernel $k$ (see \autoref{eq:kernel}) which 
+    satisfies 
+
+    \begin{equation}
+        \iint |k(x, y)|^2\ dx\,dy < \infty
+    \end{equation}
+
+    Then the Frobenius Perron operator $P : L^2 \to L^2$ is compact. Further $Q_n P$ 
+    converges strongly to $P$ in the operator norm on $L^2$, ie
+
+    \begin{equation}
+        \|\, Q_n P - P \,\| \to 0 \quad \text{as} \quad n \to \infty .
+    \end{equation}
+
+\end{theorem}
+
+Assume now that $Q_n P$ has an eigenvalue $1$ with multiplicity $2$. Then by the above 
+theorem, the eigenvalue will split into two simple eigenvalues, one of which will move away  
+from $1$ (the other will stay at 1 since $Q_n P$ is column stochastic). If we now find 
+this eigenvector $\phi_n$, then (again by the above theorem and the continuity of $P$) 
+the positive and negative regions of $\phi_n$ will converge to the sets $E^+$ and $E^-$ 
+from Theorem \ref{thm:almost}. That is, they are almost invariant. 
+
+\begin{algorithm}
+    \caption{Almost Invariant Sets}
+    \label{alg:almost}
+    \begin{spacing}{1.2}
+        \begin{algorithmic}[1]
+
+            \For{$i,j \in \left\{ 1,\ \ldots,\ n \right\}$}
+                \State $p\ \ \gets $ Choose $\left\{ p_1,\ \ldots,\ p_r \right\}$ randomly from a uniform distribution on $B_i$
+                \State $P_{ij} \gets \left. |\ B_j \cap f(p)\ | \ \middle/\ |\ p\ | \right.$
+            \EndFor
+    
+            \State $v \gets $ Find an eigenvector to the second largest eigenvalue of $P$
+            \label{alg:almost:fix}
+            \State $E^+ \gets \cup \left\{ B_i\ \vert\ v_i \geq 0 \right\}$
+            \State $E^- \gets \cup \left\{ B_i\ \vert\ v_i < 0 \right\}$
+            \State \Return $E^+,\ E^-$
+        \end{algorithmic}
+    \end{spacing}
+\end{algorithm}
+
+\begin{remark}
+    The algorithm can also be used to find almost invariant cycles. In this case line 
+    \ref{alg:almost:fix} simply needs to be changed to find an eigenvector near $-1$.
+\end{remark} 
 
 % -------------------------------------------------------------------------------------- %

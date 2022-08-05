@@ -12,8 +12,10 @@ dynamics of some portions of the system, as well as statistical \emph{invariant 
 which describe much larger sets in the space, but with less information. \\
 
 The basic technique of all the topological algorithms is to split a compact set $Q$ into 
-a partition $\mathcal{P}$ of \emph{boxes} - that is, generalized rectangles, each with 
-center vector $c$ and componentwise radii $r$. The algorithms will begin with a set of boxes 
+a partition $\mathcal{P}$ of \emph{boxes} - that is, generalized rectangles
+$[c_1 - r_1,\ c_1 + r_1) \times \ldots \times [c_d - r_d,\ c_d + r_d)$, with 
+center vector $c \in \mathbb{R}^d$ and componentwise radii $r \in \mathbb{R}^d$. 
+The algorithms will begin with a set of boxes 
 $\mathcal{B}$, and then repeatedly subdivide each box in $\mathcal{B}$ into two (or more) 
 smaller boxes, examine the dynamics of the subdivided boxes, and refine the box set to 
 include only the boxes we are interested in. \\
@@ -31,7 +33,9 @@ found in \cite*{oldGAIO} and \cite*{GAIO}, respectively.
 This section should be treated as an index of definitions, to be referred back to as 
 necessary during reading. In the following, we assume $M$ is a compact or a smooth manifold 
 in $\mathbb{R}^d$, endowed with a metric $d$, and the 
-map $f: M \to M$ is at least $\mathcal{C}^0$. Our setting is a 
+map $f: M \to M$ is at least $\mathcal{C}^0$. We further assume that $P$ is a partition 
+of a compact set $Q \subset M$ of (up to a null set) disjoint boxes, and 
+$\mathcal{B} \subset \mathcal{P}$ is a subset of boxes. Our setting is a 
 \emph{discrete, autonomous dynamical system}, that is, a system of the form:
 
 \begin{equation}
@@ -42,7 +46,49 @@ A continuous dynamical system $\dot{x} = F(x)$ can be \emph{discretized} by, for
 considering the \emph{Poincaré time-$t$ map} over some $d-1$ dimensional hyperplane,
 or by setting one "step" of the system as integrating $F$ for a set time $t$. \\
 
-We begin by giving a set of topological definitions of sets we wish to approximate.
+First, we set some notation for convenience.
+
+\begin{definition}[Image of a Box Set]
+    We will call the \emph{image of $\mathcal{B}$ under f} 
+    the set of boxes which intersect with the image $f(B)$, for at least one 
+    $B \in \mathcal{B}$. More precisely, it is 
+    
+    \begin{equation}
+        f (\mathcal{B}) = \left\{
+            R \in \mathcal{P} \quad \vert \quad 
+            f^{-1} (R)\, \cap\, \bigcup\limits_{B \in \mathcal{B}} B \neq \emptyset
+        \right\}.
+    \end{equation}
+
+\end{definition}
+
+\begin{theorem}[Image of a Box Set]
+    $f(\mathcal{B})$ is the inclusion-minimal cover of $f(\bigcup_{B \in \mathcal{B}} B)$
+    with boxes from $\mathcal{P}$.
+\end{theorem}
+
+\begin{proof}
+    We have the equivalent characterisation
+
+    \begin{equation}
+        f(\mathcal{B}) = \left\{
+            R \in \mathcal{P} \quad \vert \quad
+            \exists\ B \in \mathcal{B}\ \text{and}\ x \in B\ :\ f(x) \in R
+        \right\}.
+    \end{equation}
+
+    Hence if we remove one box $R$ from $f(\mathcal{B})$, then there exists an 
+    $x \in \bigcup_{B \in \mathcal{B}} B$ which maps outside of the created box set.
+
+\end{proof}
+
+\begin{figure}[ht]
+    \ctikzfig{boximage}
+    \caption{Image of the simple box set $\mathcal{B} = \left\{ B \right\}$}
+    \label{fig:boximage}
+\end{figure}
+
+We continue with a set of topological definitions of sets we wish to approximate.
 
 \begin{definition}[(Forward-, Backward-) Invariant]
     \cite*{algGAIO} A set $A$ is called \emph{forward-invariant} if $f(A) \subset A$, 
@@ -127,7 +173,7 @@ As shown in \cite*{algGAIO} we have the inclusion $R_M(f) \subset \bigcap_{k \ge
 which also shows that $R_M(f)$ is an invariant set. \\
 
 % -------------------------------------------------------------------------------------- %
-We continue with a set of measure-theoretical definitions for types of measures we wish to 
+Finally, we give a set of measure-theoretical definitions for types of measures we wish to 
 approximate. \\
 
 Since our goal is to partition the manifold into a finite set of boxes, we must accept some
@@ -151,18 +197,16 @@ We describe this noise using a stochastic transition function.
         \item\label{ex:q} \cite*{attr} We can model the deterministic system using the dirac 
         measure $p(x,\, A) = \delta_{f(x)}(A)$. 
         \item The approximate box version of the system can be modelled as using a uniform 
-        probability density: Let $\mathcal{P}$ be a partition of $Q$ into equally sized,
-        (up to a lebesque null set) disjoint closed
-        boxes (think of a checkerboard). Then for a point $x$, find the box 
-        $B \in \mathcal{P}$ with which contains $x$ and map it forward to $f(B)$. Finally, let 
-        $\mathcal{B} \subset \mathcal{P}$ be a cover of $f(B) \cap Q$.
+        probability density: for a point $x$ let 
+        $\mathcal{B}(x) = \left\{ B \in \mathcal{B}\ \vert\ x \in B \right\}$ be the 
+        (singleton) box set containing $x$. The define $p$ as 
 
         \begin{equation}
-            p(x,\, A) = \frac{
-                \mathcal{L} \left( A\ \cap\ \bigcup_{B \in \mathcal{B}} B \right)
+            p(x, A) = \frac{
+                \mathcal{L} (\ A \cap f(\mathcal{B}(x))\ )
             }{
-                \mathcal{L} \left(\bigcup_{B \in \mathcal{B}} B \right)
-            },
+                \mathcal{L} (\ f(\mathcal{B}(x))\ )
+            }
         \end{equation}
 
         where $\mathcal{L}$ represents the $d$-dimensional Lebesque measure.
@@ -172,7 +216,7 @@ We describe this noise using a stochastic transition function.
 \end{example}
 
 \begin{definition}[Perron-Frobenius Operator, Invariant Measure]
-    \cite*{attr} Let $p$ be a stochastic transition function, and $\mu$ a measure on $M$. 
+    \cite*{attr} Let $p$ be a transition function, and $\mu$ a measure on $M$. 
     We define the \emph{Perron-Frobenius operator} as
     
     \begin{equation}
@@ -187,7 +231,7 @@ We describe this noise using a stochastic transition function.
 \end{remark}
 
 \begin{example} 
-    \cite*{attr} We calculate
+    \label{ex:pushforward}\cite*{attr} We calculate
 
     \begin{equation}
         (P\mu)(A) = \int \delta_{f(x)} (A)\ d\mu (x) 
@@ -203,58 +247,92 @@ trajectories, and less $\mu$-mass to regions visited less frequently. \\
 
 Our "noisy" approximated system poses the benefit that while deterministic dynamical systems 
 generally support the existence of multiple invariant measures, the stochastic system will 
-(if the transition function has a strictly positive desnity) have a unique invariant measure, 
-as shown in \cite*{lasota}. \\
+(if the transition function has a strictly positive density for each $x \in M$) have a unique 
+invariant measure, as shown in \cite*{lasota}. \\
 
-A fixed point - or eigenmeasure with eigenvalue $1$ - is not the only object of interest 
-when considering the operator $P$. Suppose instead we have a deterministic dynamical system
-and a finite (complex valued) measure with $P \nu = \lambda \nu$ for a $\lambda = -1$. Then, 
-using finiteness and borel measurability, we can find a partition of M in two disjoint subsets 
-$A_1, A_2$ such that $\nu (A_1) = - \nu (A_2)$. In particular, this implies that $f$ maps 
-$A_1$ to $A_2$, and $A_2$ to $A_1$ (since $P^2 \nu = \nu$). This paritition forms a 
-\emph{two-cycle}. \\
+\begin{definition}[Almost Invariant]
+    \cite*{attr}
+    A set $A \subset M$ is called \emph{$\delta$-almost invariant} with respect to $\mu$ if 
+    $\mu (A) \neq 0$ and 
 
-Finally, we set some notation for convenience.
-
-\begin{definition}[Image of a Box Set]
-    For a partition $\mathcal{P}$ of $Q$ into boxes, and a subset 
-    $\mathcal{B} \subset \mathcal{P}$, we will call the \emph{image of $\mathcal{B}$ under f} 
-    the set of boxes which intersect with the image $f(B)$, for at least one 
-    $B \in \mathcal{B}$. More precisely, it is 
-    
     \begin{equation}
-        f (\mathcal{B}) = \left\{
-            R \in \mathcal{P} \quad \vert \quad 
-            f^{-1} (R)\, \cap\, \bigcup\limits_{B \in \mathcal{B}} B \neq \emptyset
-        \right\}.
+        \int_A p(x, A)\ d\mu (x) = \delta \mu (A)
     \end{equation}
 
 \end{definition}
 
-\begin{theorem}[Image of a Box Set]
-    $f(\mathcal{B})$ is the inclusion-minimal cover of $f(\bigcup_{B \in \mathcal{B}} B)$
-    with boxes from $\mathcal{P}$.
-\end{theorem}
-
-\begin{proof}
-    We have the equivalent characterisation
+\begin{example}
+    \cite*{attr}
+    Consider the deterministic case $p(x, \cdot) = \delta_{f(x)}$. Then using the same 
+    calcuation as Ex. \ref{ex:pushforward} we get 
 
     \begin{equation}
-        f(\mathcal{B}) = \left\{
-            R \in \mathcal{P} \quad \vert \quad
-            \exists\ B \in \mathcal{B}\ \text{and}\ x \in B\ :\ f(x) \in R
-        \right\}.
+        \delta = \frac{1}{\mu (A)} \int_A p(x, A)\ d\mu (x) 
+        = \frac{\mu (A \cap f^{-1} (A))}{\mu (A)}. 
     \end{equation}
 
-    Hence if we remove one box $R$ from $f(\mathcal{B})$, then there exists an 
-    $x \in \bigcup_{B \in \mathcal{B}} B$ which maps outside of the created box set.
+\end{example}
 
-\end{proof}
+\begin{theorem}[Hahn-decomposition]
+    \cite*{funcana}
+    Let $(M, \mathcal{A}, \mu)$ be a measure space on $M$, where $\mu$ is any signed 
+    measure. Then there exists $E^+ \in \mathcal{A}$ with 
 
-\begin{figure}[ht]
-    \ctikzfig{boximage}
-    \caption{Image of the simple box set $\mathcal{B} = \left\{ B \right\}$}
-    \label{fig:boximage}
-\end{figure} \newpage
+    \begin{equation}
+        \mu (E \cap E^+) \geq 0, \quad \mu (E \setminus E^+) \leq 0 \quad
+        \text{for all } E \in \mathcal{A}\,.
+    \end{equation}
+
+    In particular $\mu (E^+) \geq 0$ and $\mu (M \setminus E^+) \leq 0$.
+\end{theorem}
+
+A fixed point - or eigenmeasure with eigenvalue $1$ - is not the only object of interest 
+when considering the operator $P$. Suppose instead we have a
+finite (complex valued) measure with $P \nu = \lambda \nu$. Then
+we must have 
+
+\begin{equation}
+    \lambda \nu (M) = P \nu (M) = \int p(x, M)\ d\nu (x) = \int 1\ d\nu (x) = \nu (M).
+\end{equation}
+
+Hence either $\lambda = 1$ or $\nu (M) = 0$. Now assume $\lambda \neq 0$, and that $\nu$ 
+is scaled such that $| \nu |$ is a probability measure. Then by the Hahn decomposition we 
+have two sets $E^+$ and $E^- = M \setminus E^+$ which partition $M$ into positive and 
+negative "regions" of $M$. From $\sigma$-additivity we have
+
+\begin{equation}
+    0 = \nu (M) = \nu (E^+ \cup E^-) = \nu (E^+) + \nu (E^-),
+\end{equation}
+
+hence $\nu (E^+) = - \nu (E^-)$. This means $| \nu | (E^+) = | \nu | (E^-) = \frac{1}{2}$. \\
+
+\begin{theorem}[Almost Invariant Decomposition]
+    \label{thm:almost}
+    \cite*{attr}
+    Suppose $\nu$ is scaled such that $| \nu |$ is a probability measure, and 
+    $\nu (E^+) = \frac{1}{2}$. Then $\nu = | \nu |$ over $E^+$ and 
+
+    \begin{equation}
+        \delta + \sigma = \lambda + 1
+    \end{equation}
+
+    if $E^+$ is $\delta$-almost invariant and $E^- = M \setminus E^+$ is $\sigma$-almost 
+    invariant.
+\end{theorem}
+
+\begin{example}
+    \label{ex:almost}
+    Finally, we can consider the deterministic case with $\lambda \approx -1$. Then the sets 
+    $E^+$ and $E^-$ satisfy
+    
+    \begin{gather}
+        \delta = \nu (E^+ \cap f^{-1} (E^+))\, /\, \nu (E^+)\ \geq 0, \\
+        \sigma = \nu (E^- \cap f^{-1} (E^-))\, /\, \nu (E^-)\ \geq 0, \\
+        \delta + \sigma = \lambda + 1 \approx 0.
+    \end{gather}
+    
+    This implies that nearly all the $\nu$-mass of $E^+$ gets transported to $E^-$, and vice 
+    versa. We call this an \emph{almost invariant two-cycle}.     
+\end{example} 
 
 % -------------------------------------------------------------------------------------- %

@@ -47,11 +47,11 @@ by writing \jlinl{.+}. We can now call the base function \jlinl{in} or its unico
 The above example demonstrates the syntactical simplicity of julia. 
 It should be noted that despite this simplicity, julia can generate highly performant 
 machine code. For further illustration, consider the algorithm for the global unstable 
-manifold (see \autoref{alg:manifold}) implemented in matlab and in julia. The julia 
-code is one third as long, mirrors the pseudocode much more closely, 
-and still runs faster than the matlab code.
+manifold (see \autoref{alg:manifold}) implemented in matlab (\autoref{lst:gum:matlab}) 
+and in julia (\autoref{lst:gum:julia}). The julia code is one third as long, mirrors 
+the pseudocode much more closely, and still runs faster than the matlab code.
 
-\begin{jllisting}[language=matlab, style=jlcodestyle, label=lst:gum:matlab, caption=Unstable manifold algorithm in matlab]
+\begin{jllisting}[float, language=matlab, style=jlcodestyle, label=lst:gum:matlab, caption=Unstable manifold algorithm in matlab]
     function gum(t, f, X, depth)
     dim = t.dim;
     none = 0; ins = 2; expd = 4;             % defining flags
@@ -80,7 +80,7 @@ and still runs faster than the matlab code.
     end
 \end{jllisting}
 
-\begin{jllisting}[language=julia, style=jlcodestyle, label=lst:gum:julia, caption=Unstable manifold algorithm in julia]
+\begin{jllisting}[float, language=julia, style=jlcodestyle, label=lst:gum:julia, caption=Unstable manifold algorithm in julia]
     function unstable_set(F::BoxMap, B::BoxSet)
         B₀ = B
         B₁ = B
@@ -153,6 +153,6 @@ test points may be chosen. This leads to a dilemma: the more accurate we wish ou
 approximation \jlinl{F} to be, the more we need to map very similar test points forward,
 causing a considerable slow down for complicated dynamical systems. However, the process of
 mapping each test point forward is completely independent on other test points. This means 
-we do not need to perform each calculation sequentially; we can \emph{parallelize!}
+we do not need to perform each calculation sequentially; we can \emph{parallelize!} 
 
 % -------------------------------------------------------------------------------------- %
