@@ -81,6 +81,7 @@ in \cite*{simd} as \emph{Single Instruction Multiple Data (SIMD)}. As the name w
 suggest: when a single instruction, eg. \texttt{ADD}, needs to be applied to multiple 
 floating point numbers, then one could pack 4 double precision or 8 single precision 
 floating point numbers into a single \emph{vector} stored into the YMM (vector) register. 
+This ic alled a \emph{gather} operation.
 Two of these vectors can then be passed into port 1 to the AVX floating point 
 arithmetic-logic-unit (\texttt{AVX FP ADD} in \autoref{fig:CPU}), and added all at once. 
 This reduces the execution time from 20 clock cycles (4 double precision add operations at 
@@ -124,18 +125,25 @@ the "packed" space $(\mathbb{R}^4)^3$:
     ]
 \end{jllisting}
 
-So our goal becomes managing memeory careully to (efficiently) convert from one vector of 
-vectors to a vector of packed vectors, and vice versa. To acheive this, it is useful to 
-understand some of how julia objects are stored in memory. \\
-
-
+The packed SIMD vectors can be constructed using the \jlinl{Vec} type from \jlinl{SIMD.jl} 
+\cite*{simd.jl}, a convenience wrapper around julia's base SIMD vector type (which itself 
+is just special tuple). So our goal becomes managing memory careully to (efficiently) 
+convert from one vector of vectors to a vector of packed vectors, and vice versa. \\
 
 A convenient fact about the \jlinl{Tuple} type in julia is that if its elements are 
-primitive "bits" types (that is, they can be represented by a simple set of bits), then 
-the tuple is stroed \emph{contiguously} in memory. For eg. numeric types like 
-\jlinl{Float64}, this means that the exact positions in memory of each element can be 
-deduced from the memory positions of the tuple.
+"bits" types (that is, they can be represented by a string of bits that can be \emph{stack-allocated}), 
+then the tuple is stored \emph{contiguously} in memory. For eg. numeric types like 
+\jlinl{Float32}, this means that the exact positions in memory of each element can be 
+deduced from the memory positions of the tuple. Julia provides the convenience function 
+\jlinl{reinterpret} which changes the type interpretation of a block of memory. \\
 
+\begin{figure}[ht]
+    \ctikzfig{reinterpret}
+    \caption{Illustration of julia's \texttt{reinterpret} function, where each square is 1 byte}
+    \label{fig:reinterpret}
+\end{figure}
+
+Using \jlinl{reinterpret}, we can change the problem to reordering the indices of $x$. 
 Hence consider the vector $i$ of indices of $x$: 
 
 \begin{equation}
@@ -146,5 +154,92 @@ Hence consider the vector $i$ of indices of $x$:
         \underbrace{3n-2,\ 3n-1,\ 3n}_{\text{nth point}}
     \ )
 \end{equation}
+
+We wish to permute $i$ such that each group of four points has its respective elements 
+stored contiguously. Once this is done, we can call \jlinl{reinterpret} again to convert 
+the type representation to a vector of packed tuples. In particular we therefore require 
+that the number of points $n$ is divisible by $4$. 
+
+\begin{equation}
+    S(i) = (\ \underbrace{
+        \underbrace{1,\ 4,\ 7,\ 10,}_{\text{first elements}}\quad 
+        \underbrace{2,\ 5,\ 8,\ 11,}_{\text{second elements}}\quad
+        \underbrace{3,\ 6,\ 9,\ 12,}_{\text{third elements}}\  
+    }_{
+        \text{first packed point}
+    }
+        \ldots,\ 
+        3n-6,\ 3n-3,\ 3n
+    \ )
+\end{equation}
+
+We generalize this permutation $S$ to arbitrary dimension $d$, SIMD vector length $s$ and 
+vector of points $x$ with length $n$ in \autoref{lst:tuple_vgather}. \\
+
+\begin{jllisting}[float, language=julia, style=jlcodestyle, label=lst:tuple_vgather, caption=Conversion function to packed tuples]
+    function tuple_vgather(x::Vector{NTuple{d,T}}, s) where {d,T}
+        # x is a vector of tuples, each of length d and datatype T
+    
+        n = length(x)                                   
+        m = n ÷ s
+        if n != m * s
+            throw(DimensionMismatch("length of input not divisible by simd"))
+        end
+    
+        # Change type interpretation of x's memory
+        vr = reinterpret(T, x)
+    
+        # Initialize the vector of packed tuples
+        vo = Vector{NTuple{d,Vec{s,T}}}(undef, m)
+    
+        # The indices that form the first element of the first packed vector
+        idx = Vec(ntuple( i -> (i-1) * d, s ))
+    
+        # Grab the indices of the first element of the i-th packed vector, 
+        # then jump by d*s to grab the indices of the second element, and so on
+        for i in 1:m
+            vo[i] = ntuple( j -> vr[idx + (i-1) * d * s + j], d )
+        end                                             
+        
+        return vo
+    end
+\end{jllisting}
+
+This function provides the fundamental technique for parallelization on the CPU. We first 
+gather the points, then pass the gathered points to the function $f$. However, we still 
+need to convert the packed mapped points back to single points for use with other 
+functions afterward. This is the inverse of a gather operation, and is called 
+\emph{scatter} (see \autoref{lst:tuple_vscatter}). \\
+
+\begin{jllisting}[float, language=julia, style=jlcodestyle, label=lst:tuple_vscatter, caption=Conversion back to single tuples]
+    function tuple_vscatter(y::Vector{NTuple{d,Vec{s,T}}}) where {s,d,T}
+        # y is a vector of packed tuples, tuples of SIMD Vecs
+
+        # Initialize the unpacked vector
+        vo = Vector{NTuple{d,T}}(undef, s * length(y))
+
+        # Create a view of vo which is made of individual numbers of type T 
+        vr = reinterpret(T, vo)
+
+        # The indices that form the first element of the first packed vector
+        idx = Vec(ntuple( i -> d * (i-1), s ))
+
+        # set the values of vr as the permuted values of y
+        for i in 1:d, j in 1:length(vi)
+            vr[idx + (j-1) * d * s + i] = y[i + (j-1) * d]
+        end
+
+        return vo
+    end
+\end{jllisting}
+
+It is important to note that not all elementary instructions have SIMD equivalents. Hence 
+some more complicated functions cannot be parallelized in this way. 
+
+% -------------------------------------------------------------------------------------- %
+
+\subsection{Results}
+
+
 
 % -------------------------------------------------------------------------------------- %

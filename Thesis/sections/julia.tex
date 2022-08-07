@@ -27,7 +27,7 @@ A natural question to ask is whether a vector, say \jlinl{x = [0.5, 0.6]}, lies 
 
 \begin{jllisting}[language=julia, style=jlcodestyle]
     function Base.in(x::Vector, b::2dBox)
-        b.center .- b.radius .≤ x .≤ b.center .+ b.radius
+        all( b.center .- b.radius .≤ x .≤ b.center .+ b.radius )
     end
 \end{jllisting}
 
@@ -153,6 +153,6 @@ test points may be chosen. This leads to a dilemma: the more accurate we wish ou
 approximation \jlinl{F} to be, the more we need to map very similar test points forward,
 causing a considerable slow down for complicated dynamical systems. However, the process of
 mapping each test point forward is completely independent on other test points. This means 
-we do not need to perform each calculation sequentially; we can \emph{parallelize!} 
+we do not need to perform each calculation sequentially; we can \emph{parallelize}. 
 
 % -------------------------------------------------------------------------------------- %
