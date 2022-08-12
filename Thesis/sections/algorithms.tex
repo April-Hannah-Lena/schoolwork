@@ -167,7 +167,7 @@ We can equivalently characterize this set as follows:
 \end{proposition}
 
 \begin{proof}
-    Consider now a cycle in $G$. Then by construction, for each edge $(B_i, B_{i+1})$ in the 
+    Consider a cycle in $G$. Then by construction, for each edge $(B_i, B_{i+1})$ in the 
     cycle we can find a point $x_i \in B_i$ which gets mapped to $B_{i+1}$. Doing this for all
     edges we get a set $\left\{ x_0,\ x_1,\ \ldots,\ x_{n-1} \right\}$ which satisfies 
     $d(x_{i\, \text{mod}\, n},\ x_{i+1\, \text{mod}\, n}) \leq \bar{d}$, ie a 
@@ -256,7 +256,7 @@ test points in $B_i$, and set $P_{ij}$ as the fraction of test points which land
         \item Line~\ref{alg:measure:fix} is acheived using the Fortran library ARPACK \cite*{ARPACK}, 
         which has been wrapped in julia by the creators of Arpack.jl \cite*{Arpack.jl}. Recently, the 
         underlying algorithm (known as implicitly restarted Arnoldi method) has been 
-        implemented in pure julia under the package name ArnoldiMethod.jl \cite*{ArnoldiMethod.jl}.
+        implemented in pure julia under the package name ArnoldiMethod.jl \cite*{ArnoldiMethod.jl}. \\
     \end{itemize}
 \end{remark}
 
