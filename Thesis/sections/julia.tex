@@ -128,7 +128,15 @@ Instead of keeping track of positions for each individual box, we use integer in
 for an equidistant \emph{box grid} and only store the dimensions of the grid using 
 the attribute \jlinl{dims}. The attributes \jlinl{left, scale, dimsprod} are used to 
 quickly calculate box indices from a given point (see \jlinl{point_to_key, key_to_box} 
-in \texttt{GAIO.jl}).\\
+in \texttt{GAIO.jl}). We further use the index structure to our advantage when storing 
+box sets $\mathcal{B}$, only storing sets of indices corresponding to a partition:
+
+\begin{jllisting}[language=julia, style=jlcodestyle]
+    struct BoxSet{B,P<:AbstractBoxPartition{B},S<:AbstractSet} <: AbstractSet{B}
+        partition::P
+        set::S
+    end
+\end{jllisting}
 
 Finally, we need a way to convert a map $f$ defined on $Q$ to a map \jlinl{F} defined on 
 boxes of a \jlinl{BoxPartition}:
@@ -145,7 +153,19 @@ boxes of a \jlinl{BoxPartition}:
 
 When a \jlinl{SampledBoxMap} is initialized, we require a function to calculate test 
 points that are mapped by the given function $f$. This is \jlinl{domain_points}. These test 
-points are then mapped forward by $f$, and the boxes which are hit become the image set.\\
+points are then mapped forward by $f$, and the boxes which are hit become the image set.
+More precisely, mapping a box set is done in two main steps within GAIO (see 
+\autoref{lst:boxmap}):
+
+\begin{enumerate}
+    \item Test points within the box are generated (or retrieved) for the specified box 
+    using \jlinl{domain_points(box_center, box_radius)}. These test points are mapped 
+    forward by the given function $f$.
+    \item For each mapped test point \jlinl{fp}, an optional set of "perturbations" are 
+    generated using \jlinl{image_points(fp, box_radius)}. For each of the perturbed points, 
+    the index of the box within the \jlinl{BoxPartition} containing this point is calculated. 
+    This index gets added to the image set. \\
+\end{enumerate}
 
 Tha \jlinl{acceleration} attribute is what we will concern ourselves with for the remainder 
 of the present paper. Naturally, if an increase in accuracy is required, a larger set of 

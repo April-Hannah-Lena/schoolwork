@@ -35,7 +35,7 @@ A processor microarchitecture can be further split to 3 components:
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.7\textwidth]{CPU_microarchitecture.pdf}
-    \caption{\cite*{solvercomp} CPU microarchitecture}
+    \caption{CPU microarchitecture (figure inspiration \cite*{solvercomp, uops.info})}
     \label{fig:CPU}
 \end{figure}
 
@@ -233,8 +233,14 @@ functions afterward. This is the inverse of a gather operation, and is called
     end
 \end{jllisting}
 
+We now have the tool set to accelerate the function \jlinl{map_boxes} using SIMD. For 
+the implementation, see \autoref{lst:boxmap_cpu}. \\
+
 It is important to note that not all elementary instructions have SIMD equivalents. Hence 
-some more complicated functions cannot be parallelized in this way. 
+some more complicated functions cannot be parallelized in this way. Since GAIO.jl only 
+controls test points, box partitions, etc., \emph{
+the efficient implementation of the function $f$ is solely up to the user
+}.
 
 % -------------------------------------------------------------------------------------- %
 
