@@ -7,6 +7,13 @@ default(
 )
 #Plots.scalefontsizes(1.3)
 
+function linreg(xs, ys)
+    X = sum(xs) / length(xs)
+    Y = sum(ys) / length(ys)
+    m = sum((xs .- X) .* (ys .- Y)) / sum((xs .- X) .^ 2)
+    b = Y - m * X
+    return m, b
+end
 
 types  = ["nothing", "cpu", "gpu"]
 steps  = ceil.(Int, 10 .^ (1.0:3.0))

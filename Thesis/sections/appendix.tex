@@ -2,7 +2,78 @@
 
 \section{Appendix}
 
-\begin{jllisting}[language=julia, style=jlcodestyle, label=lst:boxmap, caption=Function to calculate $f(\mathcal{B})$]
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{| c | c c c |}
+        \hline
+        Number of Points  &  Time, $k=10$  & Time, $k=100$  &  Time, $k=1000$ \\
+        \hline
+        40  &  0.020134   &    0.16445     &     1.62278 \\
+        64  &  0.0326548  &    0.2653      &     2.60109 \\
+       104  &  0.059709   &    0.455421    &     4.50348 \\ 
+       160  &  0.0892529  &    0.71049     &     6.76705 \\
+       256  &  0.137585   &    1.20524     &    11.8306 \\
+       400  &  0.217655   &    1.88588     &    18.6102 \\
+       636  &  0.351438   &    3.09114     &    29.8942 \\
+      1008  &  0.55545    &    4.9555      &    47.9885 \\
+      1596  &  0.888532   &    7.75978     &    76.2201 \\
+      2524  &  1.39837    &   12.4615      &   121.395 \\
+      4000  &  2.22419    &   19.7415      &   193.073 \\
+      \hline
+    \end{tabular}
+    \caption{Results using no acceleration}
+    \label{tb:nothing}
+\end{table}
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{| c | c c c |}
+        \hline
+        Number of Points & Time, $k=10$ &  Time, $k=100$ &   Time, $k=1000$ \\
+        \hline
+        40  &  0.0201105   &   0.0694606    &    0.761066 \\
+        64  &  0.0233355   &   0.136251     &    1.24381 \\
+       104  &  0.034471    &   0.224639     &    2.3031 \\
+       160  &  0.0525481   &   0.356561     &    3.62152 \\
+       256  &  0.0846066   &   0.606809     &    6.04962 \\
+       400  &  0.131712    &   0.962795     &    9.5455 \\
+       636  &  0.211706    &   1.55601      &   16.3179 \\
+      1008  &  0.341492    &   2.52285      &   27.9455 \\
+      1596  &  0.540294    &   4.06358      &   43.3757 \\
+      2524  &  0.866405    &   6.49313      &   68.151 \\
+      4000  &  1.38411     &  10.5114       &  108.385 \\
+      \hline
+    \end{tabular}
+    \caption{Results using CPU acceleration}
+    \label{tb:cpu}
+\end{table}
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{| c | c c c |}
+        \hline
+        Number of Points & Time, $k=10$ & Time, $k=100$ & Time, $k=1000$ \\
+        \hline
+        40  &  0.0360844   &  0.0375707    &  0.0607846 \\
+        64  &  0.125934    &  0.0353227    &  0.0780206 \\
+       104  &  0.0795413   &  0.108104     &  0.125333 \\
+       160  &  0.135748    &  0.147764     &  0.207934 \\
+       256  &  0.185914    &  0.196439     &  0.300255 \\
+       400  &  0.476413    &  0.464716     &  0.47896 \\
+       636  &  0.714487    &  0.69321      &  0.863987 \\ 
+      1008  &  0.774053    &  0.80273      &  1.14469 \\ 
+      1596  &  1.2813      &  1.32692      &  1.8528 \\
+      2524  &  2.05627     &  2.17883      &  3.10034 \\
+      4000  &  3.16808     &  3.54294      &  4.86421 \\
+      \hline
+    \end{tabular}
+    \caption{Results using GPU acceleration}
+    \label{tb:gpu}
+\end{table}
+
+\clearpage
+
+\begin{jllisting}[float, floatplacement=hb!, language=julia, style=jlcodestyle, label=lst:boxmap, caption=Function to calculate $f(\mathcal{B})$]
     function map_boxes(g::SampledBoxMap, source::BoxSet)
         P = source.partition
 
@@ -10,25 +81,25 @@
         @floop for box in source
             c, r = box.center, box.radius
             domain_points = g.domain_points(c, r)
-
+            
             # Map each test point
             for p in domain_points
-                fp = g.map(p)
-                hitbox = point_to_box(P, fp)
+            fp = g.map(p)
+            hitbox = point_to_box(P, fp)
 
-                # Skip to next iteration if `fp` lands outside `P`
-                isnothing(hitbox) && continue
+            # Skip to next iteration if `fp` lands outside `P`
+            isnothing(hitbox) && continue
 
                 # Add perturbations to fp
                 r = hitbox.radius
                 image_points = g.image_points(c, r)
                 for ip in image_points
-                    hit = point_to_key(P, ip)
-                    isnothing(hit) && continue
-
-                    # Use @reduce syntax to initialize an empty
-                    # key set and add hits during iteration
-                    @reduce(image = union!(Set{keytype(P)}(), hit))
+                hit = point_to_key(P, ip)
+                isnothing(hit) && continue
+                
+                # Use @reduce syntax to initialize an empty
+                # key set and add hits during iteration
+                @reduce(image = union!(Set{keytype(P)}(), hit))
                 end
             end
         end
@@ -36,9 +107,9 @@
     end 
 \end{jllisting}
 
-\begin{jllisting}[language=julia, style=jlcodestyle, label=lst:boxmap_cpu, caption=Function to calculate $f(\mathcal{B})$ with CPU acceleration]
+\begin{jllisting}[float, floatplacement=hb!, language=julia, style=jlcodestyle, label=lst:boxmap_cpu, caption=Function to calculate $f(\mathcal{B})$ with CPU acceleration]
     function map_boxes(
-            g::SampledBoxMap{C,N}, source::BoxSet
+        g::SampledBoxMap{C,N}, source::BoxSet
         ) where {simd,C<:BoxMapCPUCache{simd},N}
         
         # Preallocated temporary storage objects.
@@ -48,16 +119,16 @@
         
         P = source.partition
         @floop for box in source
-
-            # Grab a separate section of the
-            # temporary storage for each thread
-            tid  = (threadid() - 1) * simd
-            idx  = idx_base + tid * N
-            mapped_points = @view temp_points[tid+1:tid+simd]
-
-            domain_points = g.domain_points(box.center, box.radius)
-            for p in domain_points
-                fp = g.map(p)
+        
+        # Grab a separate section of the
+        # temporary storage for each thread
+        tid  = (threadid() - 1) * simd
+        idx  = idx_base + tid * N
+        mapped_points = @view temp_points[tid+1:tid+simd]
+        
+        domain_points = g.domain_points(box.center, box.radius)
+        for p in domain_points
+            fp = g.map(p)
 
                 # Scatter packed `fp` into temporary storage
                 tuple_vscatter!(temp_vec, fp, idx)
@@ -68,8 +139,8 @@
                     isnothing(hitbox) && continue
                     image_points = g.image_points(q,  hitbox.radius)
                     for ip in image_points
-                        hit = point_to_key(P, ip)
-                        isnothing(hit) && continue
+                    hit = point_to_key(P, ip)
+                    isnothing(hit) && continue
                         @reduce(image = union!(Set{keytype(P)}(), hit))
                     end
                 end
@@ -79,7 +150,7 @@
     end
 \end{jllisting}
 
-\begin{jllisting}[language=julia, style=jlcodestyle, label=lst:gpu_kernel, caption=GPU kernel to calculate $f(\mathcal{B})$]
+\begin{jllisting}[float, floatplacement=hb!, language=julia, style=jlcodestyle, label=lst:gpu_kernel, caption=GPU kernel to calculate $f(\mathcal{B})$]
     function map_boxes_kernel(
             f,          # Function
             keys,       # Keys to be mapped
@@ -116,7 +187,7 @@
     end
 \end{jllisting}
 
-\begin{jllisting}[language=julia, style=jlcodestyle, label=lst:boxmap_gpu, caption=Function to calculate $f(\mathcal{B})$ with GPU acceleration]
+\begin{jllisting}[float, floatplacement=hb!, language=julia, style=jlcodestyle, label=lst:boxmap_gpu, caption=Function to calculate $f(\mathcal{B})$ with GPU acceleration]
     function map_boxes(
             g::SampledBoxMap{C}, source::BoxSet
         ) where {SZ,C<:BoxMapGPUCache{SZ}}
@@ -159,5 +230,66 @@
         return BoxSet(P, image)
     end
 \end{jllisting}
+
+\clearpage
+
+\begin{table}[ht]
+    \centering
+    {\footnotesize
+        \begin{tabular}{| c | c c c |}
+            \hline
+            Number of Steps  & Time, no accel.  & Time, CPU accel. &  Time, GPU accel. \\
+            \hline
+            4 & 0.10733  & 0.0774621 & 0.296883 \\
+            6 & 0.143625 & 0.0952406 & 0.364458 \\
+            7 & 0.159921 & 0.103962  & 0.289842 \\
+            8 & 0.182721 & 0.111939  & 0.294995 \\
+            10 & 0.217213 & 0.130934  & 0.35477 \\
+            13 & 0.278128 & 0.157542  & 0.462502 \\
+            16 & 0.335391 & 0.183797  & 0.463087 \\ 
+            20 & 0.40894  & 0.224452  & 0.463877 \\ 
+            26 & 0.522386 & 0.279074  & 0.466465 \\
+            32 & 0.619818 & 0.32773  & 0.311194 \\
+            40 & 0.783703 & 0.400696 & 0.369541 \\
+            51 & 0.993318 & 0.511517 & 0.365205 \\
+            64 & 1.26785  & 0.608839 & 0.400862 \\
+            80 & 1.554    & 0.780857 & 0.475648 \\
+        100 & 1.91483  & 0.979949 & 0.336051 \\
+        126 & 2.4347   & 1.19774  & 0.340938 \\
+        159 & 3.05702  & 1.52709  & 0.335395 \\
+        200 & 3.77057  & 1.88865  & 0.39955 \\
+        252 & 4.79369  & 2.36452  & 0.436983 \\
+        317 &  5.9642  &  2.97117 & 0.457834 \\
+        399 &  7.50092 &  3.72863 & 0.432015 \\
+        502 &  9.30319 &  4.76645 & 0.459764 \\ 
+        631 & 11.6748  &  6.0041  & 0.446623 \\
+        795 & 14.5952  &  7.5396  & 0.409987 \\ 
+        1000 & 18.3667  &  9.63419 & 0.439264 \\
+        1259 & 23.3917  & 11.9185  & 0.598132 \\ 
+        1585 & 29.741   & 16.0015  & 0.62983 \\
+        1996 & 36.8385  & 21.5996  & 0.715319 \\
+        2512 & 47.0677  & 27.0529  & 0.669515 \\
+        3163 &  58.3913 &  33.1406 & 0.922343 \\
+        3982 &  74.9216 &  41.7995 & 0.873487 \\
+        5012 &  92.3616 &  52.2589 & 1.24426 \\ 
+        6310 & 116.477  &  64.3065 & 1.218 \\
+        7944 & 145.294  &  82.0594 & 1.44954 \\
+        10000 & 183.667  & 103.063  & 1.75376 \\
+        12590 & 227.309  & 128.813  & 2.17254 \\
+        15849 & 289.176  & 164.242  & 2.73257 \\
+        19953 & 365.261  & 202.171  & 3.32561 \\
+        25119 & 463.006  & 257.573  & 4.1719 \\
+        31623 &  578.231 &  320.201 &  4.98578 \\
+        39811 &  778.834 &  427.457 &  6.23462 \\
+        50119 &  980.618 &  545.352 &  7.76651 \\
+        63096 & 1237.09  &  678.236 &  9.75043 \\
+        79433 & 1560.56  &  857.923 & 11.9667 \\
+        100000 & 1970.96  & 1080.9   & 15.0591 \\
+        \hline
+        \end{tabular}
+    }
+    \caption{Detailed results comparing map complexity and execution time}
+    \label{tb:steps}
+\end{table}
 
 % -------------------------------------------------------------------------------------- %

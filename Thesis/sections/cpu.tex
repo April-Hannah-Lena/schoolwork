@@ -85,7 +85,7 @@ This ic alled a \emph{gather} operation.
 Two of these vectors can then be passed into port 1 to the AVX floating point 
 arithmetic-logic-unit (\texttt{AVX FP ADD} in \autoref{fig:CPU}), and added all at once. 
 This reduces the execution time from 20 clock cycles (4 double precision add operations at 
-5 clock cycles each) to just 5 clock cycles (1 packed add operation at 5 clock cycles). \\
+5 clock cycles each) to just 8 clock cycles (1 packed add operation at 8 clock cycles). \\
 
 The majority of modern compilers can automatically convert simple loops and vectorized 
 functions into SIMD instructions. This however is not gauranteed, as the compiler neeeds 
