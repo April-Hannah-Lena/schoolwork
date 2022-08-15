@@ -1,0 +1,28 @@
+% -------------------------------------------------------------------------------------- %
+
+\section{Results}
+
+The aforementioned parallelization techinques were tested using the Lorenz system 
+\cite*{lorenz}
+
+\begin{gather}
+    \dot{x} = \sigma (y - x), \\
+    \dot{y} = x (\rho - z) - y, \\
+    \dot{z} = xy - \beta z,
+\end{gather}
+
+with the parameters $\sigma = 10,\ \rho = 28,\ \beta = 2 / 5$. The function $f_k$ was 
+defined as performing $k$ steps of the classic fourth order Runge Kutta scheme with step 
+size $1 / 10 k$. Further, the \jlinl{SampledBoxMap} \jlinl{Fₖᴺ} was generated to use $N$
+Monte-Carlo test points to map boxes in a $128 \times 128 \times 128$-element equidisdant 
+\jlinl{BoxPartition} over the compact domain 
+$Q = [-30,30] \times [-30,30] \times [-5,55]$. \\
+
+One trial of the test was calculating the unstable set for the equilibrium point 
+$(x, y, z) = (\sqrt{\beta (\rho - 1)}, \sqrt{\beta (\rho - 1)}, \rho - 1)$ using 
+\autoref{alg:manifold} (see also \autoref{lst:gum:julia}). The test was performed on a 
+Dell G15 5510 laptop with Intel i7-10870H CPU and Nividia GeForce RTX 3060 laptop GPU, 
+running Ubuntu 22.04 LTS. A depiction of the unstable set can be found in ???, result 
+graphs can be found in ???, and code for the tests can be found in \cite*{benchmarks}. 
+
+% -------------------------------------------------------------------------------------- %
