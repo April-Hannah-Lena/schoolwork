@@ -176,7 +176,7 @@ that the number of points $n$ is divisible by $4$.
 We generalize this permutation $S$ to arbitrary dimension $d$, SIMD vector length $s$ and 
 vector of points $x$ with length $n$ in \autoref{lst:tuple_vgather}. \\
 
-\begin{jllisting}[float, language=julia, style=jlcodestyle, label=lst:tuple_vgather, caption=Conversion function to packed tuples]
+\begin{jllisting}[float, floatplacement=ht!, language=julia, style=jlcodestyle, label=lst:tuple_vgather, caption=Conversion function to packed tuples]
     function tuple_vgather(x::Vector{NTuple{d,T}}, s) where {d,T}
         # x is a vector of tuples, each of length d and datatype T
     
@@ -211,7 +211,7 @@ need to convert the packed mapped points back to single points for use with othe
 functions afterward. This is the inverse of a gather operation, and is called 
 \emph{scatter} (see \autoref{lst:tuple_vscatter}). \\
 
-\begin{jllisting}[float, language=julia, style=jlcodestyle, label=lst:tuple_vscatter, caption=Conversion back to single tuples]
+\begin{jllisting}[float, floatplacement=ht!, language=julia, style=jlcodestyle, label=lst:tuple_vscatter, caption=Conversion back to single tuples]
     function tuple_vscatter(y::Vector{NTuple{d,Vec{s,T}}}) where {s,d,T}
         # y is a vector of packed tuples, tuples of SIMD Vecs
 
@@ -239,7 +239,7 @@ the implementation, see \autoref{lst:boxmap_cpu}. \\
 It is important to note that not all elementary instructions have SIMD equivalents. Hence 
 some more complicated functions cannot be parallelized in this way. Since GAIO.jl only 
 controls test points, box partitions, etc., \emph{
-the efficient implementation of the function $f$ is solely up to the user
-}.
+the efficient implementation of the function $f$ is solely up to the user.
+}
 
 % -------------------------------------------------------------------------------------- %

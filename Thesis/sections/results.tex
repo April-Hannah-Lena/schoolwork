@@ -12,7 +12,8 @@ The aforementioned parallelization techinques were tested using the Lorenz syste
 \end{gather}
 
 with the parameters $\sigma = 10,\ \rho = 28,\ \beta = 2 / 5$. The function $f_k$ was 
-defined as performing $k$ steps of the classic fourth order Runge Kutta scheme with step 
+defined as performing $k$ steps of the classic fourth order Runge Kutta scheme 
+\cite*{Runge, Kutta} with step 
 size $1 / 10 k$. Further, the \jlinl{SampledBoxMap} \jlinl{Fₖᴺ} was generated to use $N$
 Monte-Carlo test points to map boxes in a $128 \times 128 \times 128$-element equidisdant 
 \jlinl{BoxPartition} over the compact domain 
@@ -31,7 +32,7 @@ running Ubuntu 22.04 LTS. A depiction of the unstable set can be found in \autor
 result graphs can be found in \autoref{fig:times}, and code for the tests can be found 
 in \cite*{benchmarks}. \\
 
-\begin{figure}
+\begin{figure}[ht!]
     \centering
     \makebox[\linewidth][c]{
         \begin{subfigure}[t]{0.6\textwidth}
@@ -59,7 +60,7 @@ in \cite*{benchmarks}. \\
     \label{fig:lorenz}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[ht!]
     \centering
     \begin{subfigure}[t]{0.45\textwidth}
         \includegraphics[width=\textwidth]{times_simple.pdf}
