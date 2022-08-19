@@ -5,9 +5,9 @@
 \subsection{A (Very) Brief Introduction to the Julia Language}
 
 The julia language GitHub page decribes julia as "a high-level, high-performance dynamic 
-language for technical computing" \cite*{juliarepo}. Its creators come from Matlab, Python,
-Lisp among others, and they desired a langauge as syntactically simple as Python, as 
-powerful for linear algebra as Matlab, and as fast as C \cite*{julia}. To achieve this,
+language for technical computing" \cite*{juliarepo}. Its creators come from matlab, python,
+lisp among others, and they desired a langauge as syntactically simple as python, as 
+powerful for linear algebra as matlab, and as fast as C \cite*{julia}. To achieve this,
 julia is just-in-time compiled using LLVM to generate native machine code. Further, "julia uses 
 multiple dispatch as a paradigm, which makes it easy to express many object-oriented and
 functional programming patterns" \cite*{juliamain}. As a brief example of multiple dispatch,
@@ -23,7 +23,7 @@ consider a simple user defined type \jlinl{2dBox} (similar to the implementation
 
 Then we can create a \jlinl{2dBox} by calling \jlinl{b = 2dBox((0.0, 0.0), (1.0, 1.0))}. 
 A natural question to ask is whether a vector, say \jlinl{x = [0.5, 0.6]}, lies within 
-\jlinl{b}. To do this, we can \emph{overload} the function \jlinl{in} from julia base:
+\jlinl{b}. To do this, we can \emph{overload} the function \jlinl{in} from julia Base:
 
 \begin{jllisting}[language=julia, style=jlcodestyle]
     function Base.in(x::Vector, b::2dBox)
@@ -111,8 +111,9 @@ The package is built off of three base structures \jlinl{Box, BoxPartition, BoxM
 \end{jllisting}
 
 A Box is a half-open generalized rectangle, that is, a product of half-open intervals
-$[a_1, b_1) \times [a_2, b_2) \times \ldots \times [a_d, b_d)$. We now need to represent 
-a partition $\mathcal{P}$ of boxes:
+$[c_1 - r_1,\ c_1 + r_1) \times \ldots \times [c_d - r_d,\ c_d + r_d)$. We now 
+need to represent a partition $\mathcal{P}$ of boxes. GAIO.jl offers two way to do this, 
+we show only the simpler version: 
 
 \begin{jllisting}[language=julia, style=jlcodestyle]
     struct BoxPartition{N,T,I<:Integer} <: AbstractBoxPartition{Box{N,T}}
@@ -141,8 +142,9 @@ box sets $\mathcal{B}$, only storing sets of indices corresponding to a partitio
 Finally, we need a way to convert a map $f$ defined on $Q$ to a map \jlinl{F} defined on 
 boxes of a \jlinl{BoxPartition}:
 
+\begin{minipage}{\linewidth}
 \begin{jllisting}[language=julia, style=jlcodestyle]
-    struct SampledBoxMap{A,N,T,F,D,I} <: BoxMap
+    struct SampledBoxMap{A,N,T,F,D,I}
         map::F
         domain::Box{N,T}
         domain_points::D
@@ -150,15 +152,16 @@ boxes of a \jlinl{BoxPartition}:
         acceleration::A
     end
 \end{jllisting}
+\end{minipage}
 
 When a \jlinl{SampledBoxMap} is initialized, we require a function to calculate test 
-points that are mapped by the given function $f$. This is \jlinl{domain_points}. These test 
+points that are mapped by the given function $f$. This function is \jlinl{domain_points}. These test 
 points are then mapped forward by $f$, and the boxes which are hit become the image set.
 More precisely, mapping a box set is done in two main steps within GAIO (see 
 \autoref{lst:boxmap}):
 
 \begin{enumerate}
-    \item Test points within the box are generated (or retrieved) for the specified box 
+    \item Test points within the box are generated (or retrieved) 
     using \jlinl{domain_points(box_center, box_radius)}. These test points are mapped 
     forward by the given function $f$.
     \item For each mapped test point \jlinl{fp}, an optional set of "perturbations" are 

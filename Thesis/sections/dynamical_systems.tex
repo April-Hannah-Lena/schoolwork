@@ -21,11 +21,11 @@ smaller boxes, examine the dynamics of the subdivided boxes, and refine the box 
 include only the boxes we are interested in. \\
 
 The algorithms described in the present paper have been previously implemented in the 
-statistical programming language \texttt{matlab} \cite*{matlab}, but is now being fully refactored and
-reimplemented in the open-source, composable language \texttt{julia} \cite*{julia}. The reason for this 
+statistical programming language matlab \cite*{matlab}, but is now being fully refactored and
+reimplemented in the open-source, composable language julia \cite*{julia}. The reason for this 
 change is julia's high-level abstraction capabilities, just-in-time compilation, and 
 in-built set-theoretical functions, which create short, elegant code which is nonetheless 
-more performant. Source code for \texttt{GAIO} in \texttt{matlab} and \texttt{julia} and be 
+more performant. Source code for GAIO in matlab and julia and be 
 found in \cite*{oldGAIO} and \cite*{GAIO}, respectively.
 
 \subsection{Definitions}
@@ -33,8 +33,8 @@ found in \cite*{oldGAIO} and \cite*{GAIO}, respectively.
 This section should be treated as an index of definitions, to be referred back to as 
 necessary during reading. In the following, we assume $M$ is a compact or a smooth manifold 
 in $\mathbb{R}^d$, endowed with a metric $d$, and the 
-map $f: M \to M$ is at least $\mathcal{C}^0$. We further assume that $P$ is a partition 
-of a compact set $Q \subset M$ of (up to a null set) disjoint boxes, and 
+map $f: M \to M$ is at least a homeomorphism. We further assume that $P$ is a partition 
+of a compact set $Q \subset M$ into (up to a null set) disjoint boxes, and 
 $\mathcal{B} \subset \mathcal{P}$ is a subset of boxes. Our setting is a 
 \emph{discrete, autonomous dynamical system}, that is, a system of the form:
 
@@ -110,7 +110,7 @@ We continue with a set of topological definitions of sets we wish to approximate
 \end{definition}
 
 The basin of attraction acts in some sense as the set for which all points eventually arrive
-in $A$. Since the map $f$ is smooth, then the closure $\bar{A}$ is invariant too. With continuity 
+in $A$. If the map $f$ is smooth, then the closure $\bar{A}$ is invariant too. With continuity 
 it becomes clear that
 
 \begin{equation}
@@ -149,17 +149,21 @@ sets within the system. In particular, it contains local unstable manifolds.
     \cite*{dynbook} Let $n\in \mathbb{N}$. A set 
     $\left\{ x_k\ \vert\ k \in \left\{ 0,\ \dotsc ,\ n \right\} \right\}$ 
     is called \emph{$\epsilon$-pseudoperiodic} if for any
-    $k, \quad d(x_{k\, \text{mod}\, n},\ x_{k + 1\, \text{mod}\, n}) < \epsilon$.
+    $k,\,\ d(x_{k\, \text{mod}\, n},\ x_{k + 1\, \text{mod}\, n}) < \epsilon$.
 \end{definition}
 
-As the name suggests, an $\epsilon$-pseudoperiodic orbit is "almost" periodic inthe sense 
+As the name suggests, an $\epsilon$-pseudoperiodic orbit is "almost" periodic in the sense 
 that it represents a "small" perturbation of a theoretically periodic orbit. In practice,
-such direct orbits may not be known, but it will preresent a naturally useful definition
-in our approximations.
+such pseudoperiodic orbits will not be known a-priori, but it will represent a naturally 
+useful definition in our approximations.
 
 \begin{figure}[ht]
     \ctikzfig{pseudoperiodic}
-    \caption{\cite*{dynbook} A $0.1$-pseudoperiodic orbit of the map $f(x,y) = (y,\ 0.05\, (1 - x^2)\, y - x)$}
+    \caption{
+        \cite*{dynbook} A $0.1$-pseudoperiodic orbit of the map $f(x,y) = (y,\ 0.05\, (1 - x^2)\, y - x)$. 
+        One can verify that $f(2, 0) = (0.1, -2),$ $f(0, -2) = (-2, -0.1),$ 
+        $f(-2, 0) = (-0.1, 2),$ $f(0, 2) = (2, 0.1).$
+    }
     \label{fig:pseudoperiodic}
 \end{figure}
 
@@ -231,14 +235,13 @@ We describe this noise using a stochastic transition function.
 \end{remark}
 
 \begin{example} 
-    \label{ex:pushforward}\cite*{attr} We calculate
+    \label{ex:pushforward}\cite*{attr} We calculate using the function from Ex. \ref{ex:q}
 
     \begin{equation}
         (P\mu)(A) = \int \delta_{f(x)} (A)\ d\mu (x) 
         = \int \chi_A (f(x))\ d\mu (x) = \mu \circ f^{-1}(A).
     \end{equation}
 
-    In this case $P$ simply becomes the \emph{pushforward operator}.
 \end{example}
 
 An invariant measure can be used to understand the global behavior of a dynamical 
@@ -256,14 +259,14 @@ invariant measure, as shown in \cite*{lasota}. \\
     $\mu (A) \neq 0$ and 
 
     \begin{equation}
-        \int_A p(x, A)\ d\mu (x) = \delta \mu (A)
+        \int_A p(x, A)\ d\mu (x) = \delta \mu (A). 
     \end{equation}
 
 \end{definition}
 
 \begin{example}
     \cite*{attr}
-    Consider the deterministic case $p(x, \cdot) = \delta_{f(x)}$. Then using the same 
+    Consider again the deterministic case $p(x, \cdot) = \delta_{f(x)}$. Then using the same 
     calcuation as Ex. \ref{ex:pushforward} we get 
 
     \begin{equation}
@@ -287,8 +290,8 @@ invariant measure, as shown in \cite*{lasota}. \\
 \end{theorem}
 
 A fixed point - or eigenmeasure with eigenvalue $1$ - is not the only object of interest 
-when considering the operator $P$. Suppose instead we have a
-finite (complex valued) measure with $P \nu = \lambda \nu$. Then
+when considering the operator $P$. Suppose we have a
+finite (potentially complex valued) measure with $P \nu = \lambda \nu$. Then
 we must have 
 
 \begin{equation}
@@ -301,10 +304,10 @@ have two sets $E^+$ and $E^- = M \setminus E^+$ which partition $M$ into positiv
 negative "regions" of $M$. From $\sigma$-additivity we have
 
 \begin{equation}
-    0 = \nu (M) = \nu (E^+ \cup E^-) = \nu (E^+) + \nu (E^-),
+    0 = \nu (M) = \nu (E^+ \cup E^-) = \nu (E^+) + \nu (E^-). 
 \end{equation}
 
-hence $\nu (E^+) = - \nu (E^-)$. This means $| \nu | (E^+) = | \nu | (E^-) = \frac{1}{2}$. \\
+Hence $\nu (E^+) = - \nu (E^-)$, which means $| \nu | (E^+) = | \nu | (E^-) = \frac{1}{2}$. \\
 
 \begin{theorem}[Almost Invariant Decomposition]
     \label{thm:almost}

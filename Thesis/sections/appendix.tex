@@ -145,8 +145,8 @@
                     isnothing(hitbox) && continue
                     image_points = g.image_points(q,  hitbox.radius)
                     for ip in image_points
-                    hit = point_to_key(P, ip)
-                    isnothing(hit) && continue
+                        hit = point_to_key(P, ip)
+                        isnothing(hit) && continue
                         @reduce(image = union!(Set{keytype(P)}(), hit))
                     end
                 end
@@ -206,6 +206,7 @@
 
         # Normalized test points
         points = g.domain_points(P.domain.center, P.domain.radius)
+        np = length(points)
 
         image = Set{keytype(P)}()
         while !isnothing(keys.nextvalstate)
@@ -213,13 +214,19 @@
 
             # Allocate input/output indices on GPU
             in_keys = CuArray{Int32,1}(collect(Int32, take(keys, stride)))
-            out_keys = CuArray{Int32,1}(undef, length(in_keys) * length(points))
+            nk = length(in_keys)
+            out_keys = CuArray{Int32,1}(undef, np * nk)
 
-            # Launch GPU kernel and wait until task is comlete
-            launch_kernel_then_sync!(
-                map_boxes_kernel!, 
-                g.map, in_keys, points, out_keys, P
-            )
+            # Compile the GPU kernel and calculate occupancy
+            args = (g.map, in_keys, points, out_keys, P)
+            compiled_kernel! = @cuda launch=false map_boxes_kernel!(args...)
+            config  = launch_configuration(compiled_kernel!.fun)
+            threads = min(np * nk, config.threads)
+            blocks  = cld(np * nk, threads)
+
+            # Launch the compiled kernel then wait until the task to complete
+            compiled_kernel!(args...; threads, blocks)
+            CUDA.synchronize()
             
             # Transfer output indices to CPU memory
             out_cpu = Array{Int32,1}(out_keys)

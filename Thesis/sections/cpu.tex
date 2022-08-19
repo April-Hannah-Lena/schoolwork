@@ -5,15 +5,15 @@
 \subsection{CPU Architechture}
 
 When referring to CPU architecture one typically either means 
-\emph{instruction set architecture (ISA)} when referring to a range of CPUs, or the 
+\emph{instruction set architecture (ISA)} referring to a range of CPUs, or the 
 \emph{microarchitechture} of a specific CPU model. The ISA is the blueprint for a set of 
-abstract characteristics such as supported instructions, data types, register count, etc. 
+abstract CPU characteristics such as supported instructions, data types, register count, etc. 
 The microarchitechture is the \emph{implementation} of this blueprint for a CPU. We 
 restrict to the discussion of the microarchitecture for the Intel 3rd gen (Ivy Lake) 
 line of processors, though the level of detail is low enough that the statements will 
 apply to most modern CPUs built on the x86 64-bit ISA. \\
 
-A processor microarchitecture can be further split to 3 components: 
+A processor microarchitecture can be further split to 3 components (see \autoref{fig:CPU}): 
 
 \begin{itemize}
     \item The front end, which consists of instruction cache and instruction fetch / decode 
@@ -22,14 +22,14 @@ A processor microarchitecture can be further split to 3 components:
     \emph{micro-operations, or $\mu$Ops}.
     \item The back end (or execution engine), which includes the reorder buffer, 
     unified scheduler (also called reservation station), and various execution ports. 
-    Since not all instructions are necessarily dependent on one-another, they often be 
+    Since not all instructions are necessarily dependent on one-another, they can often be 
     reordered, or multiple instructions can be executed simultaneously. This is known as 
     \emph{out-of-order execution}. The reorder buffer stores the the \emph{order} of 
     $\mu$Ops until they are retired. The scheduler takes $\mu$Ops and dispatches them to 
     the various ports, each of which is specialized for a subset of instructions. 
     \item The memory system. This includes (typically) three cache levels: L1, L2, and L3.
-    The L1 cache is faster than L2, but has a lower storage capacity. The same holds for 
-    L2 vs L3 cache.
+    The L1 cache is faster than L2, but has a lower storage capacity. Similarly 
+    L2 is faster than L3, but has lower storage capacity. 
 \end{itemize}
 
 \begin{figure}[ht]
@@ -58,9 +58,8 @@ for some $p$. To perform one iteration, the CPU needs to call \texttt{MUL} once 
 \texttt{ADD} once, both of which have latency of roughly 5 clock cycles. Using 
 \texttt{FMA}, this can be performed in one operation, nearly doubling performance. A 
 consequence of this is that code which does not harness FMA instructions can harness at 
-most half of the peak theoretical power of the CPU. \\
-
-In julia, this can be performed with the \jlinl{@muladd} macro from \texttt{MuladdMacro.jl} 
+most half of the peak theoretical power of the CPU. In julia, this can be performed with 
+the \jlinl{@muladd} macro from \texttt{MuladdMacro.jl} 
 \cite*{muladd}, which automatically converts all combinations of multiply and add into 
 calls to the inbuilt \jlinl{muladd} function. \\
 
@@ -79,9 +78,9 @@ Our main technique for parallelization on the CPU is the
 \emph{Advanced Vector eXtension (AVX)}. The philosophy of AVX was initially characterized 
 in \cite*{simd} as \emph{Single Instruction Multiple Data (SIMD)}. As the name would 
 suggest: when a single instruction, eg. \texttt{ADD}, needs to be applied to multiple 
-floating point numbers, then one could pack 4 double precision or 8 single precision 
+floating point numbers, then one can pack 4 double precision or 8 single precision 
 floating point numbers into a single \emph{vector} stored into the YMM (vector) register. 
-This ic alled a \emph{gather} operation.
+This is called a \emph{gather} operation. 
 Two of these vectors can then be passed into port 1 to the AVX floating point 
 arithmetic-logic-unit (\texttt{AVX FP ADD} in \autoref{fig:CPU}), and added all at once. 
 This reduces the execution time from 20 clock cycles (4 double precision add operations at 
@@ -127,7 +126,7 @@ the "packed" space $(\mathbb{R}^4)^3$:
 
 The packed SIMD vectors can be constructed using the \jlinl{Vec} type from \jlinl{SIMD.jl} 
 \cite*{simd.jl}, a convenience wrapper around julia's base SIMD vector type (which itself 
-is just special tuple). So our goal becomes managing memory careully to (efficiently) 
+is just a special tuple). So our goal becomes managing memory careully to  
 convert from one vector of vectors to a vector of packed vectors, and vice versa. \\
 
 A convenient fact about the \jlinl{Tuple} type in julia is that if its elements are 
@@ -143,7 +142,8 @@ deduced from the memory positions of the tuple. Julia provides the convenience f
     \label{fig:reinterpret}
 \end{figure}
 
-Using \jlinl{reinterpret}, we can change the problem to reordering the indices of $x$. 
+Using \jlinl{reinterpret}, we can change the problem of converting to (and from) packed vectors
+to the (simpler) problem of reordering the indices of $x$. 
 Hence consider the vector $i$ of indices of $x$: 
 
 \begin{equation}
@@ -206,10 +206,13 @@ vector of points $x$ with length $n$ in \autoref{lst:tuple_vgather}. \\
 \end{jllisting}
 
 This function provides the fundamental technique for parallelization on the CPU. We first 
-gather the points, then pass the gathered points to the function $f$. However, we still 
-need to convert the packed mapped points back to single points for use with other 
+gather the points, then pass the gathered points to the function $f$. 
+This way, $f$ maps multiple points in parallel. 
+However, we still need to convert the packed mapped points back to single points for use with other 
 functions afterward. This is the inverse of a gather operation, and is called 
-\emph{scatter} (see \autoref{lst:tuple_vscatter}). \\
+\emph{scatter} (see \autoref{lst:tuple_vscatter}). We now have the full tool set 
+to accelerate the function \jlinl{map_boxes} using SIMD. For the implementation, 
+see \autoref{lst:boxmap_cpu}. \\
 
 \begin{jllisting}[float, floatplacement=ht!, language=julia, style=jlcodestyle, label=lst:tuple_vscatter, caption=Conversion back to single tuples]
     function tuple_vscatter(y::Vector{NTuple{d,Vec{s,T}}}) where {s,d,T}
@@ -233,8 +236,7 @@ functions afterward. This is the inverse of a gather operation, and is called
     end
 \end{jllisting}
 
-We now have the tool set to accelerate the function \jlinl{map_boxes} using SIMD. For 
-the implementation, see \autoref{lst:boxmap_cpu}. \\
+
 
 It is important to note that not all elementary instructions have SIMD equivalents. Hence 
 some more complicated functions cannot be parallelized in this way. Since GAIO.jl only 

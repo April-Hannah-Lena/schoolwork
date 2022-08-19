@@ -21,7 +21,7 @@ hierarchy:
 
 \begin{itemize}
     \item A single processing unit is known as a thread. A single consumer-level GPU can 
-    have on the order of tens of thousands of threads (Compare this with the threadcount 
+    have on the order of tens of thousands of threads (Compare this with the thread count 
     of a typical consumer-level CPU of 16 or 32 threads). 
     \item Threads are grouped into warps. Each warp consists of 32 threads and a 
     \emph{warp scheduler}. This is the most granular level of scheduling that a GPU has. 
@@ -44,7 +44,7 @@ hierarchy:
 \end{figure}
 
 This hierarchical structure simplifies the task of handling such a massive number of 
-threads since only one control unit is required per warp, which leaves more space for 
+threads. Since only one control unit is required per warp, this leaves more space for 
 packing additional threads onto the chip. Further, the large instruction register means 
 that each SM can hold many instructions and dispatch them to eligible warps before 
 stalling due to a data request \cite*{solvercomp}. A warp may of course need to access 
@@ -85,7 +85,10 @@ The precise "best" balance between occupancy and registers is highly problem dep
 and there are many other hardware-based factors which affect the true achievable occupancy. 
 This makes optimal GPU performance not always feasible when writing generic code. However, 
 Nvidia provides an official occupancy calculator API which suggests appropriate thread 
-and block counts to approximately maximize occupancy under register size constraints. 
+and block counts to approximately maximize occupancy while attempting to ensure that 
+threads have large enough register availability. The julia package \jlinl{CUDA.jl} 
+\cite*{cuda.jl} provides a wrapper for this API, accessible by calling 
+\jlinl{launch_configuration(cf)} for compiled cuda kernels \jlinl{cf}.
 
 % -------------------------------------------------------------------------------------- %
 
@@ -107,9 +110,9 @@ perform as much of a computation solely on the GPU or CPU. \\
 In order to reduce transfers, a global set of test points is calculated when the 
 \jlinl{SampledBoxMap} is initialized. These points are normalized to the unit cirle w.r.t. 
 $|| \cdot ||_\infty$, that is, the unit cube $[-1,1]^d$. The global test points are 
-transferred only once to the GPU's VRAM at initialization, and then each point $p$ is appropriately rescaled 
-using \jlinl{@muladd p .* r .+ c} where $r$ and $c$ are the box's center and radius, respectively. 
-This way, only the information about the 
+transferred only once to the GPU's VRAM at initialization, and at runtime each point $p$ 
+is appropriately rescaled using \jlinl{@muladd p .* r .+ c} where $r$ and $c$ are the 
+box's center and radius, respectively. This way, only the information about the 
 map $f$, the partition $\mathcal{P}$, and the indices of the boxes to be mapped must be 
 transferred to the GPU at runtime. Each thread calculates one index for the box containing 
 the thread's mapped point, and writes this index to an array. Finally, the array is 
@@ -117,7 +120,7 @@ transferred to the CPU and reduced to become the image set. The implementation o
 kernel is shown in \autoref{lst:gpu_kernel}, and the GPU accelerated \jlinl{map_boxes}
 function in \autoref{lst:boxmap_gpu}. \\
 
-As with the CPU kernel, there are some factors only in control fo the user. Modern GPUs 
+As with the CPU kernel, there are some factors only in control of the user. Modern GPUs 
 are primarily designed for \emph{single-precision} operations, and are correspondingly 
 much less efficient using double precision arithmetic. GAIO.jl does its best to convert 
 all objects such as partitions and box sets to single precision, but again \emph{
