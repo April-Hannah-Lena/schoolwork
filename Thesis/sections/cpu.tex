@@ -16,11 +16,11 @@ apply to most modern CPUs built on the x86 64-bit ISA. \\
 A processor microarchitecture can be further split to 3 components (see \autoref{fig:CPU}): 
 
 \begin{itemize}
-    \item The front end, which consists of instruction cache and instruction fetch / decode 
+    \item The front end, which consists of instruction register (also called instruction cache) and instruction fetch / decode 
     units. This is responsible for fetching batches of instructions from memory, storing 
     the batches in the instruction cache, and decoding the instructions into a set of 
     \emph{micro-operations, or $\mu$Ops}.
-    \item The back end (or execution engine), which includes the reorder buffer, 
+    \item The back end (also called execution engine), which includes the reorder buffer, 
     unified scheduler (also called reservation station), and various execution ports. 
     Since not all instructions are necessarily dependent on one-another, they can often be 
     reordered, or multiple instructions can be executed simultaneously. This is known as 
@@ -65,7 +65,7 @@ calls to the inbuilt \jlinl{muladd} function. \\
 
 Conversely, a conceptually difficult but practically easy technique to implement is 
 multithreading. Multithreading is more conceptually difficult because the process of 
-creating, scheduling and synchronizing processes over multiple cores is relatively 
+spawning, scheduling and synchronizing processes over multiple cores is relatively 
 complicated. However, due to the obvious benefit offered by multithreaded programming, 
 mature libraries have developed to hide these complications under a layer of abstraction. 
 In julia, examples include the \jlinl{Threads} module from julia base, as well as the 
@@ -96,7 +96,7 @@ it is often required to manually vectorize.
 \subsection{Implementation in GAIO.jl}
 
 We wish to map an array of test points 
-$x = (x_1,\ x_2,\ \ldots,\ x_n),\,\ x_i \in \mathbb{R}^d$ forward, with as much 
+$x = [x_1,\ x_2,\ \ldots,\ x_n],\,\ x_i \in \mathbb{R}^d$ forward, with as much 
 parallelism as possible. For example, consider for $d=3$ and a box $[0,1]^3$ the test 
 points:
 
@@ -132,8 +132,8 @@ convert from one vector of vectors to a vector of packed vectors, and vice versa
 A convenient fact about the \jlinl{Tuple} type in julia is that if its elements are 
 "bits" types (that is, they can be represented by a string of bits that can be \emph{stack-allocated}), 
 then the tuple is stored \emph{contiguously} in memory. For eg. numeric types like 
-\jlinl{Float32}, this means that the exact positions in memory of each element can be 
-deduced from the memory positions of the tuple. Julia provides the convenience function 
+\jlinl{Float32}, this means that the exact addresses in memory of each element can be 
+deduced from the memory address of the tuple. Julia provides the convenience function 
 \jlinl{reinterpret} which changes the type interpretation of a block of memory. \\
 
 \begin{figure}[ht]

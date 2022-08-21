@@ -206,7 +206,7 @@ In this case we can define $P: L^1 \to L^1$ as
     (P \phi)(y) = \int \phi (x)\, k(x, y)\, dx.
 \end{equation}
 
-Note that $\phi$ is the density of an invariant measure 
+Note that a fixed point $\phi$ of P is the density of an invariant measure 
 $\mu_\phi (A) = \int_A\, \phi(x)\, dx$. \\
 
 We will use a Galerkin approximation for $P$ which maintains the eigenvalues and cyclic 
@@ -226,7 +226,7 @@ the linear extension of
 
 \begin{equation}
     \label{eq:qnp}
-    (Q_n P)\, \chi_{B_i} = \sum_{j = 1}^n P_{ij}\, \chi_{B_j}.
+    (Q_n P)\, \chi_{B_i} = \sum_{j = 1}^n P_{ij}\, \chi_{B_j}, \quad i = 1, \ldots, n.
 \end{equation}
 
 To realize this approximation, we need to calculate $P_{ij}$. For this there are two 
@@ -255,8 +255,8 @@ $B_i$, and set $P_{ij}$ as the fraction of test points which land in $B_j$:
 
 \begin{remark}\ 
     \begin{itemize}
-        \item In practice the test points are only generated once from the unit cube $[-1,1]^d$, 
-        and then scaled to fit inside the box $B_i$.
+        \item In practice the Monte-Carlo test points are only generated once from the unit cube 
+        $[-1,1]^d$, and then scaled to fit inside the box $B_i$.
         \item Line~\ref{alg:measure:fix} is acheived using the Fortran library ARPACK \cite*{ARPACK}, 
         which has been wrapped in julia by the creators of Arpack.jl \cite*{Arpack.jl}. Recently, the 
         underlying algorithm (an implicitly restarted Arnoldi method) has been 
@@ -331,7 +331,7 @@ begin with a theorem about the convergence our discretized operator.
 Assume now that $Q_n P$ has an eigenvalue $1$ with multiplicity $2$. Then 
 as described in \cite*{algGAIO}: by the above 
 theorem, the eigenvalue will split into two simple eigenvalues, one of which will move away  
-from $1$ (the other will stay at 1 since $Q_n P$ is column stochastic). If we now find 
+from $1$ (the other will stay at unity since $Q_n P$ is column stochastic). If we now find 
 this eigenvector $\phi_n$, then (again by the above theorem and the continuity of $P$) 
 the positive and negative regions of $\phi_n$ will converge to the sets $E^+$ and $E^-$ 
 from Theorem \ref{thm:almost}. That is, they are almost invariant. 
