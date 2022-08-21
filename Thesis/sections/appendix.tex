@@ -90,11 +90,11 @@
             
             # Map each test point
             for p in domain_points
-            fp = g.map(p)
-            hitbox = point_to_box(P, fp)
+                fp = g.map(p)
+                hitbox = point_to_box(P, fp)
 
-            # Skip to next iteration if `fp` lands outside `P`
-            isnothing(hitbox) && continue
+                # Skip to next iteration if `fp` lands outside `P`
+                isnothing(hitbox) && continue
 
                 # Add perturbations to fp
                 r = hitbox.radius
@@ -115,7 +115,7 @@
 
 \begin{jllisting}[float, floatplacement=hb!, language=julia, style=jlcodestyle, label=lst:boxmap_cpu, caption=Function to calculate $f(\mathcal{B})$ with CPU acceleration]
     function map_boxes(
-        g::SampledBoxMap{C,N}, source::BoxSet
+            g::SampledBoxMap{C,N}, source::BoxSet
         ) where {simd,C<:BoxMapCPUCache{simd},N}
         
         # Preallocated temporary storage objects.
@@ -126,15 +126,15 @@
         P = source.partition
         @floop for box in source
         
-        # Grab a separate section of the
-        # temporary storage for each thread
-        tid  = (threadid() - 1) * simd
-        idx  = idx_base + tid * N
-        mapped_points = @view temp_points[tid+1:tid+simd]
-        
-        domain_points = g.domain_points(box.center, box.radius)
-        for p in domain_points
-            fp = g.map(p)
+            # Grab a separate section of the
+            # temporary storage for each thread
+            tid  = (threadid() - 1) * simd
+            idx  = idx_base + tid * N
+            mapped_points = @view temp_points[tid+1:tid+simd]
+            
+            domain_points = g.domain_points(box.center, box.radius)
+            for p in domain_points
+                fp = g.map(p)
 
                 # Scatter packed `fp` into temporary storage
                 tuple_vscatter!(temp_vec, fp, idx)
@@ -162,7 +162,7 @@
             keys,       # Keys to be mapped
             points,     # "Global" test points
             out_keys,   # Array to hold mapped box indices ...
-            P,          # ... wrt the partition P
+            P           # ... wrt the partition P
         )
 
         # Calculate the index of the GPU thread
