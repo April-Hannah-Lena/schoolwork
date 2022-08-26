@@ -14,27 +14,32 @@ functional programming patterns" \cite*{juliamain}. As a brief example of multip
 consider a simple user defined type \jlinl{2dBox} (similar to the implementation in 
 \texttt{GAIO.jl}):
 
+\begin{minipage}{\linewidth}
 \begin{jllisting}[language=julia, style=jlcodestyle]
     struct 2dBox
         center::Tuple{Float64,Float64}
         radius::Tuple{Float64,Float64}
     end
 \end{jllisting}
+\end{minipage}
 
 Then we can create a \jlinl{2dBox} by calling \jlinl{b = 2dBox((0.0, 0.0), (1.0, 1.0))}. 
 A natural question to ask is whether a vector, say \jlinl{x = [0.5, 0.6]}, lies within 
 \jlinl{b}. To do this, we can \emph{overload} the function \jlinl{in} from julia Base:
 
+\begin{minipage}{\linewidth}
 \begin{jllisting}[language=julia, style=jlcodestyle]
     function Base.in(x::Vector, b::2dBox)
         all( b.center .- b.radius .≤ x .≤ b.center .+ b.radius )
     end
 \end{jllisting}
+\end{minipage}
 
 This function uses julia's \emph{dot-syntax} to vectorize operations, eg. \jlinl{+}
 by writing \jlinl{.+}. We can now call the base function \jlinl{in} or its unicode alias
 \jlinl{∈}:
 
+\begin{minipage}{\linewidth}
 \begin{jllisting}[language=julia, style=jlcodestyle]
     x = [0.5, 0.6]
     b = 2dBox((0.0, 0.0), (1.0, 1.0))
@@ -43,6 +48,7 @@ by writing \jlinl{.+}. We can now call the base function \jlinl{in} or its unico
     x .- 2 ∈ b      # returns false
     x .- 2 ∉ b      # returns true
 \end{jllisting}
+\end{minipage}
 
 The above example demonstrates the syntactical simplicity of julia. 
 It should be noted that despite this simplicity, julia can generate highly performant 
@@ -103,18 +109,21 @@ This section is meant as an introduction to the most important concepts in the i
 
 The package is built off of three base structures \jlinl{Box, BoxPartition, BoxMap}:
 
+\begin{minipage}{\linewidth}
 \begin{jllisting}[language=julia, style=jlcodestyle]
     struct Box{N,T <: AbstractFloat}
         center::SVector{N,T}
         radius::SVector{N,T}
     end
 \end{jllisting}
+\end{minipage}
 
 A Box is a half-open generalized rectangle, that is, a product of half-open intervals
 $[c_1 - r_1,\ c_1 + r_1) \times \ldots \times [c_d - r_d,\ c_d + r_d)$. We now 
 need to represent a partition $\mathcal{P}$ of boxes. GAIO.jl offers two way to do this, 
 we show only the simpler version: 
 
+\begin{minipage}{\linewidth}
 \begin{jllisting}[language=julia, style=jlcodestyle]
     struct BoxPartition{N,T,I<:Integer} <: AbstractBoxPartition{Box{N,T}}
         domain::Box{N,T}
@@ -124,6 +133,7 @@ we show only the simpler version:
         dimsprod::SVector{N,I}
     end
 \end{jllisting}
+\end{minipage}
 
 Instead of keeping track of positions for each individual box, we use integer indices 
 for an equidistant \emph{box grid} and only store the dimensions of the grid using 
@@ -132,12 +142,14 @@ quickly calculate box indices from a given point (see \jlinl{point_to_key, key_t
 in \texttt{GAIO.jl}). We further use the index structure to our advantage when storing 
 box sets $\mathcal{B}$, only storing sets of indices corresponding to a partition:
 
+\begin{minipage}{\linewidth}
 \begin{jllisting}[language=julia, style=jlcodestyle]
     struct BoxSet{B,P<:AbstractBoxPartition{B},S<:AbstractSet} <: AbstractSet{B}
         partition::P
         set::S
     end
-\end{jllisting}
+\end{jllisting}    
+\end{minipage}
 
 Finally, we need a way to convert a map $f$ defined on $Q$ to a map \jlinl{F} defined on 
 boxes of a \jlinl{BoxPartition}:

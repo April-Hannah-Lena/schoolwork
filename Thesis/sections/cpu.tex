@@ -100,6 +100,7 @@ $x = [x_1,\ x_2,\ \ldots,\ x_n],\,\ x_i \in \mathbb{R}^d$ forward, with as much
 parallelism as possible. For example, consider for $d=3$ and a box $[0,1]^3$ the test 
 points:
 
+\begin{minipage}{\linewidth}
 \begin{jllisting}[language=julia, style=jlcodestyle]
     x = [   # each tuple is seen as a point in 3d space
         (1., 0., 0.),
@@ -109,10 +110,12 @@ points:
         # etc ...
     ]
 \end{jllisting}
+\end{minipage}
 
 We could equivalently characterize this array as an array of packed floats in 
 the "packed" space $(\mathbb{R}^4)^3$:
 
+\begin{minipage}{\linewidth}
 \begin{jllisting}[language=julia, style=jlcodestyle]
     x = [   # three 4xFloat64<...> are seen as a point in our "packed" 3d space
         (
@@ -123,6 +126,7 @@ the "packed" space $(\mathbb{R}^4)^3$:
         # etc ...
     ]
 \end{jllisting}
+\end{minipage}
 
 The packed SIMD vectors can be constructed using the \jlinl{Vec} type from \jlinl{SIMD.jl} 
 \cite*{simd.jl}, a convenience wrapper around julia's base SIMD vector type (which itself 
@@ -152,7 +156,7 @@ Hence consider the vector $i$ of indices of $x$:
         \underbrace{4,\ 5,\ 6,}_{\text{second point}}\ 
         \ldots,\ 
         \underbrace{3n-2,\ 3n-1,\ 3n}_{\text{nth point}}
-    \ )
+    \ ).
 \end{equation}
 
 We wish to permute $i$ such that each group of four points has its respective elements 

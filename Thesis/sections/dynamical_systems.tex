@@ -88,6 +88,11 @@ First, we set some notation for convenience.
     \label{fig:boximage}
 \end{figure}
 
+\begin{definition}[Diameter of a Box Set]
+    Denote by $d(\mathcal{B})$ the maximum diameter of a box $B \in \mathcal{B}$, ie 
+    $d(\mathcal{B}) = \max_{\substack{B\, \in\, \mathcal{B},\\ x,\, y\, \in\, B}} d(x, y)$. 
+\end{definition}
+
 We continue with a set of topological definitions of sets we wish to approximate.
 
 \begin{definition}[(Forward-, Backward-) Invariant]
@@ -99,7 +104,7 @@ We continue with a set of topological definitions of sets we wish to approximate
 \begin{definition}[Attracting Set]
     \cite*{subalg} An invariant set $A$ is called \emph{attracting} with \emph{fundamental neighborhood}
     $U$ if for every open set $V \supset A$ there is an $N \in \mathbb{N}$ such that the tail 
-    $\bigcup_{k \geq N} f^k(U)$ lies entirely within $A$. The attracting 
+    $\bigcup_{k \geq N} f^k(U)$ lies entirely within $V$. The attracting 
     set is also called \emph{global} if the \emph{basin of attraction} 
     
     \begin{equation}\label{eq:globattr}
@@ -168,13 +173,10 @@ useful definition in our approximations.
 \end{figure}
 
 \begin{definition}[Chain Recurrent]
-    \cite*{dynbook} The point $\bar{x} \in M$ is called \emph{chain recurrent} if for any $\epsilon > 0$ 
-    there exists an $\epsilon$-pseudoperiodic orbit. The \emph{chain recurrent set} $R_M(f)$ 
-    is the set of all chain recurrent points in $M$.
+    \cite*{dynbook} The point $\bar{x} \in M$ is called \emph{chain recurrent} if for any 
+    $\epsilon > 0$ there exists an $\epsilon$-pseudoperiodic orbit containing $\bar{x}$. 
+    The \emph{chain recurrent set} $R_M$ is the set of all chain recurrent points in $M$.
 \end{definition}
-
-As shown in \cite*{algGAIO} we have the inclusion $R_M(f) \subset \bigcap_{k \geq 0} f^k(M)$,
-which also shows that $R_M(f)$ is an invariant set. \\
 
 % -------------------------------------------------------------------------------------- %
 Finally, we give a set of measure-theoretical definitions for types of measures we wish to 
@@ -185,7 +187,7 @@ amount of "uncertainty" in how our sets look, and how \emph{exactly} $f$ maps su
 We describe this noise using a stochastic transition function. 
 
 \begin{definition}[Transition Function]
-    \cite*{attr} Let $\mathcal{A}$ be a $\sigma$-agebra on $M$. A function 
+    \cite*{attr} Let $\mathcal{A}$ be a $\sigma$-algebra on $M$. A function 
     $p : M \times \mathcal{A} \to [0,1]$ is called \emph{transition function} if
 
     \begin{enumerate}
@@ -198,7 +200,7 @@ We describe this noise using a stochastic transition function.
 \begin{example}\
     
     \begin{itemize}
-        \item\label{ex:q} \cite*{attr} We can model the deterministic system using the dirac 
+        \item\label{ex:q} \cite*{attr} We can model the deterministic system using the Dirac 
         measure $p(x,\, A) = \delta_{f(x)}(A)$. 
         \item The approximate box version of the system can be modelled as using a uniform 
         probability density: for a point $x$ let 

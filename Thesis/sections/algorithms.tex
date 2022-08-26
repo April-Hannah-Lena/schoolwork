@@ -9,7 +9,7 @@ relatively difficult, but the description \autoref{eq:globattr} lends to
 a natural \emph{ansatz} for its approximation using a compact subdomain $Q \subset M$. \\
 
 \begin{definition}[Relative Global Attractor]
-    Let $Q$ be compact. Then we define the \emph{attractor relative to $A$} as
+    Let $Q$ be compact. Then we define the \emph{attractor relative to $Q$} as
 
     \begin{equation}
         A_Q = \bigcap\limits_{k \geq 0} f^k (Q)
@@ -22,8 +22,8 @@ a natural \emph{ansatz} for its approximation using a compact subdomain $Q \subs
     global attractor.\\
 \end{remark}
 
-The idea to approximate the relative gloabl attractor is in two steps. First, we \emph{subdivide} 
-each of the boxes: construct a new set $\mathcal{B}'$ by splitting each box $B \in \mathcal{B}$ 
+The idea to approximate the relative global attractor is in two steps. First, we \emph{subdivide} 
+the box set $\mathcal{B}$: construct a new set $\mathcal{B}'$ by splitting each box $B \in \mathcal{B}$ 
 into two (or more) smaller boxes $B_1,\ B_2$ such that $B_1 \cup B_2 = B$. 
 Second, discard all those boxes whose image does not intersect with the 
 previous box set. The algorithm requires a map $f$, a box set $\mathcal{B}$, and a 
@@ -53,15 +53,16 @@ predefined number of steps $n$.
         $\left\{ \mathcal{B}_0,\ \mathcal{B}_1,\ \dotsc,\ \mathcal{B}_n \right\}$
         can be returned instead. This will be true for all algorithms of this type.
         \item The precise technique for subdivision can be tuned depending on the situation. 
-        In \texttt{GAIO.jl}, boxes are bisected evenly along one dimension 
-        $k \in \left\{1,\ \dotsc,\ d\right\}$. The dimension $k$ along which to bisect is 
-        cycled through during the steps. \\
+        In the julia implementation presented in the current paper, boxes are bisected 
+        evenly along one dimension $k \in \left\{1,\ \dotsc,\ d\right\}$. The dimension $k$ 
+        along which to bisect is cycled through during the steps. \\
     \end{itemize}
 \end{remark}
 
 \begin{proposition}\label{thm:cover}
     \cite*{algGAIO,subalg} Set 
     $Q_i = \bigcup_{B \in \mathcal{B}_i} B,\quad Q_\infty = \bigcap_{n \geq 1} Q_n$. 
+    Assume the subdivision technique satisfies $d(\mathcal{B}_n) \to 0$ as $n \to \infty$. 
     For all $i$ we have
 
     \begin{enumerate}
@@ -127,12 +128,9 @@ global unstable manifold $W^u(\bar{x})$:
 The algorithm to compute the chain recurrent set is first due to \cite*{chain}. The idea 
 is to construct a directed graph whose vertices are the box set $\mathcal{B}$, and for 
 which edges are drawn from $B_1$ to $B_2$ if $f$ maps any part of $B_1$ into $B_2$. 
-Call this graph \textproc{graph}$(f, \mathcal{B})$, and call $\bar{d}$ the maximum 
-\emph{diameter} of a box in our partition, ie 
-$\bar{d} = \max_{\substack{B\, \in\, \mathcal{P},\\ x,\, y\, \in\, B}} d(x, y)$.\\ 
-
-We can now ask for a subset of the vertices, for which each vertex is part of a directed cycle. 
-We can equivalently characterize this set as follows:
+Call this graph \textproc{graph}$(f, \mathcal{B})$. We can now ask for a subset of the 
+vertices, for which each vertex is part of a directed cycle. We can equivalently 
+characterize this set as follows:
 
 \begin{definition}[Strongly Connected]
     For a directed graph $G = (V, E)$, a subset $H \subset V$ of vertices is called 
@@ -152,7 +150,7 @@ We can equivalently characterize this set as follows:
 
         \For{$i = \left\{ 1,\ \dotsc,\ n \right\}$}
             \State $\mathcal{B}_i \gets$ \Call{subdivide}{$\,\mathcal{B}_{i-1}\,$}
-            \State $G\, \gets$ \Call{graph}{$\,f,\ \mathcal{B}_{i-1}\,$}
+            \State $G\, \gets$ \Call{graph}{$\,f,\ \mathcal{B}_i\,$}
             \State $\mathcal{B}_i \gets$ \Call{sccs}{$\,G\,$}
         \EndFor
 
@@ -161,39 +159,77 @@ We can equivalently characterize this set as follows:
 \end{algorithm}
 
 \begin{proposition}
-    A cycle $\left\{ B_0,\ B_1,\ \ldots,\ B_{n-1} \right\}$ exists in $G$
-    of and only if there exists an $\epsilon$-pseudoperiodic orbit 
-    $\left\{ x_0,\ x_1,\ \ldots,\ x_{n-1} \right\}$ with $x_i \in B_i$.
-    In particular, the vertices of $G$ form a covering of the chain recurrent set with 
-    Hausdorff distance at most $\bar{d}$.
+    Denote by $r(f, B)$ the minimum Hausdorff distance between the image $f(B)$ and a 
+    box $B'$ not in the image, ie $r(f, B) = \min_{B' \notin f(B)} d(B', f(B))$ and let 
+    $r$ be the minimum of $r(f, B)$ over the partition $\mathcal{P}$, ie 
+    $r = \min_{B \in \mathcal{P}}$. Then we have
+
+    \begin{enumerate}
+        \item If a cycle $\left\{ B_0,\ \ldots,\ B_{n-1} \right\}$ exists in $G$, then 
+        theres exists an $\epsilon$-pseudoperiodic orbit 
+        $\left\{ x_0,\ \ldots,\ x_{n-1} \right\}$ with $x_i \in B_i$ for any 
+        $\epsilon \geq d(\mathcal{P})$. 
+        \item If an $\epsilon$-pseudoperiodic orbit 
+        $\left\{ x_0,\ \ldots,\ x_{n-1} \right\}$ exists with $\epsilon < r$, then the 
+        boxes $\left\{ B_0,\ \ldots,\ B_{n-1} \right\}$ with $x_i \in B_i$ form a cycle in 
+        $G$. 
+    \end{enumerate}
+
 \end{proposition}
 
 \begin{proof}
-    Consider a cycle in $G$. Then by construction, for each edge $(B_i, B_{i+1})$ in the 
-    cycle we can find a point $x_i \in B_i$ which gets mapped into $B_{i+1}$. Doing this for all
-    edges we get a set $\left\{ x_0,\ x_1,\ \ldots,\ x_{n-1} \right\}$ which satisfies 
-    $d(x_{i\, \text{mod}\, n},\ x_{i+1\, \text{mod}\, n}) \leq \bar{d}$, ie a 
-    $\bar{d}$-pseudoperiodic orbit. \\
+    The distance $r(f, B)$ is strictly positive by construction. Since $\mathcal{P}$ is 
+    finite, the minimum of $r(f, B)$ over $\mathcal{P}$ is also positive, and hence 
+    it is well-defined. 
 
-    Conversely, consider an $\epsilon$-pseudoperiodic orbit 
-    $\left\{ x_0,\ x_1,\ \ldots,\ x_{n-1} \right\}$, $\epsilon \leq \bar{d}$. Then each $x_i$ is in
-    a box $B_i$, and since $d(x_{i\, \text{mod}\, n},\ x_{i+1\, \text{mod}\, n}) \leq \bar{d}$, 
-    there is an edge $(B_i, B_{i+1})$ in $G$. Hence 
-    $\left\{ B_0,\ B_1,\ \ldots,\ B_{n-1} \right\}$ is a cycle in $G$. \\
+    \begin{enumerate}
+        \item Consider a cycle in $G$. Then by construction, for each edge $(B_i, B_{i+1})$ 
+        in the cycle we can find a point $x_i \in B_i$ which gets mapped into $B_{i+1}$. 
+        Doing this for all edges we get a set $\left\{ x_0,\ x_1,\ \ldots,\ x_{n-1} \right\}$ 
+        which satisfies $d(x_{i\, \text{mod}\, n},\ x_{i+1\, \text{mod}\, n}) \leq d(\mathcal{P})$, 
+        ie a $d(\mathcal{P})$-pseudoperiodic orbit. 
+        \item Conversely, consider an $\epsilon$-pseudoperiodic orbit with $\epsilon < r$, 
+        and $\left\{ B_0,\ \ldots,\ B_{n-1} \right\}$ with $x_i \in B_i$. 
+        Then we have the inequalities 
+
+        \begin{equation}
+            d(f(B_{i\, \text{mod}\, n}),\ B_{i+1\, \text{mod}\, n}) \leq
+            d(f(x_{i\, \text{mod}\, n}),\ x_{i+1\, \text{mod}\, n}) <
+            \epsilon < r
+        \end{equation}
+
+        But by construction, $r$ is the minimum distance between any box $B$ and the image 
+        of any other box $f(B')$ which do not intersect. Hence 
+        $f(B_{i\, \text{mod}\, n})$ must intersect $B_{i+1\, \text{mod}\, n}$, so there 
+        exists an edge $(B_{i\, \text{mod}\, n},\, B_{i+1\, \text{mod}\, n})$ in $G$. 
+    \end{enumerate}
 \end{proof}
 
 \begin{corollary}
-    Proposition \ref{thm:cover} holds for \autoref{alg:chain}. For further details, 
-    see \cite*{chain}.
+    Proposition \ref{thm:cover} holds for \autoref{alg:chain}. That is, replacing $A_Q$ 
+    with $R_Q$ in Proposition \ref{thm:cover} remains true. 
 \end{corollary}
+
+\begin{proof}
+    The inclusions $1.$ and $2.$ from Proposition \ref{thm:cover} are clear. For the 
+    equality $3.$ consider the following. 
+    We have that the existence of a cycle in $G$ is a \emph{necessary} condition for an
+    $\epsilon$-pseudoperiodic orbit with $\epsilon < r$, and it is also a 
+    \emph{sufficient} condition for an $\epsilon$-pseudoperiodic orbit with 
+    $\epsilon \geq d(\mathcal{P})$. Letting $d(\mathcal{B}) \to 0$ gives a condition which 
+    is both necessary and sufficient for the existence of $\epsilon$-pseudoperiodic orbits 
+    with $\epsilon > 0$, and hence the box covering $Q_\infty$ is precisely the chain 
+    recurrent set $R_Q$. For further details, see \cite*{chain}. 
+\end{proof}
 
 % -------------------------------------------------------------------------------------- %
 
 \subsection{Invariant Measure}
 
 We shift focus to approximating invariant measures for the Perron-Frobenius operator $P$.
-For simplicity we will work only with measures absolutely continuous with respect to the 
-Lebesque measure on $M$, ie measures for which there exists a \emph{kernel} $k$ with 
+For simplicity we will work only with transition functions absolutely continuous with 
+respect to the Lebesque measure on $M$, ie measures for which there exists a 
+\emph{kernel} $k$ with 
 
 \begin{equation}
     \label{eq:kernel}
@@ -217,7 +253,7 @@ $\mathcal{P} = \left\{ B_1,\ B_2,\ \ldots,\ B_n \right\}$ and define the matrix
 
 \begin{equation}
     \label{eq:pij}
-    P_{ij} = \frac{\mathcal{L}\left(B_j \cap f(B_i)\right)}{\mathcal{L}(B_j)}, 
+    P_{ij}^n = \frac{\mathcal{L}\left(B_j \cap f^{-1}(B_i)\right)}{\mathcal{L}(B_j)}, 
     \quad i,\, j = 1, \ldots, n,
 \end{equation}
 
@@ -226,7 +262,7 @@ the linear extension of
 
 \begin{equation}
     \label{eq:qnp}
-    (Q_n P)\, \chi_{B_i} = \sum_{j = 1}^n P_{ij}\, \chi_{B_j}, \quad i = 1, \ldots, n.
+    (Q_n P)\, \chi_{B_i} = \sum_{j = 1}^n P_{ij}^n\, \chi_{B_j}, \quad i = 1, \ldots, n.
 \end{equation}
 
 To realize this approximation, we need to calculate $P_{ij}$. For this there are two 
@@ -242,12 +278,12 @@ $B_i$, and set $P_{ij}$ as the fraction of test points which land in $B_j$:
 
             \For{$i,j \in \left\{ 1,\ \ldots,\ n \right\}$}
                 \State $p\ \ \gets $ Choose $\left\{ p_1,\ \ldots,\ p_r \right\}$ randomly from a uniform distribution on $B_i$
-                \State $P_{ij} \gets \left. |\ B_j \cap f(p)\ | \ \middle/\ |\ p\ | \right.$
+                \State $P_{ij}^n \gets \left. |\ B_j \cap f(p)\ | \ \middle/\ |\ p\ | \right.$
             \EndFor
     
-            \State $v \gets $ Find a fixed point of $P$
+            \State $v \gets $ Find a fixed point of $P^n$
             \label{alg:measure:fix}
-            \State $\phi_n \gets \sum_{i=1}^n\: v_i\, \chi_{B_i}$
+            \State $\phi^n \gets \sum_{i=1}^n\: v_i\, \chi_{B_i}$
             \State \Return $\phi_n$
         \end{algorithmic}
     \end{spacing}
@@ -266,9 +302,9 @@ $B_i$, and set $P_{ij}$ as the fraction of test points which land in $B_j$:
 
 \begin{proposition}
     \cite*{lasota}
-    Let $p(x, A)$ be a transition function with globally lipschitz continuous kernel $k$. 
-    Then the operator $P$ is compact. Further, if $k$ is strictly positive, $P$ has
-    a unique fixed point $\phi \in L^1$. 
+    Let $p(x, A)$ be a transition function with globally Lipschitz continuous kernel $k$. 
+    Then the operator $P : L^1 \to L^1$ is compact. Further, if $k$ is strictly positive, 
+    $P$ has a unique fixed point $\phi \in L^1$. 
 \end{proposition}
 
 \begin{proposition}
@@ -282,8 +318,7 @@ $B_i$, and set $P_{ij}$ as the fraction of test points which land in $B_j$:
     \end{equation}
 
     (An example of this would be Ex. \ref{ex:q} for a sequence of partitions 
-    $\mathcal{P}_\epsilon$ with diameters
-    $\bar{d}_\epsilon = \max_{\substack{B\, \in\, \mathcal{P}_\epsilon,\\ x,\, y\, \in\, B}} d(x, y) \to 0$).
+    $\mathcal{P}_\epsilon$ with diameters $d(\mathcal{P}_\epsilon) \to 0$).
     Suppose further that the diffeomorphism $f$ has a hyperbolic attracting set $A$ with
     and an open set $U \supset A$ such that for the kernels we have
 
@@ -328,13 +363,14 @@ begin with a theorem about the convergence our discretized operator.
 
 \end{theorem}
 
-Assume now that $Q_n P$ has an eigenvalue $1$ with multiplicity $2$. Then 
-as described in \cite*{algGAIO}: by the above 
-theorem, the eigenvalue will split into two simple eigenvalues, one of which will move away  
-from $1$ (the other will stay at unity since $Q_n P$ is column stochastic). If we now find 
-this eigenvector $\phi_n$, then (again by the above theorem and the continuity of $P$) 
-the positive and negative regions of $\phi_n$ will converge to the sets $E^+$ and $E^-$ 
-from Theorem \ref{thm:almost}. That is, they are almost invariant. 
+Assume now that there exists an $n \in \mathbb{N}$ such that $P^n$ has an eigenvalue $1$ 
+with multiplicity $2$. Then as described in \cite*{algGAIO}: by the above theorem, 
+as $n \to \infty$ the eigenvalue will split into two simple eigenvalues, one of 
+which will move away from $1$ (the other will stay at unity since $P^n$ is column 
+stochastic). If we now find this eigenvector $\phi^n$, then (again by the above theorem 
+and the continuity of $P$) the sets $E_n^+ = \bigcup_{B_i\ \vert\ \phi_i^n \geq 0} B_i$ 
+and $E_n^- = \bigcup_{B_i\ \vert\ \phi_i^n < 0} B_i$ will converge to the sets $E^+$ and 
+$E^-$ from Theorem \ref{thm:almost}. That is, they are almost invariant. 
 
 \begin{algorithm}
     \caption{Almost Invariant Sets}
@@ -344,10 +380,10 @@ from Theorem \ref{thm:almost}. That is, they are almost invariant.
 
             \For{$i,j \in \left\{ 1,\ \ldots,\ n \right\}$}
                 \State $p\ \ \gets $ Choose $\left\{ p_1,\ \ldots,\ p_r \right\}$ randomly from a uniform distribution on $B_i$
-                \State $P_{ij} \gets \left. |\ B_j \cap f(p)\ | \ \middle/\ |\ p\ | \right.$
+                \State $P_{ij}^n \gets \left. |\ B_j \cap f(p)\ | \ \middle/\ |\ p\ | \right.$
             \EndFor
     
-            \State $v \gets $ Find an eigenvector to the second largest eigenvalue of $P$
+            \State $v \gets $ Find an eigenvector to an eigenvalue $\lambda \neq 1$ of $P^n$
             \label{alg:almost:fix}
             \State $E^+ \gets \cup \left\{ B_i\ \vert\ v_i \geq 0 \right\}$
             \State $E^- \gets \cup \left\{ B_i\ \vert\ v_i < 0 \right\}$
@@ -358,7 +394,7 @@ from Theorem \ref{thm:almost}. That is, they are almost invariant.
 
 \begin{remark}
     The algorithm can also be used to find almost invariant cycles. In this case line 
-    \ref{alg:almost:fix} simply needs to be changed to find an eigenvector near $-1$.
+    \ref{alg:almost:fix} simply needs to be changed to find an eigenvector near $-1$. \\
 \end{remark} 
 
 % -------------------------------------------------------------------------------------- %
