@@ -22,12 +22,15 @@ a natural \emph{ansatz} for its approximation using a compact subdomain $Q \subs
     global attractor.\\
 \end{remark}
 
-The idea to approximate the relative global attractor is in two steps. First, we \emph{subdivide} 
-the box set $\mathcal{B}$: construct a new set $\mathcal{B}'$ by splitting each box $B \in \mathcal{B}$ 
-into two (or more) smaller boxes $B_1,\ B_2$ such that $B_1 \cup B_2 = B$. 
-Second, discard all those boxes whose image does not intersect with the 
-previous box set. The algorithm requires a map $f$, a box set $\mathcal{B}$, and a 
-predefined number of steps $n$. 
+The idea to approximate the relative global attractor is in two steps
+
+\begin{enumerate}
+    \item First, \emph{subdivide} the box set $\mathcal{B}$: construct a new set 
+    $\mathcal{B}'$ by splitting each box $B \in \mathcal{B}$ into two (or more) 
+    smaller boxes $B_1,\ B_2$ such that $B_1 \cup B_2 = B$. 
+    \item Second, discard all those boxes whose image does not intersect with the 
+    previous box set. 
+\end{enumerate}
 
 \begin{algorithm}
     \caption{Relative Attractor}
@@ -38,6 +41,7 @@ predefined number of steps $n$.
         \State $\mathcal{B}_0 \gets \mathcal{B}$
 
         \For{$i = \left\{ 1,\ \dotsc,\ n \right\}$}
+            \Comment{$n$ is a predefined number of iteration steps}
             \State $\mathcal{B}_i \gets$ \Call{subdivide}{$\,\mathcal{B}_{i-1}\,$}
             \State $\mathcal{B}_i \gets \mathcal{B}_i\, \cap\, f (\,\mathcal{B}_i\,)$
         \EndFor
@@ -162,7 +166,7 @@ characterize this set as follows:
     Denote by $r(f, B)$ the minimum Hausdorff distance between the image $f(B)$ and a 
     box $B'$ not in the image, ie $r(f, B) = \min_{B' \notin f(B)} d(B', f(B))$ and let 
     $r$ be the minimum of $r(f, B)$ over the partition $\mathcal{P}$, ie 
-    $r = \min_{B \in \mathcal{P}}$. Then we have
+    $r = \min_{B \in \mathcal{P}} r(f, B)$. Then we have
 
     \begin{enumerate}
         \item If a cycle $\left\{ B_0,\ \ldots,\ B_{n-1} \right\}$ exists in $G$, then 
@@ -170,7 +174,7 @@ characterize this set as follows:
         $\left\{ x_0,\ \ldots,\ x_{n-1} \right\}$ with $x_i \in B_i$ for any 
         $\epsilon \geq d(\mathcal{P})$. 
         \item If an $\epsilon$-pseudoperiodic orbit 
-        $\left\{ x_0,\ \ldots,\ x_{n-1} \right\}$ exists with $\epsilon < r$, then the 
+        $\left\{ x_0,\ \ldots,\ x_{n-1} \right\}$ exists with $\epsilon \leq r$, then the 
         boxes $\left\{ B_0,\ \ldots,\ B_{n-1} \right\}$ with $x_i \in B_i$ form a cycle in 
         $G$. 
     \end{enumerate}
@@ -195,7 +199,7 @@ characterize this set as follows:
         \begin{equation}
             d(f(B_{i\, \text{mod}\, n}),\ B_{i+1\, \text{mod}\, n}) \leq
             d(f(x_{i\, \text{mod}\, n}),\ x_{i+1\, \text{mod}\, n}) <
-            \epsilon < r
+            \epsilon \leq r.
         \end{equation}
 
         But by construction, $r$ is the minimum distance between any box $B$ and the image 
@@ -253,7 +257,7 @@ $\mathcal{P} = \left\{ B_1,\ B_2,\ \ldots,\ B_n \right\}$ and define the matrix
 
 \begin{equation}
     \label{eq:pij}
-    P_{ij}^n = \frac{\mathcal{L}\left(B_j \cap f^{-1}(B_i)\right)}{\mathcal{L}(B_j)}, 
+    (P^n)_{ij} = \frac{\mathcal{L}\left(B_j \cap f^{-1}(B_i)\right)}{\mathcal{L}(B_j)}, 
     \quad i,\, j = 1, \ldots, n,
 \end{equation}
 
