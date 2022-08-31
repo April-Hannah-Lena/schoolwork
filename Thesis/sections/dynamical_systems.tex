@@ -26,15 +26,12 @@ reimplemented in the open-source, composable language julia \cite*{julia}. The r
 change is julia's high-level abstraction capabilities, just-in-time compilation, and 
 in-built set-theoretical functions, which create short, elegant code which is nonetheless 
 more performant. Source code for GAIO in matlab and julia and be 
-found in \cite*{oldGAIO} and \cite*{GAIO}, respectively.
+found in \cite*{oldGAIO} and \cite*{GAIO}, respectively. \\
 
-\subsection{Definitions}
-
-This section should be treated as an index of definitions, to be referred back to as 
-necessary during reading. In the following, we assume $M$ is a compact or a smooth manifold 
+In the following, we assume $M$ is a compact or a smooth manifold 
 in $\mathbb{R}^d$, endowed with a metric $d$, and the 
 map $f: M \to M$ is at least a homeomorphism. We further assume that $P$ is a partition 
-of a compact set $Q \subset M$ into (up to a null set) disjoint boxes, and 
+of a compact set $Q \subset M$ into (up to a Lebesque-null set) disjoint boxes, and 
 $\mathcal{B} \subset \mathcal{P}$ is a subset of boxes. Our setting is a 
 \emph{discrete, autonomous dynamical system}, that is, a system of the form:
 
@@ -44,9 +41,11 @@ $\mathcal{B} \subset \mathcal{P}$ is a subset of boxes. Our setting is a
 
 A continuous dynamical system $\dot{x} = F(x)$ can be \emph{discretized} by, for example,
 considering the \emph{Poincaré time-$t$ map} over some $d-1$ dimensional hyperplane,
-or by setting one "step" of the system as integrating $F$ for a set time $t$. \\
+or by setting one "step" of the system as integrating $F$ for a set time $t$. 
 
-First, we set some notation for convenience.
+% -------------------------------------------------------------------------------------- %
+
+\subsection{Some Notation}
 
 \begin{definition}[Image of a Box Set]
     We will call the \emph{image of $\mathcal{B}$ under f} 
@@ -93,7 +92,9 @@ First, we set some notation for convenience.
     $d(\mathcal{B}) = \max_{\substack{B\, \in\, \mathcal{B},\\ x,\, y\, \in\, B}} d(x, y)$. 
 \end{definition}
 
-We continue with a set of topological definitions of sets we wish to approximate.
+% -------------------------------------------------------------------------------------- %
+
+\subsection{Topological Definitions}
 
 \begin{definition}[(Forward-, Backward-) Invariant]
     \cite*{algGAIO} A set $A$ is called \emph{forward-invariant} if $f(A) \subset A$, 
@@ -154,7 +155,7 @@ sets within the system. In particular, it contains local unstable manifolds.
     \cite*{dynbook} Let $n\in \mathbb{N}$. A set 
     $\left\{ x_k\ \vert\ k \in \left\{ 0,\ \dotsc ,\ n \right\} \right\}$ 
     is called \emph{$\epsilon$-pseudoperiodic} if for any
-    $k,\,\ d(x_{k\, \text{mod}\, n},\ x_{k + 1\, \text{mod}\, n}) < \epsilon$.
+    $k,\,\ d(f(x_{k\, \text{mod}\, n}),\ x_{k + 1\, \text{mod}\, n}) < \epsilon$.
 \end{definition}
 
 As the name suggests, an $\epsilon$-pseudoperiodic orbit is "almost" periodic in the sense 
@@ -179,8 +180,8 @@ useful definition in our approximations.
 \end{definition}
 
 % -------------------------------------------------------------------------------------- %
-Finally, we give a set of measure-theoretical definitions for types of measures we wish to 
-approximate. \\
+
+\subsection{Stochastic Definitions}
 
 Since our goal is to partition the manifold into a finite set of boxes, we must accept some
 amount of "uncertainty" in how our sets look, and how \emph{exactly} $f$ maps such a set.
@@ -336,10 +337,10 @@ Hence $\nu (E^+) = - \nu (E^-)$, which means $| \nu | (E^+) = | \nu | (E^-) = \f
         \delta + \sigma = \lambda + 1 \approx 0.
     \end{gather}
     
-    This implies that nearly all the $\nu$-mass of $E^+$ gets transported to $E^-$, and vice 
-    versa. We call this an \emph{almost invariant two-cycle}.     
+    This implies that nearly all the $\nu$-mass of $E^+$ gets transported to $E^-$ by $f$, 
+    and vice versa. We call this an \emph{almost invariant two-cycle}.     
 \end{example} 
 
-\newpage
+%\newpage
 
 % -------------------------------------------------------------------------------------- %

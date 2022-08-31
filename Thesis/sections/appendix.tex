@@ -79,7 +79,7 @@
 
 \clearpage
 
-\begin{jllisting}[float, floatplacement=hb!, language=julia, style=jlcodestyle, label=lst:boxmap, caption=Function to calculate $f(\mathcal{B})$]
+\begin{jllisting}[float, floatplacement=hb!, language=julia, style=jlcodestyle, label=lst:boxmap, captionpos=b, caption=Function to calculate $f(\mathcal{B})$]
     function map_boxes(g::SampledBoxMap, source::BoxSet)
         P = source.partition
 
@@ -96,7 +96,7 @@
                 # Skip to next iteration if `fp` lands outside `P`
                 isnothing(hitbox) && continue
 
-                # Add perturbations to fp
+                # Add perturbations to `fp`
                 r = hitbox.radius
                 image_points = g.image_points(c, r)
                 for ip in image_points
@@ -113,14 +113,15 @@
     end 
 \end{jllisting}
 
-\begin{jllisting}[float, floatplacement=hb!, language=julia, style=jlcodestyle, label=lst:boxmap_cpu, caption=Function to calculate $f(\mathcal{B})$ with CPU acceleration]
+\begin{jllisting}[float, floatplacement=hb!, language=julia, style=jlcodestyle, label=lst:boxmap_cpu, captionpos=b, caption=Function to calculate $f(\mathcal{B})$ with CPU acceleration]
     function map_boxes(
             g::SampledBoxMap{C,N}, source::BoxSet
         ) where {simd,C<:BoxMapCPUCache{simd},N}
         
         # Preallocated temporary storage objects.
         # `temp_vec` and `temp_points` are reinterprets of
-        # the same array, `temp_points` is an array of tuples
+        # the same array, `temp_points` is an array of tuples.
+        # `idx_base` is a SIMD Vec of indices used for `tuple_vscatter!`
         idx_base, temp_vec, temp_points = g.acceleration
         
         P = source.partition
@@ -156,44 +157,7 @@
     end
 \end{jllisting}
 
-\begin{jllisting}[float, floatplacement=hb!, language=julia, style=jlcodestyle, label=lst:gpu_kernel, caption=GPU kernel to calculate $f(\mathcal{B})$]
-    function map_boxes_kernel(
-            f,          # Function
-            keys,       # Keys to be mapped
-            points,     # "Global" test points
-            out_keys,   # Array to hold mapped box indices ...
-            P           # ... wrt the partition P
-        )
-
-        # Calculate the index of the GPU thread
-        ind = (blockIdx().x - 1) * blockDim().x + threadIdx().x - 1
-        stride = gridDim().x * blockDim().x
-        nk, np = length(keys), length(points)
-        len = nk * np - 1
-
-        # In case `len` is too large, launch the warp repeatedly
-        for i in ind : stride : len
-        
-            # Loop over the test points, then the box index
-            m, n = divrem(i, np) .+ 1
-            p    = points[m]
-            key  = keys[n]
-            box  = key_to_box(P, key)
-            c, r = box.center, box.radius
-
-            # Map the point forward and record the result
-            fp   = f(@muladd p .* r .+ c)
-            hit  = point_to_key(P, fp)
-
-            # If `fp` lands outside the partition, assign it the
-            # out-of-bounds index 0. This will later be discarded
-            out_keys[i+1] = isnothing(hit) ? 0 : hit
-
-        end
-    end
-\end{jllisting}
-
-\begin{jllisting}[float, floatplacement=hb!, language=julia, style=jlcodestyle, label=lst:boxmap_gpu, caption=Function to calculate $f(\mathcal{B})$ with GPU acceleration]
+\begin{jllisting}[float, floatplacement=hb!, language=julia, style=jlcodestyle, label=lst:boxmap_gpu, captionpos=b, caption=Function to calculate $f(\mathcal{B})$ with GPU acceleration]
     function map_boxes(
             g::SampledBoxMap{C}, source::BoxSet
         ) where {SZ,C<:BoxMapGPUCache{SZ}}

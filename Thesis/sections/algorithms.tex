@@ -22,7 +22,7 @@ a natural \emph{ansatz} for its approximation using a compact subdomain $Q \subs
     global attractor.\\
 \end{remark}
 
-The idea to approximate the relative global attractor is in two steps
+The idea to approximate the relative global attractor is in two steps:
 
 \begin{enumerate}
     \item First, \emph{subdivide} the box set $\mathcal{B}$: construct a new set 
@@ -65,14 +65,14 @@ The idea to approximate the relative global attractor is in two steps
 
 \begin{proposition}\label{thm:cover}
     \cite*{algGAIO,subalg} Set 
-    $Q_i = \bigcup_{B \in \mathcal{B}_i} B,\quad Q_\infty = \bigcap_{n \geq 1} Q_n$. 
+    $Q_n = \bigcup_{B \in \mathcal{B}_n} B,\quad Q_\infty = \bigcap_{n \geq 1} Q_n$. 
     Assume the subdivision technique satisfies $d(\mathcal{B}_n) \to 0$ as $n \to \infty$. 
-    For all $i$ we have
+    For all $n$ we have
 
     \begin{enumerate}
-        \item $Q_{i+1} \subset Q_i$
-        \item $A_Q \subset Q_i$ 
-        \item $A_Q = Q_\infty$
+        \item $Q_{n+1} \subset Q_n$, 
+        \item $A_Q \subset Q_n$, 
+        \item $A_Q = Q_\infty$. 
     \end{enumerate}
 
     In particular, this shows that $Q_\infty$ is backward-invariant. 
@@ -83,13 +83,13 @@ The idea to approximate the relative global attractor is in two steps
 \subsection{Unstable Manifold}
 
 From the definition of the local unstable manifold $W^u(\bar{x}, U)$ we see that the 
-relative global attractor $R_Q(f)$ contains the local unstable manifold, and, provided the 
-set $Q$ is sufficiently small, $W^u(\bar{x}, U)$ coincides with $R_Q(f)$. For further 
+relative global attractor $A_Q$ contains the local unstable manifold, and, provided the 
+set $Q$ is sufficiently small, $W^u(\bar{x}, U)$ coincides with $A_Q$. For further 
 details, see \cite*{manifold, geodynbook}. Using this knowledge, we can approximate the 
 global unstable manifold $W^u(\bar{x})$: 
 
 \begin{enumerate}
-    \item first, we perform an \emph{initialiation step}: replace the calculation of 
+    \item First, we perform an \emph{initialiation step}: replace the calculation of 
     the local unstable manifold with the calculation of the relative
     attractor for a small set $Q'$ surrounding the fixed point $\bar{x}$, using 
     \autoref{alg:relativeattractor}. 
@@ -109,6 +109,7 @@ global unstable manifold $W^u(\bar{x})$:
 
         \While{$\mathcal{B}_1 \neq \emptyset$}
             \State $\mathcal{B}_1 \gets f(\,\mathcal{B}_1\,)$
+            \label{alg:manifold:map}
             \State $\mathcal{B}_1 \gets \mathcal{B}_1\, \setminus\, \mathcal{B}_0$
             \State $\mathcal{B}_0 \gets \mathcal{B}_1\, \cup\, \mathcal{B}_0$
         \EndWhile
@@ -118,7 +119,8 @@ global unstable manifold $W^u(\bar{x})$:
 \end{algorithm}
 
 \begin{proposition}
-    \cite*{manifold} The algorithm in general cannot guarantee covering of the 
+    \cite*{manifold} Let $\bar{x}$ by a hyperbolic fixed point of $f$.
+    The algorithm in general cannot guarantee covering of the 
     entire unstable manifold, nor can it guarantee covering of the entirety of 
     $W^u(\bar{x}) \cap Q$. This is because $W^u(\bar{x})$ could in theory exit $Q$, 
     but return at another point. The algorithm can however guarantee covering 
@@ -137,8 +139,8 @@ vertices, for which each vertex is part of a directed cycle. We can equivalently
 characterize this set as follows:
 
 \begin{definition}[Strongly Connected]
-    For a directed graph $G = (V, E)$, a subset $H \subset V$ of vertices is called 
-    \emph{strongly connected} if for all $u, v \in H$ there exist paths in both 
+    \cite*{dynbook} For a directed graph $G = (V, E)$, a subset $H \subset V$ of vertices 
+    is called \emph{strongly connected} if for all $u, v \in H$ there exist paths in both 
     directions between $v$ and $u$. Denote by \textproc{scc}$(G, v)$ the strongly connected
     subgraph which includes $v$, and by 
     \textproc{sccs}$(G) = \bigcup_{v \in V}\,$\textproc{scc}$(G, v)$ 
@@ -163,10 +165,18 @@ characterize this set as follows:
 \end{algorithm}
 
 \begin{proposition}
-    Denote by $r(f, B)$ the minimum Hausdorff distance between the image $f(B)$ and a 
-    box $B'$ not in the image, ie $r(f, B) = \min_{B' \notin f(B)} d(B', f(B))$ and let 
-    $r$ be the minimum of $r(f, B)$ over the partition $\mathcal{P}$, ie 
-    $r = \min_{B \in \mathcal{P}} r(f, B)$. Then we have
+    \cite*{chain,dynbook}
+    Let $\mathcal{P}$ be a cover of $Q$ into \emph{closed} sets. 
+    Denote by $r(B)$ the minimum Hausdorff distance between the image $f(B)$ and a 
+    box $B'$ that does not intersect the box covering $f(\mathcal{B})$, ie 
+    
+    \begin{equation}
+        r(B) = \min_{\substack{B' \in \mathcal{P}\ \\ B' \cap f(\mathcal{B}) = \emptyset}} d(B', f(B)) 
+        \quad \text{where} \quad \mathcal{B} = \left\{ B \right\}.
+    \end{equation}
+    
+    Denote by $r$ the minimum of $r(B)$ over $\mathcal{P}$, ie 
+    $r = \min_{B \in \mathcal{P}} r(B)$. Then we have
 
     \begin{enumerate}
         \item If a cycle $\left\{ B_0,\ \ldots,\ B_{n-1} \right\}$ exists in $G$, then 
@@ -181,33 +191,33 @@ characterize this set as follows:
 
 \end{proposition}
 
-\begin{proof}
-    The distance $r(f, B)$ is strictly positive by construction. Since $\mathcal{P}$ is 
-    finite, the minimum of $r(f, B)$ over $\mathcal{P}$ is also positive, and hence 
-    it is well-defined. 
-
-    \begin{enumerate}
-        \item Consider a cycle in $G$. Then by construction, for each edge $(B_i, B_{i+1})$ 
-        in the cycle we can find a point $x_i \in B_i$ which gets mapped into $B_{i+1}$. 
-        Doing this for all edges we get a set $\left\{ x_0,\ x_1,\ \ldots,\ x_{n-1} \right\}$ 
-        which satisfies $d(x_{i\, \text{mod}\, n},\ x_{i+1\, \text{mod}\, n}) \leq d(\mathcal{P})$, 
-        ie a $d(\mathcal{P})$-pseudoperiodic orbit. 
-        \item Conversely, consider an $\epsilon$-pseudoperiodic orbit with $\epsilon < r$, 
-        and $\left\{ B_0,\ \ldots,\ B_{n-1} \right\}$ with $x_i \in B_i$. 
-        Then we have the inequalities 
-
-        \begin{equation}
-            d(f(B_{i\, \text{mod}\, n}),\ B_{i+1\, \text{mod}\, n}) \leq
-            d(f(x_{i\, \text{mod}\, n}),\ x_{i+1\, \text{mod}\, n}) <
-            \epsilon \leq r.
-        \end{equation}
-
-        But by construction, $r$ is the minimum distance between any box $B$ and the image 
-        of any other box $f(B')$ which do not intersect. Hence 
-        $f(B_{i\, \text{mod}\, n})$ must intersect $B_{i+1\, \text{mod}\, n}$, so there 
-        exists an edge $(B_{i\, \text{mod}\, n},\, B_{i+1\, \text{mod}\, n})$ in $G$. 
-    \end{enumerate}
-\end{proof}
+%\begin{proof}
+%    The distance $r(B)$ is strictly positive by construction. Since $\mathcal{P}$ is 
+%    finite, the minimum of $r(B)$ over $\mathcal{P}$ is also positive, and hence 
+%    it is well-defined. 
+%
+%    \begin{enumerate}
+%        \item Consider a cycle in $G$. Then by construction, for each edge $(B_i, B_{i+1})$ 
+%        in the cycle we can find a point $x_i \in B_i$ which gets mapped into $B_{i+1}$. 
+%        Doing this for all edges we get a set $\left\{ x_0,\ x_1,\ \ldots,\ x_{n-1} \right\}$ 
+%        which satisfies $d(f(x_{i\, \text{mod}\, n}),\ x_{i+1\, \text{mod}\, n}) \leq d(\mathcal{P})$, 
+%        ie a $d(\mathcal{P})$-pseudoperiodic orbit. 
+%        \item Conversely, consider an $\epsilon$-pseudoperiodic orbit with $\epsilon < r$, 
+%        and $\left\{ B_0,\ \ldots,\ B_{n-1} \right\}$ with $x_i \in B_i$. 
+%        Then we have the inequalities 
+%
+%        \begin{equation}
+%            d(f(B_{i\, \text{mod}\, n}),\ B_{i+1\, \text{mod}\, n}) \leq
+%            d(f(x_{i\, \text{mod}\, n}),\ x_{i+1\, \text{mod}\, n}) <
+%            \epsilon \leq r.
+%        \end{equation}
+%
+%        But by construction, $r$ is the minimum distance between any box $B$ and the image 
+%        of any other box $f(B')$ which do not intersect. Hence 
+%        $f(B_{i\, \text{mod}\, n})$ must intersect $B_{i+1\, \text{mod}\, n}$, so there 
+%        exists an edge $(B_{i\, \text{mod}\, n},\, B_{i+1\, \text{mod}\, n})$ in $G$. 
+%    \end{enumerate}
+%\end{proof}
 
 \begin{corollary}
     Proposition \ref{thm:cover} holds for \autoref{alg:chain}. That is, replacing $A_Q$ 
@@ -215,15 +225,16 @@ characterize this set as follows:
 \end{corollary}
 
 \begin{proof}
-    The inclusions $1.$ and $2.$ from Proposition \ref{thm:cover} are clear. For the 
-    equality $3.$ consider the following. 
-    We have that the existence of a cycle in $G$ is a \emph{necessary} condition for an
+    The inclusions $1.$ and $2.$ from Proposition \ref{thm:cover} are clear (cf. 
+    \cite*{dynbook}). For the equality $3.$ consider the following. 
+    The existence of a cycle in $G$ is a \emph{necessary} condition for an
     $\epsilon$-pseudoperiodic orbit with $\epsilon < r$, and it is also a 
     \emph{sufficient} condition for an $\epsilon$-pseudoperiodic orbit with 
-    $\epsilon \geq d(\mathcal{P})$. Letting $d(\mathcal{B}) \to 0$ gives a condition which 
+    $\epsilon \geq d(\mathcal{P})$. Letting $d(\mathcal{P}) \to 0$ by successive subdivision 
+    (which imples $r \to 0$) gives a condition which 
     is both necessary and sufficient for the existence of $\epsilon$-pseudoperiodic orbits 
     with $\epsilon > 0$, and hence the box covering $Q_\infty$ is precisely the chain 
-    recurrent set $R_Q$. For further details, see \cite*{chain}. 
+    recurrent set $R_Q$. For further details, see \cite*{chain,dynbook}. 
 \end{proof}
 
 % -------------------------------------------------------------------------------------- %
@@ -232,8 +243,7 @@ characterize this set as follows:
 
 We shift focus to approximating invariant measures for the Perron-Frobenius operator $P$.
 For simplicity we will work only with transition functions absolutely continuous with 
-respect to the Lebesque measure on $M$, ie measures for which there exists a 
-\emph{kernel} $k$ with 
+respect to the Lebesque measure on $M$, ie there exists a \emph{kernel} $k$ with 
 
 \begin{equation}
     \label{eq:kernel}
@@ -285,10 +295,10 @@ $B_i$, and set $P_{ij}$ as the fraction of test points which land in $B_j$:
                 \State $P_{ij}^n \gets \left. |\ B_j \cap f(p)\ | \ \middle/\ |\ p\ | \right.$
             \EndFor
     
-            \State $v \gets $ Find a fixed point of $P^n$
+            \State $v^n \gets $ Find a fixed point of $P^n$
             \label{alg:measure:fix}
-            \State $\phi^n \gets \sum_{i=1}^n\: v_i\, \chi_{B_i}$
-            \State \Return $\phi_n$
+            \State $\phi^n \gets \sum_{i=1}^n\: v_i^n\, \chi_{B_i}$
+            \State \Return $\phi^n$
         \end{algorithmic}
     \end{spacing}
 \end{algorithm}
@@ -339,6 +349,7 @@ $B_i$, and set $P_{ij}$ as the fraction of test points which land in $B_j$:
         \phi_\epsilon^n \to \phi 
         \quad\text{as}\quad n \to \infty,\ \epsilon \to 0.
     \end{equation}
+
 \end{proposition}
 
 % -------------------------------------------------------------------------------------- %
@@ -371,10 +382,17 @@ Assume now that there exists an $n \in \mathbb{N}$ such that $P^n$ has an eigenv
 with multiplicity $2$. Then as described in \cite*{algGAIO}: by the above theorem, 
 as $n \to \infty$ the eigenvalue will split into two simple eigenvalues, one of 
 which will move away from $1$ (the other will stay at unity since $P^n$ is column 
-stochastic). If we now find this eigenvector $\phi^n$, then (again by the above theorem 
-and the continuity of $P$) the sets $E_n^+ = \bigcup_{B_i\ \vert\ \phi_i^n \geq 0} B_i$ 
-and $E_n^- = \bigcup_{B_i\ \vert\ \phi_i^n < 0} B_i$ will converge to the sets $E^+$ and 
-$E^-$ from Theorem \ref{thm:almost}. That is, they are almost invariant. 
+stochastic). If we now find this eigenvector $v^n$ of $P^n$, then (again by the above 
+theorem and the continuity of $P$) the sets 
+
+\begin{equation}
+    E_n^+ = \bigcup_{i\ \vert\ v_i^n \geq 0} B_i
+    \quad \text{and} \quad 
+    E_n^- = \bigcup_{i\ \vert\ v_i^n < 0} B_i 
+\end{equation}
+    
+will converge to the sets $E^+$ and $E^-$ from Theorem \ref{thm:almost} as $n \to \infty$. 
+That is, they are almost invariant. 
 
 \begin{algorithm}
     \caption{Almost Invariant Sets}
@@ -387,18 +405,18 @@ $E^-$ from Theorem \ref{thm:almost}. That is, they are almost invariant.
                 \State $P_{ij}^n \gets \left. |\ B_j \cap f(p)\ | \ \middle/\ |\ p\ | \right.$
             \EndFor
     
-            \State $v \gets $ Find an eigenvector to an eigenvalue $\lambda \neq 1$ of $P^n$
+            \State $v^n \gets $ Find an eigenvector to an eigenvalue $\lambda \neq 1$ of $P^n$
             \label{alg:almost:fix}
-            \State $E^+ \gets \cup \left\{ B_i\ \vert\ v_i \geq 0 \right\}$
-            \State $E^- \gets \cup \left\{ B_i\ \vert\ v_i < 0 \right\}$
-            \State \Return $E^+,\ E^-$
+            \State $E_n^+ \gets \cup \left\{ B_i\ \vert\ v_i^n \geq 0 \right\}$
+            \State $E_n^- \gets \cup \left\{ B_i\ \vert\ v_i^n < 0 \right\}$
+            \State \Return $E_n^+,\ E_n^-$
         \end{algorithmic}
     \end{spacing}
 \end{algorithm}
 
 \begin{remark}
-    The algorithm can also be used to find almost invariant cycles. In this case line 
-    \ref{alg:almost:fix} simply needs to be changed to find an eigenvector near $-1$. \\
+    The algorithm can also be used to find almost invariant cycles. In this case 
+    Line~\ref{alg:almost:fix} simply needs to be changed to find an eigenvector near $-1$. \\
 \end{remark} 
 
 % -------------------------------------------------------------------------------------- %

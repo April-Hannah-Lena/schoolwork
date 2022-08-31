@@ -57,7 +57,7 @@ manifold (see \autoref{alg:manifold}) implemented in matlab (\autoref{lst:gum:ma
 and in julia (\autoref{lst:gum:julia}). The julia code is one third as long, mirrors 
 the pseudocode much more closely, and still runs faster than the matlab code.
 
-\begin{jllisting}[float, language=matlab, style=jlcodestyle, label=lst:gum:matlab, caption=Unstable manifold algorithm in matlab]
+\begin{jllisting}[float, language=matlab, style=jlcodestyle, label=lst:gum:matlab, captionpos=b, caption=Unstable manifold algorithm in matlab]
     function gum(t, f, X, depth)
     dim = t.dim;
     none = 0; ins = 2; expd = 4;             % defining flags
@@ -86,7 +86,7 @@ the pseudocode much more closely, and still runs faster than the matlab code.
     end
 \end{jllisting}
 
-\begin{jllisting}[float, language=julia, style=jlcodestyle, label=lst:gum:julia, caption=Unstable manifold algorithm in julia]
+\begin{jllisting}[float, language=julia, style=jlcodestyle, label=lst:gum:julia, captionpos=b, caption=Unstable manifold algorithm in julia]
     function unstable_set(F::BoxMap, B::BoxSet)
         B₀ = B
         B₁ = B

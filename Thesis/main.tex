@@ -12,6 +12,8 @@
 \usepackage[utf8]{inputenc}
 \usepackage{caption}
 \usepackage{subcaption}
+\usepackage{afterpage}
+\usepackage{placeins}
 \usepackage{biblatex}
 \usepackage{fontspec}
 \usepackage{setspace}
@@ -118,12 +120,19 @@
 \raggedbottom
 
 \import{sections/}{dynamical_systems.tex}
+\afterpage{\FloatBarrier}
 \import{sections/}{algorithms.tex}
+\afterpage{\FloatBarrier}
 \import{sections/}{julia.tex}
+\afterpage{\FloatBarrier}
 \import{sections/}{cpu.tex}
+\afterpage{\FloatBarrier}
 \import{sections/}{gpu.tex}
+\afterpage{\FloatBarrier}
 \import{sections/}{results.tex}
+\afterpage{\FloatBarrier}
 
+\nocite{*}
 \printbibliography
 
 \newpage

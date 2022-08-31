@@ -16,7 +16,8 @@ apply to most modern CPUs built on the x86 64-bit ISA. \\
 A processor microarchitecture can be further split to 3 components (see \autoref{fig:CPU}): 
 
 \begin{itemize}
-    \item The front end, which consists of instruction register (also called instruction cache) and instruction fetch / decode 
+    \item The front end, which consists of instruction register (also called instruction 
+    cache) and instruction fetch / decode 
     units. This is responsible for fetching batches of instructions from memory, storing 
     the batches in the instruction cache, and decoding the instructions into a set of 
     \emph{micro-operations, or $\mu$Ops}.
@@ -117,7 +118,7 @@ the "packed" space $(\mathbb{R}^4)^3$:
 
 \begin{minipage}{\linewidth}
 \begin{jllisting}[language=julia, style=jlcodestyle]
-    x = [   # three 4xFloat64<...> are seen as a point in our "packed" 3d space
+    x = [   # three `4xFloat64<...>` are seen as a point in "packed" 3d 
         (
             4xFloat64<1., 0., 0., 0.>, 
             4xFloat64<0., 1., 0., 0.>, 
@@ -180,9 +181,9 @@ that the number of points $n$ is divisible by $4$.
 We generalize this permutation $S$ to arbitrary dimension $d$, SIMD vector length $s$ and 
 vector of points $x$ with length $n$ in \autoref{lst:tuple_vgather}. \\
 
-\begin{jllisting}[float, floatplacement=ht!, language=julia, style=jlcodestyle, label=lst:tuple_vgather, caption=Conversion function to packed tuples]
+\begin{jllisting}[float, floatplacement=ht!, language=julia, style=jlcodestyle, label=lst:tuple_vgather, captionpos=b, caption=Conversion function to packed tuples]
     function tuple_vgather(x::Vector{NTuple{d,T}}, s) where {d,T}
-        # x is a vector of tuples, each of length d and datatype T
+        # `x` is a vector of tuples, each of length `d` and datatype `T`
     
         n = length(x)                                   
         m = n ÷ s
@@ -190,7 +191,7 @@ vector of points $x$ with length $n$ in \autoref{lst:tuple_vgather}. \\
             throw(DimensionMismatch("length of input not divisible by simd"))
         end
     
-        # Change type interpretation of x's memory
+        # Change type interpretation of the memory of `x`
         vr = reinterpret(T, x)
     
         # Initialize the vector of packed tuples
@@ -200,7 +201,7 @@ vector of points $x$ with length $n$ in \autoref{lst:tuple_vgather}. \\
         idx = Vec(ntuple( i -> (i-1) * d, s ))
     
         # Grab the indices of the first element of the i-th packed vector, 
-        # then jump by d*s to grab the indices of the second element, and so on
+        # then jump by `d*s` to grab indices of the second element, etc.
         for i in 1:m
             vo[i] = ntuple( j -> vr[idx + (i-1) * d * s + j], d )
         end                                             
@@ -218,22 +219,24 @@ functions afterward. This is the inverse of a gather operation, and is called
 to accelerate the function \jlinl{map_boxes} using SIMD. For the implementation, 
 see \autoref{lst:boxmap_cpu}. \\
 
-\begin{jllisting}[float, floatplacement=ht!, language=julia, style=jlcodestyle, label=lst:tuple_vscatter, caption=Conversion back to single tuples]
+\begin{jllisting}[float, floatplacement=ht!, language=julia, style=jlcodestyle, label=lst:tuple_vscatter, captionpos=b, caption=Conversion back to single tuples]
     function tuple_vscatter(y::Vector{NTuple{d,Vec{s,T}}}) where {s,d,T}
-        # y is a vector of packed tuples, tuples of SIMD Vecs
+        # `y` is a vector of packed tuples, tuples of SIMD Vecs
 
         # Initialize the unpacked vector
         vo = Vector{NTuple{d,T}}(undef, s * length(y))
 
-        # Create a view of vo which is made of individual numbers of type T 
+        # Create a view of `vo` which is made of individual numbers of type `T` 
+        # as well as a view of `y` which is made up of packed `T`-vectors
         vr = reinterpret(T, vo)
+        yy = reinterpret(Vec{s,T}, y)
 
         # The indices that form the first element of the first packed vector
         idx = Vec(ntuple( i -> d * (i-1), s ))
 
-        # set the values of vr as the permuted values of y
+        # set the values of `vr` as the permuted values of `y`
         for i in 1:d, j in 1:length(vi)
-            vr[idx + (j-1) * d * s + i] = y[i + (j-1) * d]
+            vr[idx + (j-1) * d * s + i] = yy[i + (j-1) * d]
         end
 
         return vo

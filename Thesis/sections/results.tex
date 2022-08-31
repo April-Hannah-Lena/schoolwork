@@ -26,11 +26,13 @@ One trial of the test was calculating the unstable set for the equilibrium point
     (x, y, z) = \left(\,\sqrt{\beta (\rho - 1)},\,\ \sqrt{\beta (\rho - 1)},\,\ \rho - 1\,\right)
 \end{equation}
 
-using \autoref{alg:manifold} (see also \autoref{lst:gum:julia}). The test was performed on 
-a Dell G15 5510 laptop with Intel i7-10870H CPU and Nividia GeForce RTX 3060 laptop GPU, 
-running Ubuntu 22.04 LTS. A depiction of the unstable set can be found in \autoref{fig:lorenz}, 
-result graphs can be found in \autoref{fig:times}, and code for the tests can be found 
-in \cite*{benchmarks}. \\
+using \autoref{alg:manifold} (see also \autoref{lst:gum:julia}). \autoref{alg:manifold} 
+was chosen for its simplicity: nearly all of the effective run time is due to 
+Line~\ref{alg:manifold:map} calculating $f(\mathcal{B})$. This makes it ideal for demonstration. 
+The test was performed on a Dell G15 5510 laptop with Intel i7-10870H CPU and Nividia 
+GeForce RTX 3060 laptop GPU, running Ubuntu 22.04 LTS. A depiction of the unstable set 
+can be found in \autoref{fig:lorenz}, result graphs can be found in \autoref{fig:times}, 
+and code for the tests can be found in \cite*{benchmarks}. \\
 
 \begin{figure}[ht!]
     \centering
@@ -62,45 +64,56 @@ in \cite*{benchmarks}. \\
 
 \begin{figure}[ht!]
     \centering
-    \begin{subfigure}[t]{0.45\textwidth}
-        \includegraphics[width=\textwidth]{times_simple.pdf}
-        \caption{Times for a "simple" map, $k = 10$.}
-        \label{fig:times:simple}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[t]{0.45\textwidth}
-        \includegraphics[width=\textwidth]{times_medium.pdf}
-        \caption{Times for an "average" map, $k = 100$.}
-        \label{fig:times:med}
-    \end{subfigure}
-    \medskip
-    \begin{subfigure}[t]{0.45\textwidth}
-        \includegraphics[width=\textwidth]{times_simple_loglog.pdf}
-        \caption{Log-Log plot of times for the "simple" map, $k = 10$.}
-        \label{fig:times:simple:loglog}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[t]{0.45\textwidth}
-        \includegraphics[width=\textwidth]{times_medium_loglog.pdf}
-        \caption{Log-Log plot of times for the "average" map, $k = 100$.}
-        \label{fig:times:med:loglog}
-    \end{subfigure}
-    \medskip
-    \begin{subfigure}[t]{0.45\textwidth}
-        \includegraphics[width=\textwidth]{times_complex_loglog.pdf}
-        \caption{Log-Log plot of times for a "complex" map, $k = 1000$.}
-        \label{fig:times:complex:loglog}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[t]{0.45\textwidth}
-        \includegraphics[width=\textwidth]{times_steps_loglog.pdf}
-        \caption{Log-Log plot of map complexity $k$ vs time, where $N = 400$ is constant.}
-        \label{fig:times:steps:loglog}
-    \end{subfigure}
+    \makebox[\linewidth][c]{
+        \begin{subfigure}[t]{0.4\textwidth}
+            \includegraphics[width=0.95\textwidth]{times_simple.pdf}
+            \caption{Times for a "simple" map, $k = 10$.}
+            \label{fig:times:simple}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}[t]{0.4\textwidth}
+            \includegraphics[width=0.95\textwidth]{times_medium.pdf}
+            \caption{Times for an "average" map, $k = 100$.}
+            \label{fig:times:med}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}[t]{0.4\textwidth}
+            \includegraphics[width=0.95\textwidth]{times_complex.pdf}
+            \caption{Times for a "complex" map, $k = 1000$.}
+            \label{fig:times:complex}
+        \end{subfigure}
+    }
+    \\ 
+    \makebox[\linewidth][c]{
+        \begin{subfigure}[t]{0.4\textwidth}
+            \includegraphics[width=0.95\textwidth]{times_simple_loglog.pdf}
+            \caption{Log-Log plot of \ref{fig:times:simple}}
+            \label{fig:times:simple:loglog}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}[t]{0.4\textwidth}
+            \includegraphics[width=0.95\textwidth]{times_medium_loglog.pdf}
+            \caption{Log-Log plot of \ref{fig:times:med}}
+            \label{fig:times:med:loglog}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}[t]{0.4\textwidth}
+            \includegraphics[width=0.95\textwidth]{times_complex_loglog.pdf}
+            \caption{Log-Log plot of \ref{fig:times:complex}}
+            \label{fig:times:complex:loglog}
+        \end{subfigure}
+    }
     \caption{
         Execution time for \autoref{alg:manifold} using various steps $k$ and test points $N$. 
     }
     \label{fig:times}
+\end{figure}
+
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{times_steps_loglog.pdf}
+    \caption{Log-Log plot of number of steps $k$ vs time ($s$), where $N = 400$ is constant.}
+    \label{fig:steps}
 \end{figure}
 
 Execution time without acceleration and with CPU acceleration both show linear trends 
@@ -122,7 +135,7 @@ performance, though this is no longer the case in \autoref{fig:times:med}. This 
 because the calculation for the "simple" map can be performed so quickly that the 
 execution time is dominated by the time it takes to transfer the box set to the GPU 
 memory. A more detailed examination of this phenomenon can be seen in 
-\autoref{fig:times:steps:loglog}. In this case $k = 26$ steps was required before the 
+\autoref{fig:steps}. In this case $k = 26$ steps was required before the 
 GPU-accelerated version beat out the version without acceleration, and $k = 32$ steps were 
 required to beat the CPU-accelerated version. However, once this threshold has been 
 passed the GPU performs significantly better. Moreover, the speedup factor does not remain 
@@ -131,10 +144,10 @@ surpassed a 100-fold speedup, and continues to climb. Due to the limits of the t
 hardware and time, steps were only tested up to $k = 10000$. At this point the rate of 
 increase of the speedup factor had slowed, though notably had not stopped. \\
 
-The results of the present paper solidify that GAIO.jl is n ideal candidate for 
+The results of the present paper solidify that GAIO.jl is an ideal candidate for 
 parallel programming due to its high proportion of data-independent computations. As of 
 the writing, there are still regions of active development. These include endowing the 
-matrix transfer operator $P_{ij}$ from \autoref{eq:pij} with a structure that allows it to 
+matrix transfer operator $P^n$ from \autoref{eq:pij} with a structure that allows it to 
 act as the operator $Q_n P$ from \autoref{eq:qnp}, as well as 
 efficiently porting adaptive test point sampling techniques to the GPU. 
 

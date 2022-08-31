@@ -17,7 +17,7 @@ assigned to different threads concurrently. Less focus is given to low-latency m
 access and operations, and more focus is given to launching many separate threads. \\
 
 To manage this amount of parallel work, the components of a GPU are split into a 
-hierarchy: 
+hierarchy \cite*{gpuarch, gpuarch2, solvercomp}: 
 
 \begin{itemize}
     \item A single processing unit is known as a thread. A single consumer-level GPU can 
@@ -50,7 +50,9 @@ that each SM can hold many instructions and dispatch them to eligible warps befo
 stalling due to a data request \cite*{solvercomp}. A warp may of course need to access 
 the slower L1 or L2 caches for data, but while that is happening other warps are already 
 performing different operations, so that - in effect - this memory access latency is 
-hidden. \\
+hidden. A potential disadvantage of this approach is that the execution time of a warp 
+is limited by the slowest thread in the warp forcing others to idle. If the execution 
+time between threads in a warp is large, this effect is called \emph{thread divergence}. \\
 
 An important consideration when launching computations on the GPU (known as \emph{kernels}) 
 is the block size. Since all threads in a SM must share the instruction register, 
@@ -61,9 +63,9 @@ total can be launched by the SM, since each SM has a maximal number of residing 
 determined by the hardware. 
 
 \begin{definition}
-    We call the ratio of the number of residing threads $n$ in a SM vs the theoretical 
-    maximum number of threads $N$ per SM allowed by the hardware the \emph{occupancy $O$}, 
-    that is, $O = n / N$.
+    \cite*{occupancy, solvercomp} We call the ratio of the number of residing threads $n$ 
+    in a SM vs the theoretical maximum number of threads $N$ per SM allowed by the hardware 
+    the \emph{occupancy $O$}, that is, $O = n / N$.
 \end{definition}
 
 \begin{example}
@@ -81,13 +83,16 @@ determined by the hardware.
 
 \end{example}
 
-The precise "best" balance between occupancy and registers is highly problem dependent, 
+The precise "best" balance between occupancy and register size is highly problem dependent, 
 and there are many other hardware-based factors which affect the true achievable occupancy. 
+These factors iclude, but are not limited to, unbalanced workload within / across blocks, 
+launching too few blocks per SM, and not launching enough calculations to saturate all 
+threads in a warp \cite*{occupancy}. 
 This makes optimal GPU performance not always feasible when writing generic code. However, 
-Nvidia provides an official occupancy calculator API which suggests appropriate thread 
-and block counts to approximately maximize occupancy while attempting to ensure that 
-threads have large enough register availability. The julia package \jlinl{CUDA.jl} 
-\cite*{cuda.jl} provides a wrapper for this API, accessible by calling 
+Nvidia provides an official occupancy calculator API \cite*{occupancycalc} which suggests 
+appropriate thread and block counts to approximately maximize occupancy while attempting 
+to ensure that threads have large enough register availability. The julia package 
+\jlinl{CUDA.jl} \cite*{cuda.jl} provides a wrapper for this API, accessible by calling 
 \jlinl{launch_configuration(cf)} for compiled cuda kernels \jlinl{cf}.
 
 % -------------------------------------------------------------------------------------- %
@@ -115,10 +120,50 @@ is appropriately rescaled using \jlinl{@muladd p .* r .+ c} where $r$ and $c$ ar
 box's center and radius, respectively. This way, only the information about the 
 map $f$, the partition $\mathcal{P}$, and the indices of the boxes to be mapped must be 
 transferred to the GPU at runtime. Each thread calculates one index for the box containing 
-the thread's mapped point, and writes this index to an array. Finally, the array is 
+the thread's mapped point, and writes this index to an array. 
+Across threads we loop over test points then over box indices. This way consecutive 
+threads will be assigned to test points in the same box, which (using continuity of $f$) 
+reduces the chance of thread divergence. Finally, the array is 
 transferred to the CPU and reduced to become the image set. The implementation of the 
 kernel is shown in \autoref{lst:gpu_kernel}, and the GPU accelerated \jlinl{map_boxes}
 function in \autoref{lst:boxmap_gpu}. \\
+
+\begin{jllisting}[float, floatplacement=ht!, language=julia, style=jlcodestyle, label=lst:gpu_kernel, captionpos=b, caption=GPU kernel to calculate $f(\mathcal{B})$]
+    function map_boxes_kernel(
+            f,          # Function
+            keys,       # Keys to be mapped
+            points,     # "Global" test points
+            out_keys,   # Array to hold mapped box indices ...
+            P           # ... wrt the partition P
+        )
+
+        # Calculate the linear index of the GPU thread
+        ind = (blockIdx().x - 1) * blockDim().x + threadIdx().x - 1
+        stride = gridDim().x * blockDim().x
+        nk, np = length(keys), length(points)
+        len = nk * np - 1
+
+        # In case `len` is too large, launch the warp repeatedly
+        for i in ind : stride : len
+        
+            # Loop over the test points, then over the box index
+            m, n = divrem(i, np) .+ 1
+            p    = points[m]
+            key  = keys[n]
+            box  = key_to_box(P, key)
+            c, r = box.center, box.radius
+
+            # Map the test point forward
+            fp   = f(@muladd p .* r .+ c)
+            hit  = point_to_key(P, fp)
+
+            # If `fp` lands outside the partition, assign it the
+            # out-of-bounds index 0. This will later be discarded
+            out_keys[i+1] = isnothing(hit) ? 0 : hit
+
+        end
+    end
+\end{jllisting}
 
 As with the CPU kernel, there are some factors only in control of the user. Modern GPUs 
 are primarily designed for \emph{single-precision} operations, and are correspondingly 

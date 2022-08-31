@@ -24,6 +24,7 @@ docs/site/
 Manifest.toml
 quick_notes.jl
 quick_notes.py
+uname+passwd.jl
 
 *.html
 **/.ipynb_checkpoints
