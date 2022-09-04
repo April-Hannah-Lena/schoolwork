@@ -6,7 +6,8 @@ default(
     framestyle=:box
 )
 #Plots.scalefontsizes(1.3)
-
+    
+flops(point, step, time) = point * step * ( 1 + 4 * 9 + 15 * 3 ) / time
 function linreg(xs, ys)
     X = sum(xs) / length(xs)
     Y = sum(ys) / length(ys)
@@ -23,42 +24,45 @@ times  = deserialize("times_points.jls")
 
 p = plot(
     points,
-    [times[t, 1, :] for t in 1:length(types)],
+    [flops.(points, steps[1], times[t, 1, :]) for t in 1:length(types)],
     #size=(900,600),
     xaxis=("Number of points", :log),
-    yaxis=("Time (s)", :log),
+    yaxis=("FLOP / s", :log),
     #title="Execution Time for Simple Map",
-    legend_title="Acceleration",
-    legend_position=:topleft,
-    lab=permutedims(["None", "CPU", "GPU"])
+    #legend_title="Acceleration",
+    #legend_position=:topleft,
+    #lab=permutedims(["None", "CPU", "GPU"]),
+    legend=false
 )
-savefig(p, "times_simple_loglog.pdf")
+savefig(p, "flops_simple_loglog.pdf")
 
 p = plot(
     points,
-    [times[t, 2, :] for t in 1:length(types)],
+    [flops.(points, steps[2], times[t, 2, :]) for t in 1:length(types)],
     #size=(900,600),
     xaxis=("Number of points", :log),
-    yaxis=("Time (s)", :log),
+    yaxis=("FLOP / s", :log),
     #title="Execution Time for Medium Map",
-    legend_title="Acceleration",
-    legend_position=:topleft,
-    lab=permutedims(["None", "CPU", "GPU"])
+    #legend_title="Acceleration",
+    #legend_position=:topleft,
+    #lab=permutedims(["None", "CPU", "GPU"]),
+    legend=false
 )
-savefig(p, "times_medium_loglog.pdf")
+savefig(p, "flops_medium_loglog.pdf")
 
 p = plot(
     points,
-    [times[t, 3, :] for t in 1:length(types)],
+    [flops.(points, steps[3], times[t, 3, :]) for t in 1:length(types)],
     #size=(900,600),
     xaxis=("Number of points", :log),
-    yaxis=("Time (s)", :log),
+    yaxis=("FLOP / s", :log),
     #title="Execution Time for Complex Map",
-    legend_title="Acceleration",
-    legend_position=:topleft,
-    lab=permutedims(["None", "CPU", "GPU"])
+    #legend_title="Acceleration",
+    #legend_position=:topleft,
+    #lab=permutedims(["None", "CPU", "GPU"]),
+    legend=false
 )
-savefig(p, "times_complex_loglog.pdf")
+savefig(p, "flops_complex_loglog.pdf")
 
 
 steps = ceil.(Int, 10 .^ (0.6:0.1:5.0))
@@ -67,13 +71,13 @@ times = deserialize("times_complexity.jls")
 
 p = plot(
     steps,
-    [times[t, :] for t in 1:length(types)],
+    [flops.(400, steps, times[t, :]) for t in 1:length(types)],
     #size=(900,600),
     xaxis=("Number of steps", :log),
-    yaxis=("Time (s)", :log),
+    yaxis=("FLOP / s", :log),
     #title="Map Complexity vs Execution Time",
     legend_title="Acceleration",
     legend_position=:topleft,
     lab=permutedims(["None", "CPU", "GPU"])
 )
-savefig(p, "times_steps_loglog.pdf")
+savefig(p, "flops_steps_loglog.pdf")
