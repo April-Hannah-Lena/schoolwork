@@ -13,7 +13,7 @@
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{afterpage}
-\usepackage{placeins}
+\usepackage[section]{placeins}
 \usepackage{biblatex}
 \usepackage{fontspec}
 \usepackage{setspace}
@@ -110,6 +110,10 @@
                      \hbox{\scriptsize.}\hbox{\scriptsize.}}}%
                      =}
 
+\title{GAIO.jl - Bachelor Thesis April Herwig}
+\author{April Herwig}
+\date{01.09.2022}
+
 \begin{document}
 
 \import{sections/}{title.tex}
@@ -120,22 +124,18 @@
 \raggedbottom
 
 \import{sections/}{dynamical_systems.tex}
-\afterpage{\FloatBarrier}
 \import{sections/}{algorithms.tex}
-\afterpage{\FloatBarrier}
 \import{sections/}{julia.tex}
-\afterpage{\FloatBarrier}
 \import{sections/}{cpu.tex}
-\afterpage{\FloatBarrier}
 \import{sections/}{gpu.tex}
-\afterpage{\FloatBarrier}
 \import{sections/}{results.tex}
-\afterpage{\FloatBarrier}
+
+\FloatBarrier
 
 \nocite{*}
 \printbibliography
 
-\newpage
+%\newpage
 \pagenumbering{roman}
 \import{sections/}{appendix.tex}
 

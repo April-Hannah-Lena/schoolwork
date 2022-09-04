@@ -128,43 +128,6 @@ transferred to the CPU and reduced to become the image set. The implementation o
 kernel is shown in \autoref{lst:gpu_kernel}, and the GPU accelerated \jlinl{map_boxes}
 function in \autoref{lst:boxmap_gpu}. \\
 
-\begin{jllisting}[float, floatplacement=ht!, language=julia, style=jlcodestyle, label=lst:gpu_kernel, captionpos=b, caption=GPU kernel to calculate $f(\mathcal{B})$]
-    function map_boxes_kernel(
-            f,          # Function
-            keys,       # Keys to be mapped
-            points,     # "Global" test points
-            out_keys,   # Array to hold mapped box indices ...
-            P           # ... wrt the partition P
-        )
-
-        # Calculate the linear index of the GPU thread
-        ind = (blockIdx().x - 1) * blockDim().x + threadIdx().x - 1
-        stride = gridDim().x * blockDim().x
-        nk, np = length(keys), length(points)
-        len = nk * np - 1
-
-        # In case `len` is too large, launch the warp repeatedly
-        for i in ind : stride : len
-        
-            # Loop over the test points, then over the box index
-            m, n = divrem(i, np) .+ 1
-            p    = points[m]
-            key  = keys[n]
-            box  = key_to_box(P, key)
-            c, r = box.center, box.radius
-
-            # Map the test point forward
-            fp   = f(@muladd p .* r .+ c)
-            hit  = point_to_key(P, fp)
-
-            # If `fp` lands outside the partition, assign it the
-            # out-of-bounds index 0. This will later be discarded
-            out_keys[i+1] = isnothing(hit) ? 0 : hit
-
-        end
-    end
-\end{jllisting}
-
 As with the CPU kernel, there are some factors only in control of the user. Modern GPUs 
 are primarily designed for \emph{single-precision} operations, and are correspondingly 
 much less efficient using double precision arithmetic. GAIO.jl does its best to convert 

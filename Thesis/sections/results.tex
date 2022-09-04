@@ -32,7 +32,7 @@ Line~\ref{alg:manifold:map} calculating $f(\mathcal{B})$. This makes it ideal fo
 The test was performed on a Dell G15 5510 laptop with Intel i7-10870H CPU and Nividia 
 GeForce RTX 3060 laptop GPU, running Ubuntu 22.04 LTS. A depiction of the unstable set 
 can be found in \autoref{fig:lorenz}, result graphs can be found in \autoref{fig:times}, 
-and code for the tests can be found in \cite*{benchmarks}. \\
+\autoref{fig:steps}, and code for the tests can be found in \cite*{benchmarks}. \\
 
 \begin{figure}[ht!]
     \centering
@@ -65,59 +65,55 @@ and code for the tests can be found in \cite*{benchmarks}. \\
 \begin{figure}[ht!]
     \centering
     \makebox[\linewidth][c]{
-        \begin{subfigure}[t]{0.4\textwidth}
-            \includegraphics[width=0.95\textwidth]{times_simple.pdf}
-            \caption{Times for a "simple" map, $k = 10$.}
+        \begin{subfigure}[t]{0.6\textwidth}
+            \includegraphics[width=0.95\textwidth]{times_simple_loglog.pdf}
+            \caption{"Simple" map, $k = 10$.}
             \label{fig:times:simple}
         \end{subfigure}
         \hfill
-        \begin{subfigure}[t]{0.4\textwidth}
-            \includegraphics[width=0.95\textwidth]{times_medium.pdf}
-            \caption{Times for an "average" map, $k = 100$.}
+        \begin{subfigure}[t]{0.6\textwidth}
+            \includegraphics[width=0.95\textwidth]{times_medium_loglog.pdf}
+            \caption{"Average" map, $k = 100$.}
             \label{fig:times:med}
         \end{subfigure}
-        \hfill
-        \begin{subfigure}[t]{0.4\textwidth}
-            \includegraphics[width=0.95\textwidth]{times_complex.pdf}
-            \caption{Times for a "complex" map, $k = 1000$.}
+    }
+    \\
+    \makebox[\linewidth][c]{
+        \begin{subfigure}[t]{0.6\textwidth}
+            \includegraphics[width=0.95\textwidth]{times_complex_loglog.pdf}
+            \caption{"Complex" map, $k = 1000$.}
             \label{fig:times:complex}
         \end{subfigure}
     }
-    \\ 
-    \makebox[\linewidth][c]{
-        \begin{subfigure}[t]{0.4\textwidth}
-            \includegraphics[width=0.95\textwidth]{times_simple_loglog.pdf}
-            \caption{Log-Log plot of \ref{fig:times:simple}}
-            \label{fig:times:simple:loglog}
-        \end{subfigure}
-        \hfill
-        \begin{subfigure}[t]{0.4\textwidth}
-            \includegraphics[width=0.95\textwidth]{times_medium_loglog.pdf}
-            \caption{Log-Log plot of \ref{fig:times:med}}
-            \label{fig:times:med:loglog}
-        \end{subfigure}
-        \hfill
-        \begin{subfigure}[t]{0.4\textwidth}
-            \includegraphics[width=0.95\textwidth]{times_complex_loglog.pdf}
-            \caption{Log-Log plot of \ref{fig:times:complex}}
-            \label{fig:times:complex:loglog}
-        \end{subfigure}
-    }
     \caption{
-        Execution time for \autoref{alg:manifold} using various steps $k$ and test points $N$. 
+        Log-Log plots of execution time for \autoref{alg:manifold} using various steps $k$ and test points $N$. 
     }
     \label{fig:times}
 \end{figure}
 
 \begin{figure}[ht!]
     \centering
-    \includegraphics[width=0.8\textwidth]{times_steps_loglog.pdf}
-    \caption{Log-Log plot of number of steps $k$ vs time ($s$), where $N = 400$ is constant.}
+    \makebox[\linewidth][c]{
+        \begin{subfigure}[t]{0.6\textwidth}
+            \includegraphics[width=0.95\textwidth]{times_steps_loglog.pdf}
+            \caption{Number of steps $k$ vs time ($s$).}
+            \label{fig:steps:times}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}[t]{0.6\textwidth}
+            \includegraphics[width=0.95\textwidth]{flops_steps_loglog.pdf}
+            \caption{Number of steps $k$ vs floating-point operations per second.}
+            \label{fig:steps:flops}
+        \end{subfigure}
+    }
+    \caption{
+        Log-Log plots of performance calculating $f(\mathcal{B})$, where $\mathcal{B}$ is the covering from \autoref{fig:lorenz} and $N = 400$ is constant.
+    }
     \label{fig:steps}
 \end{figure}
 
 Execution time without acceleration and with CPU acceleration both show linear trends 
-w.r.t. both $k$ and $N$. CPU acceleration consistently performs faster by a factor of 2 
+w.r.t. both $k$ and $N$. CPU acceleration consistently performs faster by roughly a factor of 2 
 across all trials. One might expect that the 256 bit vector registers, which can fit 4 
 double-precision floating point numbers each, should provide a speedup factor of 4. 
 A set of 4 double precision floating point multiplcations can be sped up by slightly less 
@@ -135,14 +131,16 @@ performance, though this is no longer the case in \autoref{fig:times:med}. This 
 because the calculation for the "simple" map can be performed so quickly that the 
 execution time is dominated by the time it takes to transfer the box set to the GPU 
 memory. A more detailed examination of this phenomenon can be seen in 
-\autoref{fig:steps}. In this case $k = 26$ steps was required before the 
-GPU-accelerated version beat out the version without acceleration, and $k = 32$ steps were 
+\autoref{fig:steps}. Here just the time to calculate $f(\mathcal{B})$, where $\mathcal{B}$
+is the covering from \autoref{fig:lorenz}. In this case $k = 20$ steps was required before the 
+GPU-accelerated version beat out the version without acceleration, and $k = 40$ steps were 
 required to beat the CPU-accelerated version. However, once this threshold has been 
 passed the GPU performs significantly better. Moreover, the speedup factor does not remain 
-bounded, as it did with the CPU version. By $k = 7944$ steps, the GPU version has 
+bounded, as it did with the CPU version. By $k = 10^4$ steps, the GPU version has 
 surpassed a 100-fold speedup, and continues to climb. Due to the limits of the testing 
-hardware and time, steps were only tested up to $k = 10000$. At this point the rate of 
-increase of the speedup factor had slowed, though notably had not stopped. \\
+hardware and time, steps were only tested up to $k = 10^5$. At this point the rate of 
+increase of the speedup factor had slowed, though notably had not stopped. The author 
+speculates the speedup factor to reach roughly $150$-fold asymptotically. \\
 
 The results of the present paper solidify that GAIO.jl is an ideal candidate for 
 parallel programming due to its high proportion of data-independent computations. As of 

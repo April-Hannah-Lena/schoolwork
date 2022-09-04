@@ -2,83 +2,6 @@
 
 \section{Appendix}
 
-\begin{table}[ht!]
-    \centering
-    {\footnotesize
-        \begin{tabular}{| c | c c c |}
-            \hline
-            Number of Points  &  Time, $k=10$  & Time, $k=100$  &  Time, $k=1000$ \\
-            \hline
-            40  &  0.020134   &    0.16445     &     1.62278 \\
-            64  &  0.0326548  &    0.2653      &     2.60109 \\
-            104  &  0.059709   &    0.455421    &     4.50348 \\ 
-            160  &  0.0892529  &    0.71049     &     6.76705 \\
-            256  &  0.137585   &    1.20524     &    11.8306 \\
-            400  &  0.217655   &    1.88588     &    18.6102 \\
-            636  &  0.351438   &    3.09114     &    29.8942 \\
-            1008  &  0.55545    &    4.9555      &    47.9885 \\
-            1596  &  0.888532   &    7.75978     &    76.2201 \\
-            2524  &  1.39837    &   12.4615      &   121.395 \\
-            4000  &  2.22419    &   19.7415      &   193.073 \\
-            \hline
-        \end{tabular}
-    }
-    \caption{Results using no acceleration}
-    \label{tb:nothing}
-\end{table}
-
-\begin{table}[ht!]
-    \centering
-    {\footnotesize
-        \begin{tabular}{| c | c c c |}
-            \hline
-            Number of Points & Time, $k=10$ &  Time, $k=100$ &   Time, $k=1000$ \\
-            \hline
-            40  &  0.0201105   &   0.0694606    &    0.761066 \\
-            64  &  0.0233355   &   0.136251     &    1.24381 \\
-            104  &  0.034471    &   0.224639     &    2.3031 \\
-            160  &  0.0525481   &   0.356561     &    3.62152 \\
-            256  &  0.0846066   &   0.606809     &    6.04962 \\
-            400  &  0.131712    &   0.962795     &    9.5455 \\
-            636  &  0.211706    &   1.55601      &   16.3179 \\
-            1008  &  0.341492    &   2.52285      &   27.9455 \\
-            1596  &  0.540294    &   4.06358      &   43.3757 \\
-            2524  &  0.866405    &   6.49313      &   68.151 \\
-            4000  &  1.38411     &  10.5114       &  108.385 \\
-            \hline
-        \end{tabular}
-    }
-    \caption{Results using CPU acceleration}
-    \label{tb:cpu}
-\end{table}
-
-\begin{table}[ht!]
-    \centering
-    {\footnotesize
-        \begin{tabular}{| c | c c c |}
-            \hline
-            Number of Points & Time, $k=10$ & Time, $k=100$ & Time, $k=1000$ \\
-            \hline
-            40  &  0.0360844   &  0.0375707    &  0.0607846 \\
-            64  &  0.125934    &  0.0353227    &  0.0780206 \\
-            104  &  0.0795413   &  0.108104     &  0.125333 \\
-            160  &  0.135748    &  0.147764     &  0.207934 \\
-            256  &  0.185914    &  0.196439     &  0.300255 \\
-            400  &  0.476413    &  0.464716     &  0.47896 \\
-            636  &  0.714487    &  0.69321      &  0.863987 \\ 
-            1008  &  0.774053    &  0.80273      &  1.14469 \\ 
-            1596  &  1.2813      &  1.32692      &  1.8528 \\
-            2524  &  2.05627     &  2.17883      &  3.10034 \\
-            4000  &  3.16808     &  3.54294      &  4.86421 \\
-            \hline
-        \end{tabular}
-    }
-    \caption{Results using GPU acceleration}
-    \label{tb:gpu}
-\end{table}
-
-\clearpage
-
 \begin{jllisting}[float, floatplacement=hb!, language=julia, style=jlcodestyle, label=lst:boxmap, captionpos=b, caption=Function to calculate $f(\mathcal{B})$]
     function map_boxes(g::SampledBoxMap, source::BoxSet)
         P = source.partition
@@ -111,6 +34,59 @@
         end
         return BoxSet(P, image)
     end 
+\end{jllisting}
+
+\begin{jllisting}[float, floatplacement=hb!, language=julia, style=jlcodestyle, label=lst:tuple_vgather, captionpos=b, caption=Conversion function to packed tuples]
+    function tuple_vgather(x::Vector{NTuple{d,T}}, s) where {d,T}
+        # `x` is a vector of tuples, each of length `d` and datatype `T`
+    
+        n = length(x)                                   
+        m = n ÷ s
+        if n != m * s
+            throw(DimensionMismatch("length of input not divisible by simd"))
+        end
+    
+        # Change type interpretation of the memory of `x`
+        vr = reinterpret(T, x)
+    
+        # Initialize the vector of packed tuples
+        vo = Vector{NTuple{d,Vec{s,T}}}(undef, m)
+    
+        # The indices that form the first element of the first packed vector
+        idx = Vec(ntuple( i -> (i-1) * d, s ))
+    
+        # Grab the indices of the first element of the i-th packed vector, 
+        # then jump by `d*s` to grab indices of the second element, etc.
+        for i in 1:m
+            vo[i] = ntuple( j -> vr[idx + (i-1) * d * s + j], d )
+        end                                             
+        
+        return vo
+    end
+\end{jllisting}
+
+\begin{jllisting}[float, floatplacement=hb!, language=julia, style=jlcodestyle, label=lst:tuple_vscatter, captionpos=b, caption=Conversion back to single tuples]
+    function tuple_vscatter(y::Vector{NTuple{d,Vec{s,T}}}) where {s,d,T}
+        # `y` is a vector of packed tuples, tuples of SIMD Vecs
+
+        # Initialize the unpacked vector
+        vo = Vector{NTuple{d,T}}(undef, s * length(y))
+
+        # Create a view of `vo` which is made of individual numbers of type `T` 
+        # as well as a view of `y` which is made up of packed `T`-vectors
+        vr = reinterpret(T, vo)
+        yy = reinterpret(Vec{s,T}, y)
+
+        # The indices that form the first element of the first packed vector
+        idx = Vec(ntuple( i -> d * (i-1), s ))
+
+        # set the values of `vr` as the permuted values of `y`
+        for i in 1:d, j in 1:length(vi)
+            vr[idx + (j-1) * d * s + i] = yy[i + (j-1) * d]
+        end
+
+        return vo
+    end
 \end{jllisting}
 
 \begin{jllisting}[float, floatplacement=hb!, language=julia, style=jlcodestyle, label=lst:boxmap_cpu, captionpos=b, caption=Function to calculate $f(\mathcal{B})$ with CPU acceleration]
@@ -154,6 +130,43 @@
             end
         end
         return BoxSet(P, image)
+    end
+\end{jllisting}
+
+\begin{jllisting}[float, floatplacement=hb!, language=julia, style=jlcodestyle, label=lst:gpu_kernel, captionpos=b, caption=GPU kernel to calculate $f(\mathcal{B})$]
+    function map_boxes_kernel(
+            f,          # Function
+            keys,       # Keys to be mapped
+            points,     # "Global" test points
+            out_keys,   # Array to hold mapped box indices ...
+            P           # ... wrt the partition P
+        )
+
+        # Calculate the linear index of the GPU thread
+        ind = (blockIdx().x - 1) * blockDim().x + threadIdx().x - 1
+        stride = gridDim().x * blockDim().x
+        nk, np = length(keys), length(points)
+        len = nk * np - 1
+
+        # In case `len` is too large, launch the warp repeatedly
+        for i in ind : stride : len
+        
+            # Loop over the test points, then over the box index
+            m, n = divrem(i, np) .+ 1
+            p    = points[m]
+            key  = keys[n]
+            box  = key_to_box(P, key)
+            c, r = box.center, box.radius
+
+            # Map the test point forward
+            fp   = f(@muladd p .* r .+ c)
+            hit  = point_to_key(P, fp)
+
+            # If `fp` lands outside the partition, assign it the
+            # out-of-bounds index 0. This will later be discarded
+            out_keys[i+1] = isnothing(hit) ? 0 : hit
+
+        end
     end
 \end{jllisting}
 
@@ -215,57 +228,134 @@
     {\footnotesize
         \begin{tabular}{| c | c c c |}
             \hline
-            Number of Steps  & Time, no accel.  & Time, CPU accel. &  Time, GPU accel. \\
+            Number of Points  &  Time, $k=10$  & Time, $k=100$  &  Time, $k=1000$ \\
             \hline
-            4 & 0.10733  & 0.0774621 & 0.296883 \\
-            6 & 0.143625 & 0.0952406 & 0.364458 \\
-            7 & 0.159921 & 0.103962  & 0.289842 \\
-            8 & 0.182721 & 0.111939  & 0.294995 \\
-            10 & 0.217213 & 0.130934  & 0.35477 \\
-            13 & 0.278128 & 0.157542  & 0.462502 \\
-            16 & 0.335391 & 0.183797  & 0.463087 \\ 
-            20 & 0.40894  & 0.224452  & 0.463877 \\ 
-            26 & 0.522386 & 0.279074  & 0.466465 \\
-            32 & 0.619818 & 0.32773  & 0.311194 \\
-            40 & 0.783703 & 0.400696 & 0.369541 \\
-            51 & 0.993318 & 0.511517 & 0.365205 \\
-            64 & 1.26785  & 0.608839 & 0.400862 \\
-            80 & 1.554    & 0.780857 & 0.475648 \\
-            100 & 1.91483  & 0.979949 & 0.336051 \\
-            126 & 2.4347   & 1.19774  & 0.340938 \\
-            159 & 3.05702  & 1.52709  & 0.335395 \\
-            200 & 3.77057  & 1.88865  & 0.39955 \\
-            252 & 4.79369  & 2.36452  & 0.436983 \\
-            317 &  5.9642  &  2.97117 & 0.457834 \\
-            399 &  7.50092 &  3.72863 & 0.432015 \\
-            502 &  9.30319 &  4.76645 & 0.459764 \\ 
-            631 & 11.6748  &  6.0041  & 0.446623 \\
-            795 & 14.5952  &  7.5396  & 0.409987 \\ 
-            1000 & 18.3667  &  9.63419 & 0.439264 \\
-            1259 & 23.3917  & 11.9185  & 0.598132 \\ 
-            1585 & 29.741   & 16.0015  & 0.62983 \\
-            1996 & 36.8385  & 21.5996  & 0.715319 \\
-            2512 & 47.0677  & 27.0529  & 0.669515 \\
-            3163 &  58.3913 &  33.1406 & 0.922343 \\
-            3982 &  74.9216 &  41.7995 & 0.873487 \\
-            5012 &  92.3616 &  52.2589 & 1.24426 \\ 
-            6310 & 116.477  &  64.3065 & 1.218 \\
-            7944 & 145.294  &  82.0594 & 1.44954 \\
-            10000 & 183.667  & 103.063  & 1.75376 \\
-            12590 & 227.309  & 128.813  & 2.17254 \\
-            15849 & 289.176  & 164.242  & 2.73257 \\
-            19953 & 365.261  & 202.171  & 3.32561 \\
-            25119 & 463.006  & 257.573  & 4.1719 \\
-            31623 &  578.231 &  320.201 &  4.98578 \\
-            39811 &  778.834 &  427.457 &  6.23462 \\
-            50119 &  980.618 &  545.352 &  7.76651 \\
-            63096 & 1237.09  &  678.236 &  9.75043 \\
-            79433 & 1560.56  &  857.923 & 11.9667 \\
-            100000 & 1970.96  & 1080.9   & 15.0591 \\
+            40  &  0.020134   &    0.16445     &     1.62278 \\
+            64  &  0.0326548  &    0.2653      &     2.60109 \\
+            104  &  0.059709   &    0.455421    &     4.50348 \\ 
+            160  &  0.0892529  &    0.71049     &     6.76705 \\
+            256  &  0.137585   &    1.20524     &    11.8306 \\
+            400  &  0.217655   &    1.88588     &    18.6102 \\
+            636  &  0.351438   &    3.09114     &    29.8942 \\
+            1008  &  0.55545    &    4.9555      &    47.9885 \\
+            1596  &  0.888532   &    7.75978     &    76.2201 \\
+            2524  &  1.39837    &   12.4615      &   121.395 \\
+            4000  &  2.22419    &   19.7415      &   193.073 \\
             \hline
         \end{tabular}
     }
-    \caption{Detailed results comparing map complexity and execution time}
+    \caption{Times ($s$) for \autoref{alg:manifold} using no acceleration}
+    \label{tb:nothing}
+\end{table}
+
+\begin{table}[ht!]
+    \centering
+    {\footnotesize
+        \begin{tabular}{| c | c c c |}
+            \hline
+            Number of Points & Time, $k=10$ &  Time, $k=100$ &   Time, $k=1000$ \\
+            \hline
+            40  &  0.0201105   &   0.0694606    &    0.761066 \\
+            64  &  0.0233355   &   0.136251     &    1.24381 \\
+            104  &  0.034471    &   0.224639     &    2.3031 \\
+            160  &  0.0525481   &   0.356561     &    3.62152 \\
+            256  &  0.0846066   &   0.606809     &    6.04962 \\
+            400  &  0.131712    &   0.962795     &    9.5455 \\
+            636  &  0.211706    &   1.55601      &   16.3179 \\
+            1008  &  0.341492    &   2.52285      &   27.9455 \\
+            1596  &  0.540294    &   4.06358      &   43.3757 \\
+            2524  &  0.866405    &   6.49313      &   68.151 \\
+            4000  &  1.38411     &  10.5114       &  108.385 \\
+            \hline
+        \end{tabular}
+    }
+    \caption{Times ($s$) for \autoref{alg:manifold} using CPU acceleration}
+    \label{tb:cpu}
+\end{table}
+
+\begin{table}[ht!]
+    \centering
+    {\footnotesize
+        \begin{tabular}{| c | c c c |}
+            \hline
+            Number of Points & Time, $k=10$ & Time, $k=100$ & Time, $k=1000$ \\
+            \hline
+            40  &  0.0360844   &  0.0375707    &  0.0607846 \\
+            64  &  0.125934    &  0.0353227    &  0.0780206 \\
+            104  &  0.0795413   &  0.108104     &  0.125333 \\
+            160  &  0.135748    &  0.147764     &  0.207934 \\
+            256  &  0.185914    &  0.196439     &  0.300255 \\
+            400  &  0.476413    &  0.464716     &  0.47896 \\
+            636  &  0.714487    &  0.69321      &  0.863987 \\ 
+            1008  &  0.774053    &  0.80273      &  1.14469 \\ 
+            1596  &  1.2813      &  1.32692      &  1.8528 \\
+            2524  &  2.05627     &  2.17883      &  3.10034 \\
+            4000  &  3.16808     &  3.54294      &  4.86421 \\
+            \hline
+        \end{tabular}
+    }
+    \caption{Times ($s$) for \autoref{alg:manifold} using GPU acceleration}
+    \label{tb:gpu}
+\end{table}
+
+\begin{table}[ht!]
+    \centering
+    {\footnotesize
+        \begin{tabular}{| c | c c c |}
+            \hline
+            Number of Steps  & Time, no accel.  & Time, CPU accel. &  Time, GPU accel. \\
+            \hline
+            4    &    0.14474    &    0.10885    &    0.4877    \\
+            6    &    0.20373    &    0.14681    &    0.48377    \\
+            7    &    0.22895    &    0.14628    &    0.50268    \\
+            8    &    0.25353    &    0.16037    &    0.51701    \\
+            10    &    0.30581    &    0.17762    &    0.48161    \\
+            13    &    0.38697    &    0.21801    &    0.47945    \\
+            16    &    0.46444    &    0.26075    &    0.48565    \\
+            20    &    0.56454    &    0.30852    &    0.47572    \\
+            26    &    0.73231    &    0.39604    &    0.47968    \\
+            32    &    0.89738    &    0.45801    &    0.50168    \\
+            40    &    1.0899    &    0.55824    &    0.52061    \\
+            51    &    1.38341    &    0.70655    &    0.53133    \\
+            64    &    1.74327    &    0.88893    &    0.52218    \\
+            80    &    2.15379    &    1.08874    &    0.49339    \\
+            100    &    2.64934    &    1.35807    &    0.50099    \\
+            126    &    3.41551    &    1.68225    &    0.50188    \\
+            159    &    4.18167    &    2.13575    &    0.53094    \\
+            200    &    5.2217    &    2.68491    &    0.52429    \\
+            252    &    6.64934    &    3.3583    &    0.54523    \\
+            317    &    8.2588    &    4.24002    &    0.58982    \\
+            399    &    10.44096    &    5.34454    &    0.58884    \\
+            502    &    13.11835    &    6.68914    &    0.58776    \\
+            631    &    16.50509    &    8.41668    &    0.59624    \\
+            795    &    20.72812    &    10.52048    &    0.64005    \\
+            1000    &    25.78587    &    13.15393    &    0.68164    \\
+            1259    &    32.51914    &    16.72895    &    0.72291    \\
+            1585    &    40.89508    &    22.04528    &    0.84303    \\
+            1996    &    51.75475    &    28.14989    &    0.88808    \\
+            2512    &    64.75916    &    35.55423    &    0.99073    \\
+            3163    &    81.7256    &    44.00314    &    1.17772    \\
+            3982    &    102.74094    &    55.23752    &    1.27731    \\
+            5012    &    128.53724    &    69.12566    &    1.48844    \\
+            6310    &    162.24623    &    88.67913    &    1.80818    \\
+            7944    &    204.59758    &    109.89934    &    2.08626    \\
+            10000    &    256.9519    &    137.98999    &    2.5451    \\
+            12590    &    322.56893    &    176.28813    &    3.06926    \\
+            15849    &    409.50069    &    222.66347    &    3.76702    \\
+            19953    &    512.10249    &    280.11334    &    4.582    \\
+            25119    &    646.5692    &    351.18587    &    5.65162    \\
+            31623    &    814.60274    &    443.02861    &    6.96308    \\
+            39811    &    1024.4214    &    593.56447    &    8.75485    \\
+            50119    &    1360.60108    &    746.596    &    10.87391    \\
+            63096    &    1716.27336    &    942.11056    &    13.53368    \\
+            79433    &    2160.62323    &    1181.19324    &    16.82755    \\
+            100000    &    2726.68107    &    1484.66971    &    20.99817    \\
+            \hline
+        \end{tabular}
+    }
+    \caption{
+        Map complexity $k$ and execution time ($s$) to calculate $f(\mathcal{B})$ from \autoref{fig:lorenz}
+    }
     \label{tb:steps}
 \end{table}
 

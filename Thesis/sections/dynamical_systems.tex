@@ -61,7 +61,8 @@ or by setting one "step" of the system as integrating $F$ for a set time $t$.
 
 \end{definition}
 
-\begin{theorem}[Image of a Box Set]
+\begin{theorem}
+    If $\mathcal{P}$ is pairwise disjoint, then 
     $f(\mathcal{B})$ is the inclusion-minimal cover of $f(\bigcup_{B \in \mathcal{B}} B)$
     with boxes from $\mathcal{P}$.
 \end{theorem}
@@ -76,9 +77,10 @@ or by setting one "step" of the system as integrating $F$ for a set time $t$.
         \right\}.
     \end{equation}
 
-    Hence if we remove one box $R$ from $f(\mathcal{B})$, then there exists an 
-    $x \in \bigcup_{B \in \mathcal{B}} B$ which maps outside of the created box set.
-
+    Hence if we take one box $R \in f(\mathcal{B})$, then there exists an 
+    $x \in \bigcup_{B \in \mathcal{B}} B$ which maps into $R$. Since 
+    $\mathcal{P}$ is pairwise disjoint, $f(\mathcal{B}) \setminus \left\{ R \right\}$ 
+    no longer covers $f(x)$. 
 \end{proof}
 
 \begin{figure}[ht]
@@ -88,7 +90,7 @@ or by setting one "step" of the system as integrating $F$ for a set time $t$.
 \end{figure}
 
 \begin{definition}[Diameter of a Box Set]
-    Denote by $d(\mathcal{B})$ the maximum diameter of a box $B \in \mathcal{B}$, ie 
+    Denote by $d(\mathcal{B})$ the maximum \emph{diameter} of a box $B \in \mathcal{B}$, ie 
     $d(\mathcal{B}) = \max_{\substack{B\, \in\, \mathcal{B},\\ x,\, y\, \in\, B}} d(x, y)$. 
 \end{definition}
 
@@ -115,9 +117,9 @@ or by setting one "step" of the system as integrating $F$ for a set time $t$.
     is the whole of $\mathbb{R}^n$.
 \end{definition}
 
-The basin of attraction acts in some sense as the set for which all points eventually arrive
-in $A$. If the map $f$ is smooth, then the closure $\bar{A}$ is invariant too. With continuity 
-it becomes clear that
+The basin of attraction acts in some sense as the set for which all points approach
+in $A$. If the map $f$ is smooth, then the closure $\bar{A}$ is invariant too. 
+If $A$ is closed, it becomes clear with continuity of $f$ that 
 
 \begin{equation}
     A = \bigcap\limits_{k \geq 0} f^k(U).

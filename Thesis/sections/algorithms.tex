@@ -26,8 +26,8 @@ The idea to approximate the relative global attractor is in two steps:
 
 \begin{enumerate}
     \item First, \emph{subdivide} the box set $\mathcal{B}$: construct a new set 
-    $\mathcal{B}'$ by splitting each box $B \in \mathcal{B}$ into two (or more) 
-    smaller boxes $B_1,\ B_2$ such that $B_1 \cup B_2 = B$. 
+    $\mathcal{B}'$ such that $\bigcup_{B' \in \mathcal{B}'} B' = \bigcup_{B \in \mathcal{B}} B$ 
+    and $d(\mathcal{B}') \leq \theta \cdot d(\mathcal{B})$ for some fixed $\theta < 1$. 
     \item Second, discard all those boxes whose image does not intersect with the 
     previous box set. 
 \end{enumerate}
@@ -182,7 +182,7 @@ characterize this set as follows:
         \item If a cycle $\left\{ B_0,\ \ldots,\ B_{n-1} \right\}$ exists in $G$, then 
         theres exists an $\epsilon$-pseudoperiodic orbit 
         $\left\{ x_0,\ \ldots,\ x_{n-1} \right\}$ with $x_i \in B_i$ for any 
-        $\epsilon \geq d(\mathcal{P})$. 
+        $\epsilon > d(\mathcal{P})$. 
         \item If an $\epsilon$-pseudoperiodic orbit 
         $\left\{ x_0,\ \ldots,\ x_{n-1} \right\}$ exists with $\epsilon \leq r$, then the 
         boxes $\left\{ B_0,\ \ldots,\ B_{n-1} \right\}$ with $x_i \in B_i$ form a cycle in 
@@ -191,33 +191,34 @@ characterize this set as follows:
 
 \end{proposition}
 
-%\begin{proof}
-%    The distance $r(B)$ is strictly positive by construction. Since $\mathcal{P}$ is 
-%    finite, the minimum of $r(B)$ over $\mathcal{P}$ is also positive, and hence 
-%    it is well-defined. 
-%
-%    \begin{enumerate}
-%        \item Consider a cycle in $G$. Then by construction, for each edge $(B_i, B_{i+1})$ 
-%        in the cycle we can find a point $x_i \in B_i$ which gets mapped into $B_{i+1}$. 
-%        Doing this for all edges we get a set $\left\{ x_0,\ x_1,\ \ldots,\ x_{n-1} \right\}$ 
-%        which satisfies $d(f(x_{i\, \text{mod}\, n}),\ x_{i+1\, \text{mod}\, n}) \leq d(\mathcal{P})$, 
-%        ie a $d(\mathcal{P})$-pseudoperiodic orbit. 
-%        \item Conversely, consider an $\epsilon$-pseudoperiodic orbit with $\epsilon < r$, 
-%        and $\left\{ B_0,\ \ldots,\ B_{n-1} \right\}$ with $x_i \in B_i$. 
-%        Then we have the inequalities 
-%
-%        \begin{equation}
-%            d(f(B_{i\, \text{mod}\, n}),\ B_{i+1\, \text{mod}\, n}) \leq
-%            d(f(x_{i\, \text{mod}\, n}),\ x_{i+1\, \text{mod}\, n}) <
-%            \epsilon \leq r.
-%        \end{equation}
-%
-%        But by construction, $r$ is the minimum distance between any box $B$ and the image 
-%        of any other box $f(B')$ which do not intersect. Hence 
-%        $f(B_{i\, \text{mod}\, n})$ must intersect $B_{i+1\, \text{mod}\, n}$, so there 
-%        exists an edge $(B_{i\, \text{mod}\, n},\, B_{i+1\, \text{mod}\, n})$ in $G$. 
-%    \end{enumerate}
-%\end{proof}
+\begin{proof}
+    The distance $r(B)$ is strictly positive by construction. Since $\mathcal{P}$ is 
+    finite, the minimum of $r(B)$ over $\mathcal{P}$ is also positive, and hence 
+    it is well-defined. 
+
+    \begin{enumerate}
+        \item Consider a cycle in $G$. Then by construction, for each edge $(B_i, B_{i+1})$ 
+        in the cycle we can find a point $x_i \in B_i$ which gets mapped into $B_{i+1}$. 
+        Doing this for all edges we get a set $\left\{ x_0,\ x_1,\ \ldots,\ x_{n-1} \right\}$ 
+        which satisfies 
+        $d(f(x_{i\, \text{mod}\, n}),\ x_{i+1\, \text{mod}\, n}) \leq d(\mathcal{P}) < \epsilon$, 
+        ie an $\epsilon$-pseudoperiodic orbit for $\epsilon > d(\mathcal{P})$. 
+        \item Conversely, consider an $\epsilon$-pseudoperiodic orbit with $\epsilon < r$, 
+        and $\left\{ B_0,\ \ldots,\ B_{n-1} \right\}$ with $x_i \in B_i$. 
+        Then we have the inequalities 
+
+        \begin{equation}
+            d(f(B_{i\, \text{mod}\, n}),\ B_{i+1\, \text{mod}\, n}) \leq
+            d(f(x_{i\, \text{mod}\, n}),\ x_{i+1\, \text{mod}\, n}) <
+            \epsilon \leq r.
+        \end{equation}
+
+        But by construction, $r$ is the minimum distance between any box $B'$ and the image 
+        of any other box $f(B)$ which do not intersect. Hence 
+        $f(B_{i\, \text{mod}\, n})$ must intersect $B_{i+1\, \text{mod}\, n}$, so there 
+        exists an edge $(B_{i\, \text{mod}\, n},\, B_{i+1\, \text{mod}\, n})$ in $G$. 
+    \end{enumerate}
+\end{proof}
 
 \begin{corollary}
     Proposition \ref{thm:cover} holds for \autoref{alg:chain}. That is, replacing $A_Q$ 
@@ -228,13 +229,13 @@ characterize this set as follows:
     The inclusions $1.$ and $2.$ from Proposition \ref{thm:cover} are clear (cf. 
     \cite*{dynbook}). For the equality $3.$ consider the following. 
     The existence of a cycle in $G$ is a \emph{necessary} condition for an
-    $\epsilon$-pseudoperiodic orbit with $\epsilon < r$, and it is also a 
+    $\epsilon$-pseudoperiodic orbit with $\epsilon \leq r$, and it is also a 
     \emph{sufficient} condition for an $\epsilon$-pseudoperiodic orbit with 
-    $\epsilon \geq d(\mathcal{P})$. Letting $d(\mathcal{P}) \to 0$ by successive subdivision 
-    (which imples $r \to 0$) gives a condition which 
-    is both necessary and sufficient for the existence of $\epsilon$-pseudoperiodic orbits 
-    with $\epsilon > 0$, and hence the box covering $Q_\infty$ is precisely the chain 
-    recurrent set $R_Q$. For further details, see \cite*{chain,dynbook}. 
+    $\epsilon > d(\mathcal{P})$. Letting $d(\mathcal{P}) \to 0$ by successive subdivision 
+    (which imples $r \to 0$) gives a condition which is both necessary and sufficient for 
+    the existence of orbits which are $\epsilon$-pseudoperiodic for any $\epsilon > 0$, 
+    and hence the box covering $Q_\infty$ is precisely the chain recurrent set $R_Q$. For 
+    further details, see \cite*{chain,dynbook}. 
 \end{proof}
 
 % -------------------------------------------------------------------------------------- %
@@ -324,7 +325,7 @@ $B_i$, and set $P_{ij}$ as the fraction of test points which land in $B_j$:
 \begin{proposition}
     \cite*{attr, measure, algGAIO, perturbationsbook, perturbationsart} 
     Suppose the transition function $p = p_\epsilon$ converges in the weak* sense to the 
-    dirac measure, ie 
+    Dirac measure, ie 
 
     \begin{equation}
         p_\epsilon (x, \cdot) \overset{*}{\rightharpoonup} \delta_{f(x)} 
