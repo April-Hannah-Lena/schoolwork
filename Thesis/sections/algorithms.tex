@@ -22,14 +22,16 @@ a natural \emph{ansatz} for its approximation using a compact subdomain $Q \subs
     global attractor.\\
 \end{remark}
 
-The idea to approximate the relative global attractor is in two steps:
+The idea to approximate the relative global attractor is in two steps. Given a partition 
+$\mathcal{P}$ of the compact set $Q$, and a box set $\mathcal{B} \subset \mathcal{P}$: 
 
 \begin{enumerate}
-    \item First, \emph{subdivide} the box set $\mathcal{B}$: construct a new set 
-    $\mathcal{B}'$ such that $\bigcup_{B' \in \mathcal{B}'} B' = \bigcup_{B \in \mathcal{B}} B$ 
-    and $d(\mathcal{B}') \leq \theta \cdot d(\mathcal{B})$ for some fixed $\theta < 1$. 
-    \item Second, discard all those boxes whose image does not intersect with the 
-    previous box set. 
+    \item First, \emph{subdivide} the box set: construct a new partition 
+    $\mathcal{P}'$ of $Q$ and box set $\mathcal{B}' \subset \mathcal{P}'$ 
+    such that $\bigcup_{B' \in \mathcal{B}'} B' = \bigcup_{B \in \mathcal{B}} B$ 
+    and $d(\mathcal{P}') \leq \theta \cdot d(\mathcal{P})$ for some fixed $\theta < 1$. 
+    \item Second, discard all those boxes $B' \in \mathcal{B}'$ whose image under $f$ does 
+    not intersect with the current box set. 
 \end{enumerate}
 
 \begin{algorithm}
@@ -262,8 +264,8 @@ In this case we can define $P: L^1 \to L^1$ as
     (P \phi)(y) = \int \phi (x)\, k(x, y)\, dx.
 \end{equation}
 
-Note that a fixed point $\phi$ of P is the density of an invariant measure 
-$\mu_\phi (A) = \int_A\, \phi(x)\, dx$. \\
+Note that a fixed point $\phi$ of $P$ is the density of an invariant measure 
+$\mu (A) = \int_A\, \phi(x)\, dx$. \\
 
 We will use a Galerkin approximation for $P$ which maintains the eigenvalues and cyclic 
 behavior of $P$. To do this, we project to a subspace 
