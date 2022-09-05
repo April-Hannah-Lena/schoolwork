@@ -133,18 +133,23 @@ global unstable manifold $W^u(\bar{x})$:
 
 The algorithm to compute the chain recurrent set is first due to \cite*{chain}. The idea 
 is to construct a directed graph whose vertices are the box set $\mathcal{B}$, and for 
-which edges are drawn from $B_1$ to $B_2$ if $f$ maps any part of $B_1$ into $B_2$. 
+which edges are drawn from $B_1$ to $B_2$ if $f$ maps any part of $B_1$ into $B_2$, ie if 
+
+\begin{equation}
+    B_2 \in f(\hat{\mathcal{B}}) \quad \text{where} \quad \hat{\mathcal{B}} = \left\{ B_1 \right\}. 
+\end{equation}
+
 Call this graph \textproc{graph}$(f, \mathcal{B})$. We can now ask for a subset of the 
 vertices, for which each vertex is part of a directed cycle. We can equivalently 
 characterize this set as follows:
 
 \begin{definition}[Strongly Connected]
     \cite*{dynbook} For a directed graph $G = (V, E)$, a subset $H \subset V$ of vertices 
-    is called \emph{strongly connected} if for all $u, v \in H$ there exist paths in both 
-    directions between $v$ and $u$. Denote by \textproc{scc}$(G, v)$ the strongly connected
-    subgraph which includes $v$, and by 
-    \textproc{sccs}$(G) = \bigcup_{v \in V}\,$\textproc{scc}$(G, v)$ 
-    the union of strongly connected components.
+    is called \emph{strongly connected} if for all $u, v \in H$ there 
+    exist paths in both directions between $v$ and $u$. Denote by \textproc{scc}$(G, v)$ 
+    the strongly connected subgraph which includes $v$ (this may be empty).  
+    Further denote by \textproc{sccs}$(G) = \bigcup_{v \in V}\,$\textproc{scc}$(G, v)$ 
+    the union of strongly connected vertices.
 \end{definition}
 
 \begin{algorithm}
@@ -168,11 +173,11 @@ characterize this set as follows:
     \cite*{chain,dynbook}
     Let $\mathcal{P}$ be a cover of $Q$ into \emph{closed} sets. 
     Denote by $r(B)$ the minimum Hausdorff distance between the image $f(B)$ and a 
-    box $B'$ that does not intersect the box covering $f(\mathcal{B})$, ie 
+    box $B'$ that does not intersect the box covering of the image, ie 
     
     \begin{equation}
-        r(B) = \min_{\substack{B' \in \mathcal{P}\ \\ B' \cap f(\mathcal{B}) = \emptyset}} d(B', f(B)) 
-        \quad \text{where} \quad \mathcal{B} = \left\{ B \right\}.
+        r(B) = \min_{B' \in \mathcal{P} \setminus f(\hat{\mathcal{B}})} d(B', f(B)) 
+        \quad \text{where} \quad \hat{\mathcal{B}} = \left\{ B \right\}.
     \end{equation}
     
     Denote by $r$ the minimum of $r(B)$ over $\mathcal{P}$, ie 
@@ -283,7 +288,7 @@ the linear extension of
 To realize this approximation, we need to calculate $P_{ij}$. For this there are two 
 techniques discussed in \cite*{algGAIO}. The simpler of the two techniques is a 
 Monte-Carlo approach. Namely, we choose a fixed number $r$ of test points in 
-$B_i$, and set $P_{ij}$ as the fraction of test points which land in $B_j$:
+$B_j$, and set $P_{ij}$ as the fraction of test points which land in $B_i$:
 
 \begin{algorithm}
     \caption{Invariant Measure}
@@ -292,8 +297,8 @@ $B_i$, and set $P_{ij}$ as the fraction of test points which land in $B_j$:
         \begin{algorithmic}[1]
 
             \For{$i,j \in \left\{ 1,\ \ldots,\ n \right\}$}
-                \State $p\ \ \gets $ Choose $\left\{ p_1,\ \ldots,\ p_r \right\}$ randomly from a uniform distribution on $B_i$
-                \State $P_{ij}^n \gets \left. |\ B_j \cap f(p)\ | \ \middle/\ |\ p\ | \right.$
+                \State $p\ \ \gets $ Choose $\left\{ p_1,\ \ldots,\ p_r \right\}$ randomly from a uniform distribution on $B_j$
+                \State $P_{ij}^n \gets \left. |\ f(p) \cap B_i\ | \ \middle/\ |\ p\ | \right.$
             \EndFor
     
             \State $v^n \gets $ Find a fixed point of $P^n$
@@ -402,8 +407,8 @@ That is, they are almost invariant.
         \begin{algorithmic}[1]
 
             \For{$i,j \in \left\{ 1,\ \ldots,\ n \right\}$}
-                \State $p\ \ \gets $ Choose $\left\{ p_1,\ \ldots,\ p_r \right\}$ randomly from a uniform distribution on $B_i$
-                \State $P_{ij}^n \gets \left. |\ B_j \cap f(p)\ | \ \middle/\ |\ p\ | \right.$
+                \State $p\ \ \gets $ Choose $\left\{ p_1,\ \ldots,\ p_r \right\}$ randomly from a uniform distribution on $B_j$
+                \State $P_{ij}^n \gets \left. |\ f(p) \cap B_i\ | \ \middle/\ |\ p\ | \right.$
             \EndFor
     
             \State $v^n \gets $ Find an eigenvector to an eigenvalue $\lambda \neq 1$ of $P^n$
