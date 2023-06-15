@@ -42,6 +42,7 @@ uname+passwd.jl
 *.synctex.gz
 *.xml
 *.bcf
+*.bbl
 
 *.cpython-38.pyc
 *.cpython-39.pyc
