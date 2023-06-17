@@ -1,4 +1,4 @@
-\documentclass[a4paper,draft]{article}
+\documentclass[a4paper]{article}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
 \usepackage{amssymb}
@@ -6,12 +6,35 @@
 \usepackage{amsfonts}
 \usepackage[a4paper]{geometry}
 \usepackage{parskip}
+\usepackage{hyperref}
 \usepackage{biblatex}
 
-\newtheorem{definition}{Definition}
-\newtheorem{theorem}{Theorem}
-\newtheorem{lemma}{Lemma}
-\newcommand{\Tr}{\text{Tr}}
+\newcommand{\Tr}{\textrm{Tr}\,}
+\newcommand{\ran}{\textrm{Range}\,}
+\newcommand{\bbN}{\mathbb{N}}
+\newcommand{\bbR}{\mathbb{R}}
+\newcommand{\bbC}{\mathbb{C}}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\def\definitionautorefname{Definition}
+
+\newtheorem{theorem}[definition]{Theorem}
+\def\theoremautorefname{Theorem}
+\newtheorem{proposition}[definition]{Proposition}
+\def\propositionautorefname{Proposition}
+\newtheorem{lemma}[definition]{Lemma}
+\def\lemmaautorefname{Lemma}
+\newtheorem{corollary}[definition]{Corollary}
+\def\corollaryautorefname{Corollary}
+
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+\def\remarkautorefname{Remark}
+
+\theoremstyle{remark}
+\newtheorem{example}[definition]{Example}
+\def\exampleautorefname{Ex.}
 
 \addbibresource{handout.bib}
 
@@ -23,22 +46,104 @@
 
 \maketitle
 
+\begin{definition}[Notation]
+    We consider a separable Hilbert space $X$ with inner product $(\cdot, \cdot)$. $A \in K(X)$ is a trace-class operator. 
+
+    Let $\lambda_1,\, \lambda_2,\, \ldots$ (resp. $s_1,\, s_2,\, \ldots$) be the eigenvalues (resp. singular values) of $A$ in descending order:
+    \begin{equation}
+        A\, v_j = \lambda_j v_j, \quad |\lambda_1| \geq |\lambda_2| \geq \ldots, \quad s_1 \geq s_2 \geq \ldots\, .
+    \end{equation}
+    $A$ can be decomposed as $A = U\, |A|$ where $U$ is unitary and $|A|$ is positive and self-adjoint. $\left\{ z_j \right\}_j$ is an orthonormal basis of $\overline{\ran |A|}$. Writing $w_j = U z_j$, we have
+    \begin{equation}
+        A = \sum_{j=1}^\infty s_j (\cdot, z_j) w_j \,. 
+    \end{equation}
+\end{definition}
+
 \subsection{Lidskii's Theorem}
 
-\begin{theorem}
-    Let $X$ be a Hilbert space and $A \in L(X)$ be a trace-class operator with eigenvalues $\left\{ \lambda_1,\, \lambda_2,\, \ldots \right\}$. Then 
+\begin{theorem}[Lidksii]
+    \label{lidskii}
+    Let $X$ be a Hilbert space and $A \in L(X)$ be a trace-class operator with eigenvalues $\lambda_1,\, \lambda_2,\, \ldots$. Then 
     \begin{equation}
-        \Tr A = \sum_{n=1}^{\infty} \lambda_n . 
+        \Tr A = \sum_{n=1}^{\infty} \lambda_n\ . 
     \end{equation}
 \end{theorem}
 
 \subsection{Tools: Generalized Eigenspaces and a Singular Value Inequality}
 
+\begin{lemma}[Generalized eigenspaces]
+    Let $0 \neq \lambda \in \sigma (A)$. Then there exist subspaces $N = N(\lambda)$, $R = R(\lambda)$ of $X$ with
+    \begin{enumerate}
+        \item[a)] (finiteness) $\dim N < \infty$,
+        \item[b)] (splitting) $X = N \oplus R$,
+        \item[c)] (invariance) $A(N) \subset N,\quad A(R) \subset R$,
+        \item[d)] (isolation) $\lambda \in \sigma (A \vert N),\quad \lambda \in \sigma (A \vert R)$ . 
+    \end{enumerate}
+    Write $P_\lambda : X \twoheadrightarrow N$ for the orthogonal projection of $X$ into $N$. 
+\end{lemma}
+
+\begin{lemma}[Lalesco-Schur-Weyl]
+    For any $N \in \bbN,\,\ \prod_{j=1}^N | \lambda_j | \leq \prod_{j=1}^N s_j$. 
+    In particular we can conclude the eigenvalue - singular value inequality 
+    \begin{equation}
+        \sum_{j=1}^{\infty} | \lambda_j | \leq \sum_{j=1}^{\infty} s_j . 
+    \end{equation}
+\end{lemma}
+
+\begin{lemma}[An infinite product formulation]
+    \label{prod}
+    Let $f : \bbC \circlearrowleft$ be an entire function with $f(0) = 1$. Let $\left\{ z_j \right\}_j$ be the zeros of $f$ and assume $\sum_{j=1}^{\infty} | z_j |^{-1} < \infty$. Finally suppose the boundedness condition
+    \begin{equation}
+        \forall\, \epsilon > 0\,\  \exists\, C > 0 \,:\,\ | f(z) | \leq C \cdot e^{\epsilon |z|}\,\ \forall\, z \in \bbC . 
+    \end{equation}
+    Then 
+    \begin{equation}
+        f(z) = \prod_{j=1}^{\infty} (1 - \frac{z}{z_j}) . 
+    \end{equation}
+\end{lemma}
+
 \subsection{(Antisymmetric) Tensor Products in Hilbert Spaces}
+
+\begin{definition}
+    For $x_1, x_2, \ldots, x_n \in X$, let $x_1 \otimes x_2 \otimes \ldots \otimes x_n$ be the multilinear map 
+    \begin{equation}
+        (x_1 \otimes x_2 \otimes \ldots \otimes x_n) : X \times X \times \ldots \times X \to \bbC, \quad (y_1, y_2, \ldots, y_n) \mapsto \prod_{j=1}^{n} (x_j, y_j) \,. 
+    \end{equation}
+    The metric completion of the span of such $x_1 \otimes \ldots \otimes x_n$ (w.r.t. the natural inner product) forms a Hilbert space, denoted $X \otimes X \otimes \ldots \otimes X$. 
+
+    If $\left\{ e_j \right\}_j$ is an orthonormal basis of $X$, then $\left\{ e_{\iota_1} \otimes e_{\iota_2} \otimes \ldots \otimes e_{\iota_n} \right\}_{\iota_1 < \iota_2 < \ldots < \iota_n}$ is an orthonormal basis of $X \otimes X \otimes \ldots \otimes X$. 
+
+    Operators $A_1, A_2, \ldots, A_n \in L(X)$ induce a map $X \otimes \ldots \otimes X \circlearrowleft$: 
+    \begin{equation}
+        (A_1 \otimes A_2 \otimes \ldots \otimes A_n)(\ell) :\  (y_1, y_2, \ldots, y_n) \mapsto \ell (A_1^* y_1, A_2^* y_2, \ldots, A_n^* y_n)
+    \end{equation}
+
+    Denote the antisymmetrization of $x_1 \otimes \ldots \otimes x_n$ as 
+    \begin{equation}
+        x_1 \wedge x_2 \wedge \ldots \wedge x_n = \frac{1}{\sqrt{n}}  \sum_{\pi \in S_n} (-1)^\pi\, x_{\pi (1)} \otimes x_{\pi (2)} \otimes \ldots \otimes x_{\pi (n)} 
+    \end{equation}
+    where $S_n$ is the symmetric group with $n$ elements, $(-1)^\pi$ is the sign of a permutation. 
+
+    Denote by $\Lambda^n (X)$ the (Hilbert) span of such $x_1 \wedge x_2 \wedge \ldots \wedge x_n$, and $\Lambda^0 (X) = \bbC$. The same statement about orthonormal bases can be made for $\Lambda^n (X)$. 
+\end{definition}
 
 \subsection{Operator Determinants}
 
-\subsection{Properties of the Determinant}
+\begin{definition}[Fredholm's determinant]
+    \begin{equation}
+        \det (I + z A) = \sum_{k=0}^{\infty} z^k \cdot \Tr \Lambda^k (A) . 
+    \end{equation}
+\end{definition}
+
+The technique to prove Lidskii's Theorem \ref{lidskii} is to show that Lemma \ref{prod} applies. This shows that the preceeding definition is equivalent to the following: 
+
+\begin{definition}[Groh'berg-Krein's determinant]
+    \begin{equation}
+        \det (I + z A) = \prod_{j=1}^{\infty} (1 + \lambda_j z) . 
+    \end{equation}
+\end{definition}
+
+%\subsection{Properties of the Determinant}
 
 %\printbibliography[title={{\normalsize References}}]
 
