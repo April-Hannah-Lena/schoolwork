@@ -1,10 +1,10 @@
-\documentclass[a4paper]{article}
+\documentclass[a4paper, 10pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{amsthm}
 \usepackage{amsfonts}
-\usepackage[a4paper]{geometry}
+\usepackage[a4paper, margin=1in]{geometry}
 \usepackage{parskip}
 \usepackage{hyperref}
 \usepackage{biblatex}
@@ -124,7 +124,7 @@
     \end{equation}
     where $S_n$ is the symmetric group with $n$ elements, $(-1)^\pi$ is the sign of a permutation. 
 
-    Denote by $\Lambda^n (X)$ the (Hilbert) span of such $x_1 \wedge x_2 \wedge \ldots \wedge x_n$, and $\Lambda^0 (X) = \bbC$. The same statement about orthonormal bases can be made for $\Lambda^n (X)$. 
+    Denote by $\Lambda^n (X)$ the (Hilbert) span of such $x_1 \wedge x_2 \wedge \ldots \wedge x_n$. $\Lambda^0 (X) = \bbC$, $\Lambda^1 (X) = X$. The same statement about orthonormal bases can be made for $\Lambda^n (X)$. 
 \end{definition}
 
 \begin{proposition}[Properties of the tensor products] 
@@ -132,7 +132,7 @@
         \text{a)} &\quad (A_1 \otimes A_2 \otimes \ldots \otimes A_n) (x_1 \otimes x_2 \otimes \ldots \otimes x_n) = (A_1 x_1) \otimes (A_2 x_2) \otimes \ldots \otimes (A_n x_n), \\
         \text{b)} &\quad | \Lambda^n (A) | = \Lambda^n (|A|), \\
         \text{c)} &\quad \Lambda^n (A)\ \text{has singular values}\ s_{\iota_1} \cdot s_{\iota_2} \cdot \ldots \cdot s_{\iota_n}\ \forall\, \iota_1 < \iota_2 < \ldots < \iota_n, \\
-        \text{d)} &\quad \text{If}\ \dim X = d < \infty,\ \text{then}\ \Tr \lambda^d (A) = \det A,\,\ \Tr \Lambda^{d+m} (A) = 0\ \forall\, m > 0. 
+        \text{d)} &\quad \text{If}\ \dim X = d < \infty,\ \text{then}\ \Tr \lambda^d (A) = \det A,\,\ \Tr \Lambda^{d+m} (A) = 0\,\ \forall\, m > 0. 
     \end{align}
 
 \end{proposition}
