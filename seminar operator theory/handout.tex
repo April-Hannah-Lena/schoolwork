@@ -73,12 +73,12 @@
 
 \begin{lemma}[Generalized eigenspaces]
     Let $0 \neq \lambda \in \sigma (A)$. Then there exist subspaces $N = N(\lambda)$, $R = R(\lambda)$ of $X$ with
-    \begin{enumerate}
-        \item[a)] (finiteness) $\dim N < \infty$,
-        \item[b)] (splitting) $X = N \oplus R$,
-        \item[c)] (invariance) $A(N) \subset N,\quad A(R) \subset R$,
-        \item[d)] (isolation) $\lambda \in \sigma (A \vert N),\quad \lambda \in \sigma (A \vert R)$ . 
-    \end{enumerate}
+    \begin{align}
+        \text{a)}\ &\ \text{(finiteness)} \quad\ \dim N < \infty, \\
+        \text{b)}\ &\ \text{(splitting)} \quad\ \ X = N \oplus R, \\
+        \text{c)}\ &\ \text{(invariance)} \quad A(N) \subset N,\,\ A(R) \subset R, \\
+        \text{d)}\ &\ \text{(isolation)} \quad\ \ \lambda \in \sigma (A \,\vert\, N),\,\ \lambda \in \sigma (A \,\vert\, R). 
+    \end{align}
     Write $P_\lambda : X \twoheadrightarrow N$ for the orthogonal projection of $X$ into $N$. 
 \end{lemma}
 
@@ -90,7 +90,7 @@
     \end{equation}
 \end{lemma}
 
-\begin{lemma}[An infinite product formulation]
+\begin{lemma}[Hadamard factorization]
     \label{prod}
     Let $f : \bbC \circlearrowleft$ be an entire function with $f(0) = 1$. Let $\left\{ z_j \right\}_j$ be the zeros of $f$ and assume $\sum_{j=1}^{\infty} | z_j |^{-1} < \infty$. Finally suppose the boundedness condition
     \begin{equation}
@@ -126,6 +126,16 @@
 
     Denote by $\Lambda^n (X)$ the (Hilbert) span of such $x_1 \wedge x_2 \wedge \ldots \wedge x_n$, and $\Lambda^0 (X) = \bbC$. The same statement about orthonormal bases can be made for $\Lambda^n (X)$. 
 \end{definition}
+
+\begin{proposition}[Properties of the tensor products] 
+    \begin{align}
+        \text{a)} &\quad (A_1 \otimes A_2 \otimes \ldots \otimes A_n) (x_1 \otimes x_2 \otimes \ldots \otimes x_n) = (A_1 x_1) \otimes (A_2 x_2) \otimes \ldots \otimes (A_n x_n), \\
+        \text{b)} &\quad | \Lambda^n (A) | = \Lambda^n (|A|), \\
+        \text{c)} &\quad \Lambda^n (A)\ \text{has singular values}\ s_{\iota_1} \cdot s_{\iota_2} \cdot \ldots \cdot s_{\iota_n}\ \forall\, \iota_1 < \iota_2 < \ldots < \iota_n, \\
+        \text{d)} &\quad \text{If}\ \dim X = d < \infty,\ \text{then}\ \Tr \lambda^d (A) = \det A,\,\ \Tr \Lambda^{d+m} (A) = 0\ \forall\, m > 0. 
+    \end{align}
+
+\end{proposition}
 
 \subsection{Operator Determinants}
 
