@@ -46,6 +46,18 @@
 
 \maketitle
 
+\section{Lidskii's Theorem}
+
+\begin{theorem}[Lidksii]
+    \label{lidskii}
+    Let $X$ be a Hilbert space and $A \in L(X)$ be a trace-class operator with eigenvalues $\lambda_1,\, \lambda_2,\, \ldots$. Then 
+    \begin{equation}
+        \Tr A = \sum_{n=1}^{\infty} \lambda_n\ . 
+    \end{equation}
+\end{theorem}
+
+\section{Tools: Generalized Eigenspaces and a Product Form}
+
 \begin{definition}[Notation]
     We consider a separable Hilbert space $X$ with inner product $(\cdot, \cdot)$. $A \in K(X)$ is a trace-class operator. 
 
@@ -59,19 +71,7 @@
     \end{equation}
 \end{definition}
 
-\subsection{Lidskii's Theorem}
-
-\begin{theorem}[Lidksii]
-    \label{lidskii}
-    Let $X$ be a Hilbert space and $A \in L(X)$ be a trace-class operator with eigenvalues $\lambda_1,\, \lambda_2,\, \ldots$. Then 
-    \begin{equation}
-        \Tr A = \sum_{n=1}^{\infty} \lambda_n\ . 
-    \end{equation}
-\end{theorem}
-
-\subsection{Tools: Generalized Eigenspaces and a Singular Value Inequality}
-
-\begin{lemma}[Generalized eigenspaces]
+\begin{theorem}[Generalized eigenspaces]
     Let $0 \neq \lambda \in \sigma (A)$. Then there exist subspaces $N = N(\lambda)$, $R = R(\lambda)$ of $X$ with
     \begin{align}
         \text{a)}\ &\ \text{(finiteness)} \quad\ \dim N < \infty, \\
@@ -80,15 +80,7 @@
         \text{d)}\ &\ \text{(isolation)} \quad\ \ \lambda \in \sigma (A \,\vert\, N),\,\ \lambda \in \sigma (A \,\vert\, R). 
     \end{align}
     Write $P_\lambda : X \twoheadrightarrow N$ for the orthogonal projection of $X$ into $N$. 
-\end{lemma}
-
-\begin{lemma}[Lalesco-Schur-Weyl]
-    For any $N \in \bbN,\,\ \prod_{j=1}^N | \lambda_j | \leq \prod_{j=1}^N s_j$. 
-    In particular we can conclude the eigenvalue - singular value inequality 
-    \begin{equation}
-        \sum_{j=1}^{\infty} | \lambda_j | \leq \sum_{j=1}^{\infty} s_j . 
-    \end{equation}
-\end{lemma}
+\end{theorem}
 
 \begin{lemma}[Hadamard factorization]
     \label{prod}
@@ -102,20 +94,33 @@
     \end{equation}
 \end{lemma}
 
-\subsection{(Antisymmetric) Tensor Products in Hilbert Spaces}
+\begin{lemma}[Weyl-Horn]
+    We have the singular value inequality 
+    \begin{equation}
+        \sum_{j=1}^{\infty} | \lambda_j | \leq \sum_{j=1}^{\infty} s_j . 
+    \end{equation}
+\end{lemma}
+
+\section{(Antisymmetric) Tensor Products in Hilbert Spaces}
 
 \begin{definition}
     For $x_1, x_2, \ldots, x_n \in X$, let $x_1 \otimes x_2 \otimes \ldots \otimes x_n$ be the multilinear map 
     \begin{equation}
-        (x_1 \otimes x_2 \otimes \ldots \otimes x_n) : X \times X \times \ldots \times X \to \bbC, \quad (y_1, y_2, \ldots, y_n) \mapsto \prod_{j=1}^{n} (x_j, y_j) \,. 
+        (x_1 \otimes x_2 \otimes \ldots \otimes x_n) : X \times X \times \ldots \times X \to \bbC, \quad (y_1, y_2, \ldots, y_n) \mapsto \prod_{j=1}^{n} (x_j,\, y_j) \,. 
     \end{equation}
-    The metric completion of the span of such $x_1 \otimes \ldots \otimes x_n$ (w.r.t. the natural inner product) forms a Hilbert space, denoted $X \otimes X \otimes \ldots \otimes X$. 
+    The (Hilbert) span of such $x_1 \otimes \ldots \otimes x_n$ (w.r.t. the natural inner product) 
+
+    \begin{equation}
+        \left\langle\, x_1 \otimes x_2 \otimes \ldots \otimes x_n,\,\ y_1 \otimes y_2 \otimes \ldots \otimes y_n \,\right\rangle = \prod_{j=1}^{n} (x_j,\, y_j) \,. 
+    \end{equation}
+    
+    forms a Hilbert space, denoted $X \otimes X \otimes \ldots \otimes X$. 
 
     If $\left\{ e_j \right\}_j$ is an orthonormal basis of $X$, then $\left\{ e_{\iota_1} \otimes e_{\iota_2} \otimes \ldots \otimes e_{\iota_n} \right\}_{\iota_1 < \iota_2 < \ldots < \iota_n}$ is an orthonormal basis of $X \otimes X \otimes \ldots \otimes X$. 
 
     Operators $A_1, A_2, \ldots, A_n \in L(X)$ induce a map $X \otimes \ldots \otimes X \circlearrowleft$: 
     \begin{equation}
-        (A_1 \otimes A_2 \otimes \ldots \otimes A_n)(\ell) :\  (y_1, y_2, \ldots, y_n) \mapsto \ell (A_1^* y_1, A_2^* y_2, \ldots, A_n^* y_n)
+        (A_1 \otimes A_2 \otimes \ldots \otimes A_n)(\ell) :\  (y_1, y_2, \ldots, y_n) \mapsto \ell (A_1^* y_1,\, A_2^* y_2,\, \ldots,\, A_n^* y_n)
     \end{equation}
 
     Denote the antisymmetrization of $x_1 \otimes \ldots \otimes x_n$ as 
@@ -132,12 +137,12 @@
         \text{a)} &\quad (A_1 \otimes A_2 \otimes \ldots \otimes A_n) (x_1 \otimes x_2 \otimes \ldots \otimes x_n) = (A_1 x_1) \otimes (A_2 x_2) \otimes \ldots \otimes (A_n x_n), \\
         \text{b)} &\quad | \Lambda^n (A) | = \Lambda^n (|A|), \\
         \text{c)} &\quad \Lambda^n (A)\ \text{has singular values}\ s_{\iota_1} \cdot s_{\iota_2} \cdot \ldots \cdot s_{\iota_n}\ \forall\, \iota_1 < \iota_2 < \ldots < \iota_n, \\
-        \text{d)} &\quad \text{If}\ \dim X = d < \infty,\ \text{then}\ \Tr \lambda^d (A) = \det A,\,\ \Tr \Lambda^{d+m} (A) = 0\,\ \forall\, m > 0. 
+        \text{d)} &\quad \text{If}\ \dim X = d < \infty,\ \text{then}\ \Tr \Lambda^d (A) = \det A,\,\ \Tr \Lambda^{d+m} (A) = 0\,\ \forall\, m > 0. 
     \end{align}
 
 \end{proposition}
 
-\subsection{Operator Determinants}
+\section{Operator Determinants}
 
 \begin{definition}[Fredholm's determinant]
     \begin{equation}
@@ -153,7 +158,7 @@ The technique to prove Lidskii's Theorem \ref{lidskii} is to show that Lemma \re
     \end{equation}
 \end{definition}
 
-%\subsection{Properties of the Determinant}
+%\section{Properties of the Determinant}
 
 %\printbibliography[title={{\normalsize References}}]
 
