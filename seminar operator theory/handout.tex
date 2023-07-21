@@ -114,9 +114,7 @@
         \left\langle\, x_1 \otimes x_2 \otimes \ldots \otimes x_n,\,\ y_1 \otimes y_2 \otimes \ldots \otimes y_n \,\right\rangle = \prod_{j=1}^{n} (x_j,\, y_j) \,. 
     \end{equation}
     
-    forms a Hilbert space, denoted $X \otimes X \otimes \ldots \otimes X$. 
-
-    If $\left\{ e_j \right\}_j$ is an orthonormal basis of $X$, then $\left\{ e_{\iota_1} \otimes e_{\iota_2} \otimes \ldots \otimes e_{\iota_n} \right\}_{\iota_1 < \iota_2 < \ldots < \iota_n}$ is an orthonormal basis of $X \otimes X \otimes \ldots \otimes X$. 
+    forms a Hilbert space, denoted $X \otimes X \otimes \ldots \otimes X$.  
 
     Operators $A_1, A_2, \ldots, A_n \in L(X)$ induce a map $X \otimes \ldots \otimes X \circlearrowleft$: 
     \begin{equation}
@@ -125,11 +123,13 @@
 
     Denote the antisymmetrization of $x_1 \otimes \ldots \otimes x_n$ as 
     \begin{equation}
-        x_1 \wedge x_2 \wedge \ldots \wedge x_n = \frac{1}{\sqrt{n}}  \sum_{\pi \in S_n} (-1)^\pi\, x_{\pi (1)} \otimes x_{\pi (2)} \otimes \ldots \otimes x_{\pi (n)} 
+        x_1 \wedge x_2 \wedge \ldots \wedge x_n = \frac{1}{n !}  \sum_{\pi \in S_n} (-1)^\pi\, x_{\pi (1)} \otimes x_{\pi (2)} \otimes \ldots \otimes x_{\pi (n)} 
     \end{equation}
     where $S_n$ is the symmetric group with $n$ elements, $(-1)^\pi$ is the sign of a permutation. 
 
-    Denote by $\Lambda^n (X)$ the (Hilbert) span of such $x_1 \wedge x_2 \wedge \ldots \wedge x_n$. $\Lambda^0 (X) = \bbC$, $\Lambda^1 (X) = X$. The same statement about orthonormal bases can be made for $\Lambda^n (X)$. 
+    Denote by $\Lambda^n (X)$ the (Hilbert) span of such $x_1 \wedge x_2 \wedge \ldots \wedge x_n$. $\Lambda^0 (X) = \bbC$, $\Lambda^1 (X) = X$. 
+    
+    If $\left\{ e_j \right\}_j$ is an orthonormal basis of $X$, then $\left\{ e_{\iota_1} \wedge e_{\iota_2} \wedge \ldots \wedge e_{\iota_n} \right\}_{\iota_1 < \iota_2 < \ldots < \iota_n}$ is an orthonormal basis of $\Lambda^n (X)$.
 \end{definition}
 
 \begin{proposition}[Properties of the tensor products] 
