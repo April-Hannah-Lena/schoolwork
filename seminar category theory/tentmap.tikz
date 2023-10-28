@@ -1,0 +1,21 @@
+\begin{tikzpicture}
+    \node (0) at (0, 0) {};
+    \node (1) at (4.25, 0) {};
+    \node (2) at (0, 4.25) {};
+    \node (4) at (4, 0) {};
+    \node (5) at (2, 4) {};
+    \node (6) at (-0.25, 4) {};
+    \node (7) at (0.25, 4) {};
+    \node (8) at (4, 0.25) {};
+    \node (9) at (4, -0.25) {};
+    \node (10) at (-0.75, 4) {$1$};
+    \node (11) at (4, -0.75) {$1$};
+    \node (12) at (-0.25, -0.25) {$0$};
+    \node (13) at (3, 3.5) {{\color{purple} $\phi_1$}};
+    \draw (2.center) to (0.center);
+    \draw (0.center) to (1.center);
+    \draw[purple] (0.center) to (5.center);
+    \draw[purple] (5.center) to (4.center);
+    \draw (6.center) to (7.center);
+    \draw (9.center) to (8.center);
+\end{tikzpicture}

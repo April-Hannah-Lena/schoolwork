@@ -49,3 +49,5 @@ uname+passwd.jl
 *.so
 __pycache__
 precompile_plots.jl
+
+*.DS_Store
