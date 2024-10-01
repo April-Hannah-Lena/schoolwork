@@ -1,0 +1,171 @@
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{BOONDOX-cal}
+\usepackage{quiver}
+\usepackage[a4paper, margin=1in]{geometry}
+\usepackage{tikz}
+\usepackage{tikzscale}
+\usepackage{subcaption}
+\usepackage{wrapfig}
+\usepackage{multicol}
+\usepackage{parskip}
+\usepackage{hyperref}
+\usepackage{biblatex}
+
+\newcommand{\ran}{\textrm{Range}\,}
+\newcommand{\bbN}{\mathbb{N}}
+\newcommand{\bbR}{\mathbb{R}}
+\newcommand{\bbC}{\mathbb{C}}
+\newcommand{\bbA}{\mathbb{A}}
+\newcommand{\bbG}{\mathbb{G}}
+\newcommand{\bbL}{\mathbb{L}}
+
+\newcommand{\ob}{\text{ob}}
+%\newcommand{\hom}{\text{Hom}}
+\newcommand{\id}{\text{id}}
+
+%\newcommand{\sA}{\boldsymbol{\mathcal{A}}}
+%\newcommand{\sB}{\boldsymbol{\mathcal{B}}}
+\newcommand{\sA}{\mathbcal{A}}
+\newcommand{\sB}{\mathbcal{B}}
+\newcommand{\sK}{\mathbcal{K}}
+
+\newcommand{\T}{\mathcal{T}}
+\newcommand{\bT}{\mathbcal{T}}
+\newcommand{\mettop}{\mathbcal{MetTop}}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\def\definitionautorefname{Definition}
+
+\newtheorem{theorem}[definition]{Theorem}
+\def\theoremautorefname{Theorem}
+\newtheorem{proposition}[definition]{Proposition}
+\def\propositionautorefname{Proposition}
+\newtheorem{lemma}[definition]{Lemma}
+\def\lemmaautorefname{Lemma}
+\newtheorem{corollary}[definition]{Corollary}
+\def\corollaryautorefname{Corollary}
+
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+\def\remarkautorefname{Remark}
+
+\theoremstyle{remark}
+\newtheorem{example}[definition]{Example}
+\def\exampleautorefname{Ex.}
+
+\addbibresource{handout.bib}
+
+\title{\vspace*{-5ex}DMD Error Representation}
+
+\author{\vspace*{-15ex}April Herwig}
+\date{25.08.2024}
+
+\begin{document}
+
+\maketitle
+
+% --------------------------------------------------
+
+Given
+
+\begin{itemize}
+    \item system $S : \Omega \to \Omega$
+    \item quadrature scheme $\left\{ (w_i, x_i) \right\}_i$
+    \item samples $\left\{ y_i \right\}_i$, $y_i = S(x_i)$
+    \item family $\left\{ \psi_j \right\}_j$ spanning a Hilbert space $\mathcal{H}$
+\end{itemize}
+
+Construct the matrices
+
+\begin{equation*}
+    \Psi_X = \begin{matrix}
+        \psi_1 (x_1) & \ldots & \psi_N (x_1) \\
+        \vdots & & \vdots \\
+        \psi_1 (x_M) & \ldots & \psi_N (x_M) \\
+    \end{matrix}
+    , \quad 
+    \Psi_Y = \begin{matrix}
+        \psi_1 (y_1) & \ldots & \psi_N (y_1) \\
+        \vdots & & \vdots \\
+        \psi_1 (y_M) & \ldots & \psi_N (y_M) \\
+    \end{matrix}
+    .
+\end{equation*}
+
+EDMD constructs the Galerkin matrices 
+
+\begin{equation*}
+    G = \Psi_X^* W \Psi_X, \quad A = \Psi_X^* W \Psi_Y, \quad L = \Psi_Y^* W \Psi_Y. 
+\end{equation*}
+
+We have 
+
+\begin{itemize}
+    \item $\lim_{M \to \infty} G_{j k} = \left\langle \psi_j, \psi_k \right\rangle =: \mathbb{G}_{j k}$,
+    \item $\lim_{M \to \infty} A_{j k} = \left\langle \psi_j, \mathcal{K}\psi_k \right\rangle =: \mathbb{A}_{j k}$,
+    \item $\lim_{M \to \infty} L_{j k} = \left\langle \mathcal{K}\psi_j, \mathcal{K}\psi_k \right\rangle =: \mathbb{L}_{j k}$.
+\end{itemize}
+
+Consider a candidate eigenpair $(\lambda, g),\ g = \sum_{j}^{\infty} a_j \psi_j$ for $\mathcal{K}$. 
+
+\begin{align*}
+    \left\Vert (\mathcal{K} - \lambda I) g \right\Vert_{\mathcal{H}}^2
+    &= \left\langle (\sK - \lambda I) g, (\sK - \lambda I) g \right\rangle \\
+    &= \left\langle \sK g, \sK g \right\rangle - \lambda \left\langle \sK g, g \right\rangle - \bar{\lambda} \left\langle g, \sK g \right\rangle + \vert \lambda \vert^2 \left\langle g, g \right\rangle \\
+    &= a^* \left( \mathbb{L} - \lambda \mathbb{A}^* - \bar{\lambda} \mathbb{A} + \vert \lambda \vert^2 \mathbb{G} \right) a . 
+\end{align*}
+
+Now if we consider the "standard" EDMD residual
+
+\begin{align*}
+    \left\Vert (\bbG^{-1} \bbA - \lambda) g \right\Vert_{\mathcal{H}}^2
+    &= \left\langle (\bbG^{-1} \bbA - \lambda)g, (\bbG^{-1} \bbA - \lambda)g \right\rangle \\
+    &= \left\langle \bbG^{-1} \bbA g, \bbG^{-1} \bbA g \right\rangle - \lambda \left\langle \bbG^{-1} \bbA g, g \right\rangle - \bar{\lambda} \left\langle g, \bbG^{-1} \bbA g \right\rangle + \vert \lambda \vert^2 \left\langle g, g \right\rangle \\
+    &= a^* (\bbA^* (\bbG \bbG^*)^{-1} \bbA - \lambda (\bbG^{-1} \bbA)^* - \bar{\lambda} \bbG^{-1} \bbA + \vert \lambda \vert^2 \bbG) a . 
+\end{align*}
+
+Let us assume that $\left\{ \psi_i \right\}_i$ is an orthonormal basis, so that $\bbG = I$. 
+
+\begin{equation*}
+    \left\Vert (\bbG^{-1} \bbA - \lambda) g \right\Vert_{\mathcal{H}}^2
+    -
+    \left\Vert (\mathcal{K} - \lambda I) g \right\Vert_{\mathcal{H}}^2
+    =
+    a^* (\bbA^* \bbA - \bbL) a. 
+\end{equation*}
+
+Now, viewing $\bbA$ as an "infinite matrix" on $l^2(\mathbb{N}_0)$
+
+\begin{align*}
+    \left( \bbA^* \bbA \right)_{i j} 
+    &= \sum_l \bbA^*_{i l} \bbA_{l j} \\
+    &= \sum_l \left\langle \sK \psi_i, \psi_l \right\rangle \, \left\langle \psi_l, \sK \psi_j \right\rangle \\
+    &= \left\langle \sum_l \left\langle \sK \psi_i, \psi_l \right\rangle \psi_l, \sK \psi_j \right\rangle \\
+    &= \left\langle \sK \psi_i, \sK \psi_j \right\rangle \\
+    &= \bbL_{i j}
+\end{align*}
+
+This is good. If we however only have access to the first $N$ basis elements, that is, we have a finite matrix $\tilde{\bbA} = (\bbA_{i j})_{i,j = 1}^N$, then
+
+\begin{align*}
+    \left( \tilde{\bbA}^* \tilde{\bbA} \right)_{i j} 
+    &= \sum_{l=1}^N \tilde{\bbA}^*_{i l} \tilde{\bbA}_{l j} \\
+    &= \sum_{l=1}^N \left\langle \sK \psi_i, \psi_l \right\rangle \, \left\langle \psi_l, \sK \psi_j \right\rangle \\
+    &= \left\langle \sK \psi_i, \sK \psi_j \right\rangle - \left\langle \sum_{l=N+1}^\infty \left\langle \sK \psi_i, \psi_l \right\rangle \psi_l, \sK \psi_j \right\rangle \\
+    &= \bbL_{i j} - \left\langle P^\perp \sK \psi_i, \sK, \psi_j \right\rangle \\
+\end{align*}
+
+where $P$ is the orthogonal projection onto $\text{span} \left\{ \psi_1, \ldots, \psi_N \right\}$, $P^\perp = I - P$. 
+
+% --------------------------------------------------
+
+%\nocite{*}
+%\printbibliography
+
+\end{document}
