@@ -4,9 +4,9 @@
 \setlength{\voffset}{-28.4mm}
 \setlength{\hoffset}{-1in}
 \setlength{\topmargin}{20mm}
-\setlength{\oddsidemargin}{25mm}
-\setlength{\evensidemargin}{25mm}
-\setlength{\textwidth}{160mm}
+\setlength{\oddsidemargin}{35mm}
+\setlength{\evensidemargin}{35mm}
+\setlength{\textwidth}{140mm}
 
 \setlength{\parindent}{0pt}
 %\setlength{\parskip}{\baselineskip}
@@ -16,6 +16,7 @@
 \setlength{\headsep}{50pt}
 \setlength{\headheight}{0pt}
 
+\setlength{\topsep}{6pt}
 
 %\def\autorefname
 \def\algorithmautorefname{Algorithm}
@@ -25,7 +26,7 @@
 \numberwithin{equation}{section}
 \def\equationautorefname{Eq.}
 
-\theoremstyle{definition}
+\theoremstyle{theorem}
 \newtheorem{definition}{Definition}[section]
 \def\definitionautorefname{Definition}
 
@@ -35,6 +36,8 @@
 \def\propositionautorefname{Proposition}
 \newtheorem{corollary}[definition]{Corollary}
 \def\corollaryautorefname{Corollary}
+\newtheorem{lemma}[definition]{Lemma}
+\def\lemmaautorefname{Lemma}
 
 \theoremstyle{remark}
 \newtheorem*{remark}{Remark}
@@ -43,6 +46,9 @@
 \theoremstyle{remark}
 \newtheorem{example}[definition]{Example}
 \def\exampleautorefname{Ex.}
+
+\newcommand\todo[1]{\textcolor{red}{TODO: #1}}
+%\renewcommand\todo[1]{} % this line removes todos
 
 \newcommand*{\defeq}{\mathrel{\vcenter{\baselineskip0.5ex \lineskiplimit0pt
                      \hbox{\scriptsize.}\hbox{\scriptsize.}}}%
@@ -53,11 +59,18 @@
 \newcommand{\scrH}{\mathcal{H}}
 \newcommand{\scrX}{\mathcal{X}}
 \newcommand{\scrY}{\mathcal{Y}}
+\newcommand{\scrA}{\mathcal{A}}
+\newcommand{\scrW}{\mathcal{W}}
+
 \newcommand{\bbC}{\mathbb{C}}
 \newcommand{\bbR}{\mathbb{R}}
 \newcommand{\bbT}{\mathbb{T}}
 \newcommand{\bbD}{\mathbb{D}}
 \newcommand{\bbZ}{\mathbb{Z}}
+\newcommand{\bbN}{\mathbb{N}}
+\newcommand{\bbQ}{\mathbb{Q}}
+\newcommand{\bbone}{\mathbbm{1}}
+
 \newcommand{\YX}{\Psi_X}
 \newcommand{\YY}{\Psi_Y}
 \newcommand{\res}{\text{res}}
