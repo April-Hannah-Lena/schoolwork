@@ -79,10 +79,22 @@ $\scrL f = \scrL f^+ - \scrL f^-$.
 
 \ref{eq:pushforward} shows that $\scrL$ is precisely the action of the pushforward 
 $S_\sharp \mu = \mu \circ S^{-1}$ for densities. This provides a useful intuition for 
-the transfer operator: we move away from the viewpoint of single points $x \in \scrX$, 
+the transfer operator: we move away from the viewpoint of single points $x \in \Omega$, 
 and instead consider \emph{distributions} of point density. If $x$ is 
 chosen from a random distribution with density $f$, then the distribution of $S (x)$ has 
 density $\scrL f$. 
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.85\textwidth]{perron_asymptotic.pdf}
+    \caption{
+        Illustration of the pushforward intuition of the Perron-Frobenius operator. 
+        Action of the $\scrL$ associated with the quadratic map 
+        $S : [0, 1] \circlearrowleft,\ x \mapsto 4 x (1 - x)$. One million points are 
+        sampled uniformly in $[0, 1]$ and mapped forward under $S$, $S^2$, and $S^{10}$. 
+        The respective distributions are shown in histograms. 
+    }\label{fig:perron_asymptotic}
+\end{figure}
 
 
 \subsection{Spectral Properties}
@@ -110,8 +122,10 @@ convergent.
 
 \begin{proposition}
     The spectrum admits a decomposition 
-    $\sigma (M) = \sigma_p (M) \oplus \sigma_c (M) \oplus \sigma_r (M)$ into \emph{point-, 
-    continuous-,} and \emph{residual-spectrum} with
+    \begin{equation}
+        \sigma (M) = \sigma_p (M) \oplus \sigma_c (M) \oplus \sigma_r (M)
+    \end{equation}
+    into \emph{point-, continuous-,} and \emph{residual-spectrum} with
     \begin{align}
         &\sigma_p (M) = \left\{ \lambda \in \bbC \mid 
             M - \lambda I \text{ is not injective} \right\}, &\phantom{.} \\
@@ -133,7 +147,8 @@ has a similar characterization as the set of $\lambda \in \bbC$ for which $M _ \
 is injective but \emph{not} bounded from below, i.e. there exists a sequence $(x_k)_k$, 
 $\| x_k \| = 1$, for which $(M - \lambda I) x_k \to 0$. Equivalently, 
 $(M - \lambda I)^{-1}$ cannot be extended to a bounded linear operator, but is still a 
-(densely defined) closed linear operator. 
+(densely defined) closed linear operator. (See the proof of theorem 
+\ref{thm:resolvent_adjoint} for a proof of this characterization.)
 
 One might ask why such detail is required in defining the spectrum. The answer lies in 
 the subtle consequences of infinite-dimensionality. The following example from 
@@ -248,6 +263,18 @@ Perron-Frobenius / Koopman operators acting on the domain $\scrX$.
     measure $f\,dx$}. 
 \end{definition}
 
+\begin{figure}
+    \centering
+    \includegraphics[width=0.9\textwidth]{koopman_perron_invariance_example.pdf}
+    \caption{
+        Actions of the Koopman and Perron-Frobenius operators associated with the quadratic 
+        map $S : [0, 1] \circlearrowleft,\ x \mapsto 4 x (1 - x)$. The constant density 
+        $\bbone_{[0, 1]}$ is fixed under $\scrK$ and the density 
+        $f_* (x) = \frac{1}{\pi \sqrt{ x (1 - x) }}$ is fixed under $\scrL$ (c.f. figure 
+        \ref{fig:perron_asymptotic}). 
+    }
+\end{figure}
+
 The following are well-known facts about the Koopman and Perron-Frobenius operator. They 
 can be found in many sources e.g. \cite{lasotamackey}. 
 
@@ -273,7 +300,9 @@ The following theorem is from \cite{attr}.
 
 \begin{definition}
     A set $A \subset \Omega$ in phase space is called \emph{$\delta$-almost-invariant} if 
-    $\int_{ S^{-1} (A) \cap A } dx = \delta \cdot \int_A dx$. 
+    \begin{equation}
+        \int_{ S^{-1} (A) \cap A } dx = (1 - \delta) \cdot \int_A dx . 
+    \end{equation}
 \end{definition}
 
 \begin{theorem}
@@ -295,7 +324,7 @@ are many more which can be studied.
 
 \subsection{Pseudospectra}
 
-The reder will have likely noticed the sensitivity required in understanding the spectrum 
+The reader will have likely noticed the sensitivity required in understanding the spectrum 
 for infinite-dimensional operators. In particular the spectral types can be unstable 
 w.r.t. perturbations of the operator. For example, for any self-adjoint operator $M$ (e.g. 
 the generator for the Koopman semigroup in a continuous-time dynamical system) there 
@@ -323,13 +352,26 @@ In the present paper we tackle the instability problem for operator perturbation
         Some authors will deine the pseudospectrum with "$\leq$" instead of "$<$". This 
         makes $\sigma_\epsilon (M)$ a closed set, but breaks theorem \ref{thm:pseudo}.}
     \begin{equation}
+        \label{eq:pseudospectrum_union}
         \sigma_\epsilon (M) = \bigcup_{\| E \| < \epsilon} \sigma (M + E). 
     \end{equation}
 \end{definition}
 
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{pseudospectrum_rand.pdf}
+    \caption{
+        Pseudospectra for the $40 \times 40$ Toeplitz matrix $T$ with $0$ on the main 
+        diagonal, $1$ on the first upper off-diagonal, and $1/4$ on the second lower 
+        off-diagonal. Contour lines show the boundary of the $\epsilon$-pseudospectrum 
+        for $\epsilon = 10^{-2}, 10^{-4}, 10^{-6}, 10^{-8}, 10^{-10}$. Black: Spectrum 
+        of $T$. Purple: Spectra of $T + E$ for $40$ randomly sampled 
+        perturbations $E$ with $\| E \| < 10^{-4}$. 
+    }
+\end{figure}
+
 \begin{theorem}
     \label{thm:pseudo}
-    
     We have the following equivalent formulation of the pseudospectrum:
     \begin{equation}
         \sigma_\epsilon (M) = \left\{ \lambda \in \bbC \mid 
@@ -339,13 +381,25 @@ In the present paper we tackle the instability problem for operator perturbation
     $M - \lambda I$ is not invertible. 
 \end{theorem}
 
+\begin{remark}
+    While this result is practically pseudospectrum folklore, a correct proof in the general 
+    case of closed linear operators on Banach spaces is difficult to find. Virtually all 
+    sources which cite this result, cite an unpublished technical report by Chaitin-Chatelin 
+    and Harrabi \cite{unpublished_pseudospectrum_result}. The following proof is based on 
+    \cite{boettcher2005spectral} and extended slightly from bounded operators to closed 
+    (potentially) unbounded operators. 
+\end{remark}
+
 \begin{proof}
     We prove "$\subset$" by contraposition: assume 
     $\| (M - \lambda I)^{-1} \| > \frac{1}{\epsilon}$ and let $\| E \| < \epsilon$. Then 
-    $\| (M - \lambda I)^{-1} M \| < 1$ and hence $I + (M - \lambda I)^{-1} E$ is 
-    invertible. This implies $M - \lambda I + E 
-    = \left( M - \lambda I \right) \left( I + (M - \lambda I)^{-1} E \right)$ is 
-    invertible. 
+    $\| (M - \lambda I)^{-1} E \| < 1$ and hence $I + (M - \lambda I)^{-1} E$ is 
+    invertible. This implies 
+    \begin{equation}
+        M - \lambda I + E 
+        = \left( M - \lambda I \right) \left( I + (M - \lambda I)^{-1} E \right)
+    \end{equation}
+    is invertible. 
 
     Conversely, we prove "$\supset$" by showing there exists an operator $E$ with 
     $\| E \| < \epsilon$ sich that $M - \lambda I + E$ is not invertible. Since 
@@ -359,10 +413,22 @@ In the present paper we tackle the instability problem for operator perturbation
     Set $E = - \delta u v^*$. Then $\| E \| = \delta < \epsilon$ and 
     \begin{equation}
         E v = - \delta u v^* v = - u = - (M - \lambda I) (M - \lambda I)^{-1} u 
-        = (M - \lambda I) v . 
+        = - (M - \lambda I) v . 
     \end{equation}
-    Rearranging provides $(M + E - \lambda I) v = 0$. 
+    Rearranging yields $(M + E - \lambda I) v = 0$. 
 \end{proof}
+
+The proof of the above theorem also shows that one can consider only rank-one 
+perturbations in \ref{eq:pseudospectrum_union}: 
+
+\begin{corollary}
+    We can restrict \ref{eq:pseudospectrum_union} to 
+    \begin{equation}
+        \sigma_\epsilon (M) 
+        = \bigcup_{\substack{ \| E \| < \epsilon \\ \text{rank }E = 1 }} 
+        \sigma (M + E) . 
+    \end{equation}
+\end{corollary}
 
 The following formulation of the pseudospectrum in the Hilbert space case will be the 
 main tool we use in the section on numerical methods. 
@@ -376,7 +442,8 @@ main tool we use in the section on numerical methods.
 \end{definition}
 
 \begin{lemma}
-    Let $M : D(M) \to \scrH$ be a closed linear operator on a Hilbert space. 
+    \label{lem:injection_modulus}
+    Let $M : D(M) \to \scrX$ be a closed linear operator on a Hilbert space. 
     If $\lambda \in \rho (M)$ then 
     \begin{equation}
         \label{eq:injection_modulus_adjoint}
@@ -395,6 +462,7 @@ main tool we use in the section on numerical methods.
 \end{proof}
 
 \begin{theorem}
+    \label{thm:resolvent_adjoint}
     For a Hilbert space operator $M$, 
     \begin{equation}
         \frac{1}{\left\| (M - \lambda I)^{-1} \right\|} = \min \left\{ 
@@ -409,29 +477,251 @@ main tool we use in the section on numerical methods.
     When $\lambda \in \sigma_p (M)$, then obviously $\sigma_{\inf} (M - \lambda I) = 0$. 
     Due to theorem \ref{thm:spec_relations_adjoints} part $2$, $\lambda \in \sigma_r (M)$ 
     has $\sigma_{\inf} (M^* - \bar{\lambda} I) = 0$. Finally, let 
-    $\lambda \in \sigma_c (M)$. Assume $\sigma_{\inf} (M - \lambda I) > 0$. Then 
-    $(M - \lambda I)^{-1} : \text{ran} (M - \lambda I) \to \scrW \subset \scrX$ is bounded. 
+    $\lambda \in \sigma_c (M)$ so $M - \lambda I$ is injective. Assume 
+    $\sigma_{\inf} (M - \lambda I) > 0$. Then 
+    $(M - \lambda I)^{-1} : \text{ran} (M - \lambda I) \to D(M)$ is bounded. 
     But since $\text{ran} (M - \lambda I) \subset \scrX$ is dense, $(M - \lambda I)^{-1}$ 
-    has a unique extension to $\scrX$, a contradiction. 
+    has a unique bounded extension to $\scrX$, a contradiction. 
 \end{proof}
 
 \begin{corollary}
     In the Hilbert space setting, the psudospectrum can be formulated as: 
-    \begin{align}
-        \begin{split}\label{eq:pseudospectrum}
-            \sigma_\epsilon (M) &= \left\{ \lambda \in \bbC \mid \exists\; u : 
-            \| u \| = 1 \text{ and either }\right. \\
-            &\quad\quad\quad\quad\quad\quad
-            \left.\left\| (M - \lambda I) u \right\| < \epsilon \text{ or } 
-            \left\| (M^* - \bar{\lambda} I) u \right\| < \epsilon \right\}    
-        \end{split}
-        \\[2ex]
-        &= \sigma (M) \cup \left\{ \lambda \in \bbC \mid \exists\; u : 
-        \| u \| = 1,\ \left\| (M - \lambda I) u \right\| < \epsilon \right\} .  
-    \end{align}
+    \begin{multline}
+        \label{eq:pseudospectrum}
+        \sigma_\epsilon (M) = \left\{ \lambda \in \bbC \mid \exists\; u \in \scrX : 
+        \| u \| = 1 \text{ and either }\right. \\
+        \left.\left\| (M - \lambda I) u \right\| < \epsilon \text{ or } 
+        \left\| (M^* - \bar{\lambda} I) u \right\| < \epsilon \right\} .  
+    \end{multline}
+    In the general Banach space setting,
+    \begin{equation}
+        \label{eq:pseudospec_min}
+        \sigma_\epsilon (M) = \sigma (M) \cup \left\{ \lambda \in \bbC \mid \exists\; u \in \scrX : 
+        \| u \| = 1,\ \left\| (M - \lambda I) u \right\| < \epsilon \right\} . 
+    \end{equation}
 \end{corollary}
+
+One sees from the proofs of lemma \ref{lem:injection_modulus} and theorem 
+\ref{thm:resolvent_adjoint} that $\sigma (M)$ in equation \ref{eq:pseudospec_min} can be 
+replaced with $\sigma_r (M)$. The residual spectrum causes many common and unintuitive 
+issues in spectral theory. In the study of pseudospectra, this issue is alleviated in 
+one of three ways: $(1)$: consider only classes of operators which have no residual 
+spectrum (e.g. finite-dimensional or compact operators), $(2)$: compute a slightly 
+different object known as the \emph{approximate-point spectrum} (see below), $(3)$: 
+ignore the problem entirely and write proofs which are all slightly incorrect. 
+
+\begin{definition}
+    \label{def:approximate_point_spec}
+    The \emph{approximate-point pseudospectrum} is the set of points for which there 
+    exists an \emph{$\epsilon$-approximate pseudoeigenvector}
+    \begin{equation}
+        \sigma_{ap, \epsilon} (M) = \left\{ \lambda \in \bbC \mid 
+            \exists\; u \in \scrX : \left\| u \right\| = 1,\ 
+            \left\| (M - \lambda I) u \right\| < \epsilon 
+        \right\} . 
+    \end{equation}
+    The $\epsilon \to 0$ limit of such sets is the \emph{approximate-point spectrum}
+    \begin{align}
+        \sigma_{ap} (M) &= \bigcap_{\epsilon > 0} \sigma_{ap, \epsilon} (M) \\
+        &= \left\{ \lambda \in \bbC \mid
+            \exists\; (u_k)_k : \left\| u_k \right\| = 1\ \forall\; k,\ 
+            \lim_{k \to \infty} \left\| (M - \lambda I) u_k \right\| = 0
+        \right\} . 
+    \end{align}
+\end{definition}
 
 
 \subsubsection{Properties}
+
+To gain some intuition for the pseudospectrum, we derive some properties for specific 
+types of operators. 
+
+\begin{definition}
+    An operator $M$ on a Hilbert space is called \emph{normal} if $M^* M = M M^*$. 
+    Special classes of normal operator include \emph{unitary} operators ($M^* = M^{-1}$) 
+    and \emph{self-adjoint} operators ($M^* = M$). 
+\end{definition}
+
+\begin{proposition}
+    For a normal operator $M$, $\sigma_r (M) = \emptyset$. 
+\end{proposition}
+
+\begin{proof}
+    Let $\lambda \in \sigma (M)$, $A = M - \lambda I$. If $\lambda$ is not an eigenvalue 
+    then $\ker A = \left\{ 0 \right\}$ and 
+    \begin{equation}
+        \left\{ 0 \right\} = \ker A = \ker A^* = (\text{ran} A)^\perp
+    \end{equation}
+    where for the second equality we used the normality. Hence $\text{ran} A$ 
+    is dense. 
+\end{proof}
+
+\begin{lemma}
+    \label{lem:resolvent_dist}
+    For a closed linear operator $M$ we have
+    \begin{equation}
+        \label{eq:resolvent_dist}
+        \text{dist} (\lambda, \sigma (M)) \geq \frac{1}{
+            \left\| (M - \lambda I)^{-1} \right\|} . 
+    \end{equation}
+    Moreover, if $M$ is a normal operator on a Hilbert space, then we have equality. 
+\end{lemma}
+
+\begin{proof}
+    Let $\eta \in \sigma (M)$. Denote $A = M - \lambda I$, $B = M - \eta I$. Then $A$ is 
+    invertible and 
+    \begin{equation}
+        \label{eq:resolvent_formula}
+        B = A - (A - B) = A (I - A^{-1} (A - B)) . 
+    \end{equation}
+    Now 
+    $\left\| A^{-1} (A - B) \right\| \leq \left\| A^{-1} \right\| \left| \lambda - \eta \right|$
+    so if $| \lambda - \eta | < \frac{1}{\left\| B^{-1} \right\|}$ then the right hand 
+    side of \ref{eq:resolvent_formula} is invertible, a contradiction to 
+    $\eta \in \sigma (M)$. 
+
+    To prove equality in the case of normal operators requires some heavy machinery from 
+    operator theory, namely:
+    \begin{enumerate}
+        \item Every normal operator is unitarily similar to a multiplication operator 
+            on some semi-finite measure space (i.e. there exists a unitary $U$ such that 
+            $M = U^{-1} M_a U$ where $(M_a f) (x) = a(x) f(x)$ is a multiplication 
+            operator). 
+        \item For multiplication operators, equation \ref{eq:resolvent_dist} holds with 
+            equality. 
+    \end{enumerate}
+    These results can be found in many sources e.g. \cite{barrysimon}. 
+\end{proof}
+
+\begin{theorem}
+    \label{thm:pseudospectrum_growth}
+    We have
+    \begin{enumerate}
+        \item $\sigma_\delta (M) \subset \sigma_\epsilon (M)$ whenever $\delta \leq \epsilon$,
+        \item $\bigcap_{\epsilon > 0} \sigma_\epsilon (M) = \sigma (M)$,  
+        \item $\sigma (M) + B_\epsilon \subset \sigma_\epsilon (M)$, where $B_\epsilon$ is 
+            the ball with radius $\epsilon$ centered at $0$ and $+$ refers to pointwise 
+            summation $C + D = \left\{ x + y \mid x \in C,\ y \in D \right\}$. 
+        \item When $M$ is normal, $\sigma (M) + B_\epsilon = \sigma_\epsilon (M)$. 
+    \end{enumerate}
+\end{theorem}
+
+\begin{remark}
+    Theorem \ref{thm:pseudospectrum_growth} effectively says that the Pseudospectra are 
+    nested sets which grow \emph{at least} as quickly as $\epsilon$-balls around the 
+    spectrum. 
+\end{remark}
+
+\begin{proof}
+    $1$ and $2$ are consequences of the representation \ref{eq:pseudospectrum_union} of 
+    the pseudospectrum. $3$ and $4$ are consequences of lemma \ref{lem:resolvent_dist}. 
+\end{proof}
+
+\begin{theorem}
+    \label{thm:pseudospectrum_continuous}
+    The function which maps $(\epsilon, M) \mapsto \sigma_\epsilon (M)$ which sends an 
+    $\epsilon > 0$ and a bounded $M$ acting on a Hilbert space $\scrX$ to the set 
+    $\sigma_\epsilon (M)$ is continuous using the metric 
+    \begin{equation}
+        d(\, (\epsilon_1, M_1),\ (\epsilon_2, M_2) \,) 
+        = | \epsilon_1 - \epsilon_2 | + \left\| M_1 - M_2 \right\|
+    \end{equation}
+    in the domain and the Haussdorff metric in the codomain. 
+\end{theorem}
+
+\begin{remark}
+    \begin{enumerate}
+        \item The idea for the proof is taken from
+        \cite{pseudospectrum_continuous}, though it originally included two
+        errors: it does not take into account residual spectrum, and makes a
+        bound which is unfortunately not correct. These issues can be lifted in
+        the Hilbert space setting, so that the theorem is still correct as it is
+        stated in \cite{pseudospectrum_continuous}. 
+        \item If one replaces $\sigma_\epsilon (M)$ with $\sigma_{ap, \epsilon}
+        (M)$ in theorem \ref{thm:pseudospectrum_continuous}, then the proof in
+        \cite{pseudospectrum_continuous} is correct and even works for general
+        Banach spaces. To the best of this author's knowledge, there is no
+        published proof for the Banach space setting, despite it being
+        considered common knowledge in the study of pseudospectra. 
+    \end{enumerate}
+\end{remark}
+
+\begin{proof}
+    Let $(M, \epsilon)$ and $(M', \epsilon')$ be such that 
+    $d\left(\, (M, \epsilon),\ (M', \epsilon') \,\right) < \delta$ for some 
+    $0 < \delta < \epsilon / 2$. Without loss of generality let 
+    $\epsilon \leq \epsilon'$. 
+    
+    Let $\lambda \in \sigma_{\epsilon'} (M')$. By 
+    \ref{eq:pseudospectrum} there exists a normalized $v \in \scrX$ such that 
+    either $\left\| (M' - \lambda I) v \right\| < \epsilon'$ or 
+    $\left\| (M'^* - \bar{\lambda} I) v \right\| < \epsilon'$. Assume the former is true. 
+    It follows
+    \begin{equation}
+        \label{eq:M_Mprime}
+        \left\| (M - \lambda I) v \right\| 
+        \leq \left\| (M - M') v \right\| + \left\| (M' - \lambda I) v \right\|
+        < \delta - \left| \epsilon - \epsilon' \right| + \epsilon'
+        \leq \delta + \epsilon
+    \end{equation}
+    where for the last inequality we used that 
+    $\epsilon \geq \epsilon' - \left| \epsilon' - \epsilon \right|$. By 
+    \ref{eq:pseudospectrum}, $\lambda \in \sigma_{\epsilon + \delta} (M)$ and hence 
+    $\sigma_{\epsilon'} (M') \subset \sigma_{\epsilon + \delta} (M)$. 
+    
+    For the case that 
+    $\left\| (M'^* - \bar{\lambda} I) v \right\| < \epsilon'$, equation \ref{eq:M_Mprime} 
+    can be done exactly the same with $\left\| (M^* - \bar{\lambda} I) v \right\|$ on 
+    the left hand side. 
+
+    Now let $\lambda \in \sigma_{\epsilon - \delta} (M)$. Again this implies there exists 
+    a normalized $v \in \scrX$ such that either 
+    $\left\| (M - \lambda I) v \right\| < \epsilon - \delta$ or 
+    $\left\| (M^* - \bar{\lambda} I) v \right\| < \epsilon - \delta$. Assume again the 
+    former is true. Then 
+    \begin{equation}
+        \left\| (M' - \lambda I) v \right\| 
+        \leq \left\| (M' - M) v \right\| + \left\| (M - \lambda I) v \right\|
+        < \delta + \epsilon - \delta
+        \leq \epsilon'
+    \end{equation}
+    and hence $\lambda \in \sigma_{\epsilon'} (M')$ so that 
+    $\sigma_{\epsilon - \delta} (M) \subset \sigma_{\epsilon'} (M')$ (again the adjoint 
+    case can be done exactly the same with adjoints on the left hand side of the equation). 
+
+    We now have 
+    $\sigma_{\epsilon - \delta} (M) 
+    \subset \sigma_{\epsilon'} (M') 
+    \subset \sigma_{\epsilon + \delta} (M)$
+    which implies for the Haussdorff distance between $\sigma_\epsilon (M)$ and 
+    $\sigma_{\epsilon'} (M')$,
+    \begin{align}
+        \scrH & \left(\, \sigma_\epsilon (M),\ \sigma_{\epsilon'} (M') \,\right) \\
+        & \leq \max \left\{\,
+            \scrH \left(\, \sigma_\epsilon (M),\ \sigma_{\epsilon - \delta} (M) \,\right),\ 
+            \scrH \left(\, \sigma_\epsilon (M),\ \sigma_{\epsilon + \delta} (M) \,\right) 
+        \,\right\} \\
+        & \leq \scrH \left(\, 
+            \sigma_{\epsilon - \delta} (M),\ 
+            \sigma_{\epsilon + \delta} (M) 
+        \,\right) \label{eq:hauss_epsilon_delta}
+    \end{align}
+    so we must investigate the difference between $\sigma_{\epsilon - \delta} (M)$ and 
+    $\sigma_{\epsilon + \delta} (M)$. But 
+    \begin{equation}
+        \label{eq:epsilon_delta_diff}
+        \sigma_{\epsilon + \delta} (M) \setminus \sigma_{\epsilon - \delta} (M) 
+        = \left\{ \lambda \in \bbC \mid 
+            \frac{1}{\epsilon + \delta}
+            < \left\| (M - \lambda I)^{-1} \right\| 
+            < \frac{1}{\epsilon - \delta}
+        \right\}
+    \end{equation}
+    which is just a difference of sublevel sets for the continuous function 
+    $\lambda \mapsto \left\| (M - \lambda I)^{-1} \right\|$. Hence 
+    \ref{eq:epsilon_delta_diff} collapses continuously to $\emptyset$ as $\delta \to 0$, 
+    which implies \ref{eq:hauss_epsilon_delta} converges to $0$ as $\delta \to 0$. 
+\end{proof}
+
 
 % -------------------------------------------------------------------------------------- %
