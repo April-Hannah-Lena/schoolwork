@@ -242,7 +242,7 @@ as a finite section method.
         $[0, 1]$. Left: spectrum of $K$. Middle: (normalized) eigenfunction of $K$ for 
         the eigenvalue $\lambda = 1$. Right: (normalized) eigenfunction of $L$ for the 
         eigenvalue $\lambda = 1$. Compare with figure \ref{fig:quadratic_eigs}. 
-    }
+    }\label{fig:edmd}
 \end{figure}
 
 \subsubsection{EDMD for the Perron-Frobenius Operator}
@@ -443,7 +443,12 @@ guarantees that all such eigenvalues are real).
     \centering
     \includegraphics[width=0.5\textwidth]{resdmd.pdf}
     \caption{
-        \todo{}
+        Algorithm \ref{alg:resdmd} applied to the quadratic map (c.f. figure 
+        \ref{fig:perron_asymptotic}) performed with the same parameters as 
+        figure \ref{fig:edmd}. Contours of $\lambda \mapsto \res (\lambda)$ are shown with 
+        the spectrum of $K$. The quadratic map is ergodic \cite{logisitc_ergodic} 
+        which is verified by the residuals. The eigenvalues of $K$ other than $1$ 
+        are spurious. 
     }
 \end{figure}
 
