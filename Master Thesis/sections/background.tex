@@ -272,7 +272,7 @@ Perron-Frobenius / Koopman operators acting on the domain $\scrX$.
         $\bbone_{[0, 1]}$ is fixed under $\scrK$ and the density 
         $f_* (x) = \frac{1}{\pi \sqrt{ x (1 - x) }}$ is fixed under $\scrL$ (c.f. figure 
         \ref{fig:perron_asymptotic}). 
-    }
+    }\label{fig:quadratic_eigs}
 \end{figure}
 
 The following are well-known facts about the Koopman and Perron-Frobenius operator. They 
@@ -340,6 +340,36 @@ If the rotation is rational then the spectrum is discrete, but if the rotation i
 irrational then the spectrum is dense in the unit circle. 
 
 In the present paper we tackle the instability problem for operator perturbations. 
+One might wonder whether operators which are "close" (in some sense) also have spectra 
+which are "close". Unfortunately, this is in general not true. Even in finite dimensions 
+this breaks down, as the following example shows. 
+
+\begin{example}[\cite{tao}]
+    \label{ex:spec_unstable}
+    Let $\scrX = \bbR^n$ and let 
+    \begin{equation}
+        M = \begin{bmatrix}
+            0 &   1    &        &   \\
+              & \ddots & \ddots &   \\
+              &        &        & 1 \\
+              &        &        & 0
+        \end{bmatrix} . 
+    \end{equation}
+    $M$ is nilpotent so $\sigma (M) = \left\{ 0 \right\}$. However, for an arbitrarily 
+    small $\epsilon > 0$, the perturbation
+    \begin{equation}
+        M + E = \begin{bmatrix}
+            0        &   1    &        &   \\
+                        & \ddots & \ddots &   \\
+                        &        &        & 1 \\
+            \epsilon &        &        & 0
+        \end{bmatrix} . 
+    \end{equation}
+    has characteristic polynomial $(-\lambda)^n - (-1)^n \epsilon$ so that 
+    $\sigma (M + E) = \left\{ \lambda \in \bbC \mid \lambda^n = \epsilon \right\}$. 
+    For growing $n$, $\sigma (M + E)$ comes asymptotically close to filling the 
+    unit circle. 
+\end{example}
 
 
 \subsubsection{Definitions of the Pseudospectrum}
@@ -641,7 +671,8 @@ types of operators.
         (M)$ in theorem \ref{thm:pseudospectrum_continuous}, then the proof in
         \cite{pseudospectrum_continuous} is correct and even works for general
         Banach spaces. To the best of this author's knowledge, there is no
-        published proof for the Banach space setting, despite it being
+        published correct proof for the general Banach space setting with 
+        $\sigma_\epsilon (M)$, despite it being
         considered common knowledge in the study of pseudospectra. 
     \end{enumerate}
 \end{remark}
@@ -722,6 +753,11 @@ types of operators.
     \ref{eq:epsilon_delta_diff} collapses continuously to $\emptyset$ as $\delta \to 0$, 
     which implies \ref{eq:hauss_epsilon_delta} converges to $0$ as $\delta \to 0$. 
 \end{proof}
+
+With an understanding of the spectral properties of Koopman and Perron-Frobenius operators 
+as well as the pseudospectrum, we are prepared to apply pseudospectral methods to some of 
+the most common Koopman approximation methods, known under the umbrella term 
+\emph{dynamic mode decomposition}. 
 
 
 % -------------------------------------------------------------------------------------- %
