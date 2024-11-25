@@ -30,7 +30,8 @@ It should be noted that until now we have not declared a function space to act a
 for $\scrK$. This is because there are many potential domains for which $\scrK$ is not 
 only well-defined, but has interesting properties worth studying. For the current section 
 we consider $\scrK : L^\infty \to L^\infty$. On this space $\scrK$ is obviously bounded, 
-in fact it is a contraction. 
+in fact it is a contraction. However, that need not be the case for other spaces. Depending 
+one the function space and in $S$, $\scrK$ may not even be bounded. 
 
 The Koopman operator tracks how observables evolve with $S$. There is however a dual 
 viewpoint: that of \emph{densities} and \emph{pushforwards}. From the duality pairing
@@ -96,6 +97,37 @@ density $\scrL f$.
     }\label{fig:perron_asymptotic}
 \end{figure}
 
+When $S$ is a diffeomorphism, $\scrL$ has an explicit form. 
+
+\begin{theorem}
+    Let $S$ be a diffeomorphism. Then 
+    \begin{equation}
+        \scrL f = \frac{f \circ S^{-1}}{\left| \det D\,S^{-1} \right|}
+    \end{equation}
+\end{theorem}
+
+In particular one sees that when $S$ is a measure algebra isomorphism (that is, $S$ and 
+$S^{-1}$ both preserve the measure) then the Koopman operator is unitary, i.e. 
+$\scrK^* (= \scrL) = \scrK^{-1}$. 
+
+\begin{proof}
+    This follows from a change of variables $y = S(x)$
+    \begin{equation}
+        \int g \cdot \scrL f \,dx = \int \scrK \cdot f \,dx 
+        = \int f(y) \cdot g \circ S^{-1} (y) \left| \det D\,S (S^{-1} (y)) \right| \,dy . 
+    \end{equation}
+\end{proof}
+
+\begin{corollary}
+    Assume $S$ is a piecewise diffeomorphism, i.e. there exists a disjoint decomposition 
+    $\Omega = \biguplus_{l=1}^n U_l$ such that for each $l$, 
+    $S_l \defeq \left. S \right|_{U_l} : U_l \to V_l$ is a diffeomorphism. Then 
+    \begin{equation}
+        (\scrL f) (x) = \sum_{l=1}^{n} 
+        \frac{f \circ S_l^{-1} \,(x)}{\left| \det D\,S_l^{-1}\,(x) \right|} \bbone_{V_l} (x) . 
+    \end{equation}
+\end{corollary}
+
 
 \subsection{Spectral Properties}
 
@@ -121,9 +153,9 @@ convergent.
 \end{definition}
 
 \begin{proposition}
-    The spectrum admits a decomposition 
+    The spectrum admits a disjoint decomposition 
     \begin{equation}
-        \sigma (M) = \sigma_p (M) \oplus \sigma_c (M) \oplus \sigma_r (M)
+        \sigma (M) = \sigma_p (M) \uplus \sigma_c (M) \uplus \sigma_r (M)
     \end{equation}
     into \emph{point-, continuous-,} and \emph{residual-spectrum} with
     \begin{align}
@@ -753,6 +785,45 @@ types of operators.
     \ref{eq:epsilon_delta_diff} collapses continuously to $\emptyset$ as $\delta \to 0$, 
     which implies \ref{eq:hauss_epsilon_delta} converges to $0$ as $\delta \to 0$. 
 \end{proof}
+
+We conclude the section on mathematical background by examining the interaction between 
+an operator and finite rank approximations of it. The methods we will describe in the 
+following section are special types of \emph{finite-section methods}. 
+
+\begin{theorem}
+    \label{thm:projection_pseudospectrum}
+    Let $M$ be a closed linear operator and $\left( \Pi_n : \scrX \to V_n \right)_n$ be 
+    a collection of projections onto finite-dimensional subspaces $V_n$ which converge 
+    pointwise to the identity. Let further $(\lambda, c)$ be an 
+    $\epsilon$-pseudoeigenpair of $\Pi_n M \Pi_n$. Then for every $\delta > 0$ 
+    there exists an $N = N(\delta, c)$ such that 
+    $\lambda \in \sigma_{\epsilon + \delta} (M)$ whenever $n > N$. 
+
+    However, this does \emph{not} necessarily imply 
+    $\sigma_\epsilon (\Pi_n M \Pi_n) \to \sigma_\epsilon (M)$ in the Haussdorff metric. 
+\end{theorem}
+
+\begin{proof}
+    Let $N$ be such that of off-diagonal action of $(M - \lambda I)$ on $c$ is bounded by 
+    $\delta$, i.e. $\left\| (I - \Pi_N) (M - \lambda I) \Pi_N c \right\| < \delta$. Now 
+    the claim follows from the triangle inequality since
+    \begin{equation}
+        (M - \lambda I) c = (\Pi_N M \Pi_N - \lambda I) c + (I - \Pi_N) (M - \lambda I) \Pi_N c
+    \end{equation}
+    and (by definition) $c = \Pi_N c$. 
+
+    For the second claim of the theorem consider the \emph{two-sided} left shift 
+    operator $L : \ell^2 \to \ell^2$ and let 
+    \begin{equation}
+        \Pi_n : (\ldots, a_{-1}, a_0, a_1, \ldots) \mapsto 
+        (\ldots, 0, 0, a_{-n}, \ldots a_{-1}, a_0, a_1, \ldots, a_n, 0, 0, \ldots) . 
+    \end{equation}
+    Then $L$ is unitary and has spectrum on the (complex) unit circle $\bbT$, so 
+    $\sigma_\epsilon (L) = \bbT + B_\epsilon$. However, $\Pi_n L \Pi_n$ is nilpotent 
+    so $\sigma_\epsilon (\Pi_n L \Pi_n)$ always contains $0$, which is not in 
+    $\bbT + B_\epsilon$ for any $\epsilon < 1$. 
+\end{proof}
+
 
 With an understanding of the spectral properties of Koopman and Perron-Frobenius operators 
 as well as the pseudospectrum, we are prepared to apply pseudospectral methods to some of 

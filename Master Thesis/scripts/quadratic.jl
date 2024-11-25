@@ -26,7 +26,7 @@ A = ΨX' * W * ΨY
 p1 = plot(exp.(im .* (-π:0.001:π)), 
     style=:dash, aspectratio=1., leg=false, color=:blue
 )
-scatter!(λ_K, marker=:+, xlabel="", ylabel="", markersize=7, markerstrokewidth=3, color=:chocolate1)
+scatter!(λ_K, marker=:+, xlabel="", ylabel="", markersize=7, markerstrokewidth=3, color=:black)
 
 v_K = real.(V_K[:, end])
 ψ_K(x) = v_K' * [ ψ(x) for ψ in dictionary ]
@@ -67,6 +67,24 @@ p4 = contour(xs, ys, residuals,
 plot!(exp.(im .* (-π:0.001:π)), 
     style=:dash, aspectratio=1., leg=false, color=:blue
 )
-scatter!(λ_K, marker=:+, xlabel="", ylabel="", markersize=7, markerstrokewidth=3, color=:chocolate1)
+scatter!(λ_K, marker=:+, xlabel="", ylabel="", markersize=7, markerstrokewidth=3, color=:black)
 
 savefig(p4, "../figures/resdmd.pdf")
+
+nodes .= τ⁻¹.(nodes)
+nodes = range(0, 1, length=M)
+
+k(x, y; c=10., α=15) = (1 + x'y / c) ^ α
+k(x, y; c=0.06) = exp(-norm(x - y)^2 / c^2)
+
+Ĝ = [k(x, y) for x in nodes, y in nodes] / M
+Â = [k(S(x), y) for x in nodes, y in nodes] / M
+
+σ, Q = eigen(Ĝ)
+r = sum(real.(σ) .> 1e-10) - 1
+Σ̂ = Diagonal(sqrt.(real.(σ[end-r:end])))
+Q̂ = Q[:, end-r:end]
+
+K̂ = inv(Σ̂) * Q̂' * Â * Q̂ * inv(Σ̂)
+
+λ_K̂, v_K̂ = eigen(K̂)
