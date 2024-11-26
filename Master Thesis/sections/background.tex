@@ -547,6 +547,7 @@ main tool we use in the section on numerical methods.
 \end{proof}
 
 \begin{corollary}
+    \label{cor:pseudospectrum_min_residual}
     In the Hilbert space setting, the psudospectrum can be formulated as: 
     \begin{multline}
         \label{eq:pseudospectrum}
@@ -558,14 +559,17 @@ main tool we use in the section on numerical methods.
     In the general Banach space setting,
     \begin{equation}
         \label{eq:pseudospec_min}
-        \sigma_\epsilon (M) = \sigma (M) \cup \left\{ \lambda \in \bbC \mid \exists\; u \in \scrX : 
+        \sigma_\epsilon (M) = \sigma_r (M) \cup \left\{ \lambda \in \bbC \mid \exists\; u \in \scrX : 
         \| u \| = 1,\ \left\| (M - \lambda I) u \right\| < \epsilon \right\} . 
     \end{equation}
 \end{corollary}
 
+\iffalse
 One sees from the proofs of lemma \ref{lem:injection_modulus} and theorem 
 \ref{thm:resolvent_adjoint} that $\sigma (M)$ in equation \ref{eq:pseudospec_min} can be 
-replaced with $\sigma_r (M)$. The residual spectrum causes many common and unintuitive 
+replaced with $\sigma_r (M)$. 
+\fi
+The residual spectrum causes many common and unintuitive 
 issues in spectral theory. In the study of pseudospectra, this issue is alleviated in 
 one of three ways: $(1)$: consider only classes of operators which have no residual 
 spectrum (e.g. finite-dimensional or compact operators), $(2)$: compute a slightly 

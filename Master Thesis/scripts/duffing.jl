@@ -1,8 +1,8 @@
 using LinearAlgebra, Statistics, StaticArrays
 using LegendrePolynomials, FastGaussQuadrature
 using DifferentialEquations, OrdinaryDiffEq
-using Plots, ProgressMeter, Logging
-import CairoMakie: Makie.streamplot, :(..), Point2, Point2f, save
+using Plots, ProgressMeter, Logging, LaTeXStrings
+import CairoMakie: Makie.streamplot!, :(..), Point2, Point2f, save, Figure, Axis, hidespines!
 
 scale(x, γ=1e-2) = sign(x) * (log10(abs(x) + γ) - log10(γ))
 _x = -2:0.0001:2
@@ -48,7 +48,11 @@ function duffing(u::Point2{T}) where T
     Point2f(duffing(v))
 end
 
-p2 = streamplot(duffing, -2..2, -2..2, colormap=:acton)
+p2 = Figure()
+ax = Axis(p2[1,1], xlabel=L"x", ylabel=L"\dot{x}")
+hidespines!(ax, :t, :r)
+ms = streamplot!(ax, duffing, -2..2, -2..2, colormap=:acton)
+p2
 save("../figures/duffing_streamplot.pdf", p2)
 
 tspan = (0., 0.1)
@@ -105,8 +109,8 @@ p1 = plot(exp.(im .* (-π:0.001:π)),
 scatter!(λ, 
     marker=:+, 
     xlabel="", ylabel="", 
-    markersize=3, markerstrokewidth=1., 
-    color=:purple
+    markersize=5, markerstrokewidth=1.5, 
+    color=2
 )
 contour!(xs, ys, residuals, 
     colormap=:acton, linewidth=2,
@@ -142,4 +146,4 @@ p_all = scatter!(
     subplot=6
 )
 
-savefig(p_all, "../figures/duffing_05.pdf")
+savefig(p_all, "../figures/duffing_01.pdf")

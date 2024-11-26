@@ -26,7 +26,7 @@ A = ΨX' * W * ΨY
 p1 = plot(exp.(im .* (-π:0.001:π)), 
     style=:dash, aspectratio=1., leg=false, color=:blue
 )
-scatter!(λ_K, marker=:+, xlabel="", ylabel="", markersize=7, markerstrokewidth=3, color=:black)
+scatter!(λ_K, marker=:+, xlabel="", ylabel="", markersize=5, markerstrokewidth=1.5, color=2)
 
 v_K = real.(V_K[:, end])
 ψ_K(x) = v_K' * [ ψ(x) for ψ in dictionary ]
@@ -67,7 +67,7 @@ p4 = contour(xs, ys, residuals,
 plot!(exp.(im .* (-π:0.001:π)), 
     style=:dash, aspectratio=1., leg=false, color=:blue
 )
-scatter!(λ_K, marker=:+, xlabel="", ylabel="", markersize=7, markerstrokewidth=3, color=:black)
+scatter!(λ_K, marker=:+, xlabel="", ylabel="", markersize=5, markerstrokewidth=1.5, color=2)
 
 savefig(p4, "../figures/resdmd.pdf")
 
