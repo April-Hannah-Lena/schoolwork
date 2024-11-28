@@ -539,6 +539,9 @@ guarantees that all such eigenvalues are real).
 
 \subsubsection{A Naive Attempt at Duality}
 
+From this point onward, we shall always assum (without loss of generality) that $\YX$ has 
+full rank, that is, rank $N$ when $N \leq M$ or rank $M$ when $M \leq N$. 
+
 Algorithm \ref{alg:resdmd} provides a way to compute the approximate-point pseudospectrum 
 of the Koopman operator. In order to resolve the full pseudospectrum, one needs to compute 
 $\sigma_{\inf} (\scrK - \lambda I)$ \emph{and} $\sigma_{\inf} (\scrL - \bar{\lambda} I)$ 
