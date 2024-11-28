@@ -182,6 +182,34 @@ $(M - \lambda I)^{-1}$ cannot be extended to a bounded linear operator, but is s
 (densely defined) closed linear operator. (See the proof of theorem 
 \ref{thm:resolvent_adjoint} for a proof of this characterization.)
 
+We have already used the duality pairing \ref{eq:duality} to deduce a form of the 
+Perron-Frobenius operator. For completetess we provide a full definition for the adjoint 
+of an unbounded operator and cite some basic facts about adjoints. 
+
+\begin{definition}
+    \label{thm:adjoint}
+    Let $M : \scrX \supset D(M) \to \scrX$ be a densely defined closed linear operator on 
+    a Banach space. The \emph{adjoint operator} is constructed as follows. Let 
+    \begin{equation}
+        D(M^*) = \left\{ f \in \scrX^* \mid \exists\, f' \in \scrX : 
+        \left\langle f, M g \right\rangle = \left\langle f', g \right\rangle\ \forall\, 
+        g \in D(M) \right\} . 
+    \end{equation}
+    Now $M^*$ is defined by $M^* f = f'$. 
+\end{definition}
+
+\begin{lemma}[\cite{kato}]
+    Let $\scrX$ be a reflexive\footnote{
+        The bidual $\scrX^{**}$ is isomorphic to $\scrX$, that is, $\scrX^{**} \cong \scrX$. 
+    } Banach space. Then the adjoint operator is also densely defined and closed, and
+    \begin{enumerate}
+        \item $M^{**} = M$,
+        \item $\ker (M^*) = \ran (M)^\perp$,
+    \end{enumerate}
+    where for $A \subset \scrX$, $A^\perp = \left\{ f \in \scrX^* \mid 
+    \left\langle f, g \right\rangle = 0\ \forall\, g \in A \right\}$ is the annihilator. 
+\end{lemma}
+
 One might ask why such detail is required in defining the spectrum. The answer lies in 
 the subtle consequences of infinite-dimensionality. The following example from 
 \cite{spectraexample} shows the subtle interplay between residual spectrum and spectrum 
@@ -256,7 +284,7 @@ adjoint operators.
 
 \begin{theorem}
     \label{thm:spec_relations_adjoints}
-    Let $M$ be a densely defined closed linear operator on a Hilbert space. 
+    Let $M$ be a densely defined closed linear operator on a reflexive Banach space. 
     
     \begin{enumerate}
         \item $\lambda \in \sigma (M)$ iff $\bar{\lambda} \in \sigma (M^*)$. 
@@ -273,11 +301,11 @@ adjoint operators.
               $(M - \lambda I) B = B (M - \lambda I) = I$. Equivalently 
               $B^* (M^* - \bar{\lambda} I) = (M^* - \bar{\lambda} I) B^* = I^* = I$. 
         \item The range of $M - \lambda I$ is not dense in $\scrX$. Hence there exists a 
-              $v \perp \text{ran} (M - \lambda I)$. But this implies 
+              $v \in \text{ran} (M - \lambda I)^\perp$. But this implies 
               $v \in \text{ker} (M^* - \bar{\lambda} I)$. 
         \item There exists a $v \in \text{ker} (M - \lambda I)$ which implies 
-              $v \perp \text{ran} (M^* - \bar{\lambda} I)$. 
-        \item This follows from $1$, $2$, and $3$. 
+              $v \in \text{ran} (M^* - \bar{\lambda} I)^\perp$. 
+        \item Follows from $1$, $2$, and $3$. 
     \end{enumerate}
 \end{proof}
 

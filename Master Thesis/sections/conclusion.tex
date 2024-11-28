@@ -2,7 +2,47 @@
 
 \section{Conclusion}
 
+$5$ related algorithms for the study of Koopman and Perron-Frobenius operators are studied. 
+The algorithms are based on the concept of \emph{pseudospectra}, which are investigated 
+from a theoretical basis before applied to Koopman operators. In the process, two new 
+proofs (one extension and one correction of previous proofs) are given for well-known 
+results in pseudospectral theory. The idea behind each algorithm is deduced rigorously, 
+and new connections between algorithms are presented. Finally, the algorithms are explored 
+on three examples. 
 
+The examples lead to a fundamental question in the study of operator theoretic dynamics, 
+which was already hinted toward in the example of the Duffing equation. When the 
+physically relevant (pseudo)eigenvectors lie outside of the space of study, as e.g. Dirac 
+distributions on equillibria and periodic orbits, or e.g. adjoint Hardy space functionals, 
+how should one know which approximated eigenvectors are "real"? 
+
+This interesting phenomenon that many discretization techniques are excited by eigenmodes of 
+Koopman operators over functions spaces which are \emph{strictly larger} than $L^2$. 
+This raises a question - which computed eigenmodes are $(1)$ "expected": 
+approximations of $L^2$ Koopman eigenmodes, $(2)$ "unexpected": approximations of 
+eigenmodes in unintended function spaces, $(3)$: "spurious": caused solely by the 
+discretization?
+
+The current state of research holds two potential answers to this question, the first of 
+which has already been mentioned in section \ref{sec:validation}: one can make a 
+philosophical change and assume that the underlying dynamics is governed by a 
+stochastic system. The result of this assumption is that $\scrK$ (resp. $\scrL$) 
+"collapses" to a compact operator. In this case one can construct \emph{strongly} 
+convergent approximation schemes e.g. Ulams' method \cite{attr} or point-cloud methods 
+based on entropically regularized optimal transport \cite{entropic}. However, the 
+stochastic approach "destroys fine structures" in the sense that anythinig which is 
+not robust to perturbation is changed, e.g. fixed points become absolutely continuous 
+invariant measures with (potentially) support on the entire phase space. 
+
+Another approach \cite{rigged} considers only measure preserving dynamical systems 
+(thereby restricting to the case that $\scrK$ is an isometry) but tackles continuous and 
+point spectrum simultaneously by embedding some space $\scrX$ into a \emph{rigged Hilbert 
+space} structure, $\scrX \subset L^2 (\Omega) \subset \scrX^*$. By carefully choosing this 
+approximation space, one can guarantee a existence of a full spectral decomposition of 
+$\scrK$. 
+
+More research into the regime $N < M$ may lead to further connections between kernel 
+methods and Perron-Frobenius methods. 
 
 
 % -------------------------------------------------------------------------------------- %

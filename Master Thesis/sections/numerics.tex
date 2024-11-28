@@ -140,7 +140,6 @@ which can be computed with constant memory requirement.
 
 \subsubsection{Functional Minimization}\label{sec:functional_minimization}
 
-\todo{replace $P$ with $\Pi$}
 We could have arrived at equation \ref{eq:edmd} completely differently: 
 equation \ref{eq:edmd} is precisely a quadrature approximation of the functional least 
 squares minimization:
@@ -193,18 +192,18 @@ Hence the adjoint quasi-matrix $\Psi^* : \scrX \to \bbC^N$ acts as
 \end{equation}
 
 \begin{lemma}
-    For an arbitrary basis $\left\{ \psi_j \right\}_{j=1}^N$, the orthogonal projector $P$ 
+    For an arbitrary basis $\left\{ \psi_j \right\}_{j=1}^N$, the orthogonal projector $\Pi$ 
     onto the space spanned by the basis is 
     \begin{equation}
-        P = \Psi (\Psi^* \Psi)^{-1} \Psi^* . 
+        \Pi = \Psi (\Psi^* \Psi)^{-1} \Psi^* . 
     \end{equation}
 \end{lemma}
 
 \begin{proof}
     The solution of a linear least squares problem $\left\| Ax - b \right\| = \min !$ is 
-    the result of orthogonally projecting $b$ onto the range of $A$, that is, $A x = P b$. 
+    the result of orthogonally projecting $b$ onto the range of $A$, that is, $A x = \Pi b$. 
     From equation \ref{eq:adjoint_inverse} we know $x = (A^* A)^{-1} A^* b$. Therefore 
-    $P b = A x = A (A^* A)^{-1} A^* b$. Since this holds for arbitrary $b$, the result 
+    $\Pi b = A x = A (A^* A)^{-1} A^* b$. Since this holds for arbitrary $b$, the result 
     is proven. 
 \end{proof}
 
@@ -222,7 +221,7 @@ $c$ as an object in $\scrX$, that is, $\Psi K c$, we see that
 \begin{equation}
     \label{eq:PKP}
     \Psi K c = \Psi (\Psi^* \Psi)^{-1} \Psi^* (\scrK \Psi) c
-    = P \scrK \Psi c = P \scrK P \Psi c . 
+    = \Pi \scrK \Psi c = \Pi \scrK \Pi \Psi c . 
 \end{equation}
 Since this holds for arbitrary $c$ we have proven that (when viewed as an operator 
 on $\scrX$) $K$ is precisely the action of $P \scrK P$, the finite section of $\scrK$ 
@@ -279,7 +278,7 @@ or the finite analogue:
 
 % -------------------------------------------------------------------------------------- %
 
-\subsubsection{Validation of Koopman Eigenpairs}
+\subsubsection{Validation of Koopman Eigenpairs}\label{sec:validation}
 
 The formulation \ref{eq:PKP} shows that $K$ (when viewed as a operator on $\scrX$) 
 converges weakly to $\scrK$. However, from example \ref{ex:spec_unstable} we know that 
@@ -575,14 +574,14 @@ infinite data limit yields
         \end{pmatrix} \right\|_{\bbC^N}^2 \\
         &= \sum_{j=1}^{N} \left| \left\langle\, (\scrK - \lambda I) \psi_j, g \,\right\rangle \right|^2 \\
         &= \sum_{j=1}^{N} \left| \left\langle\, \psi_j, (\scrL - \bar{\lambda} I) g \,\right\rangle \right|^2 \\
-        &= \left\| (P \scrL P - \bar{\lambda} I) g \right\|_{\scrX}^2
+        &= \left\| (\Pi \scrL \Pi - \bar{\lambda} I) g \right\|_{\scrX}^2
     \end{split}
 \end{equation}
 where $P$ is the orthogonal projector onto $\spn \left\{ \psi_j \right\}_{j=1}^N$. By 
-the Galerkin property we know that $L$ encodes precisely the action of $P \scrL P$. Hence, 
+the Galerkin property we know that $L$ encodes precisely the action of $\Pi \scrL \Pi$. Hence, 
 \begin{equation}
     \label{eq:PLP}
-    \left\| (P \scrL P - \bar{\lambda} I) g \right\|_{\scrX}^2
+    \left\| (\Pi \scrL \Pi - \bar{\lambda} I) g \right\|_{\scrX}^2
     = \left\| (L - \bar{\lambda} I) c \right\|_{\bbC^N}^2 
 \end{equation}
 and so the least-squares Ansatz computes the pseudospectrum of $L$ which by theorem 
@@ -615,7 +614,6 @@ While we will not use this immediately, we still expand the first line of
 
 \subsubsection{The Kernel Trick}
 
-\todo{replace $c$ with $v$ when $M$-dimensional}
 The choice of dictionary $\left\{ \psi_j \right\}_{j=1}^N$ naturally has massive impacts 
 on the accuracy of the above methods. We will see later in section \ref{sec:benchmark} 
 that a poorly chosen dictionary can cause catastrophic results. This is because even 
@@ -786,9 +784,9 @@ since by definition
     \begin{equation}
         Z \widehat{ K } Z^* 
         = \YX^\dagger \sqrt{W}^{-1} \sqrt{W} \YY \YX^* \sqrt{W} \sqrt{W}^{-1} {\YX^*}^\dagger%\left( \left( \sqrt{W} \YX \right)^* \right)^\dagger 
-        = K P_{\ran\, \YX^* \sqrt{W}}
+        = K \Pi_{\ran\, \YX^* \sqrt{W}}
     \end{equation}
-    where $P_{\ran \YX^*}$ is the orthogonal projection onto the range of $\YX^*$. 
+    where $\Pi_{\ran \YX^*}$ is the orthogonal projection onto the range of $\YX^*$. 
     But since $\YX^* \sqrt{W} = Z \Sigma Q^*$, this is equivalent to 
     \begin{equation}
         \label{eq:Z*_K_Z}
@@ -828,30 +826,30 @@ since by definition
 We set out again to deduce which candidate eigenvalues produced by algorithm 
 \ref{alg:kedmd} are spurious, and which are accurate. Theorem \ref{thm:K_hat} suggests 
 that we could potentially compute $\| (\scrK - \lambda I) g \|$ by using the altered 
-features $g = \Psi \cdot (Z c)$ the same way as in theorem \ref{thm:res_M_limit}. However, 
+features $g = \Psi \cdot (Z v)$ the same way as in theorem \ref{thm:res_M_limit}. However, 
 this is not effective in the regime $M \leq N$ (remember that the benefit of kernel 
 methods was the ability to cheaply crank $N$ up). 
 
 \begin{proposition}[\cite{resdmd}]
     Suppose $M \leq N$ and $\sqrt{W} \YX \in \bbC^{M \times N}$ has full rank. Then 
-    for any eigenpair $(\lambda, c)$ of $\widehat{K}$, the residual
+    for any eigenpair $(\lambda, v)$ of $\widehat{K}$, the residual
     \begin{equation}
-        \res_{N,M} (\lambda, Z c) = 0 . 
+        \res_{N,M} (\lambda, Z v) = 0 . 
     \end{equation}
 \end{proposition}
 
 \begin{proof}
     Write
     \begin{equation}
-        \sqrt{W} (\YY - \lambda \YX) (Z c) 
-        = \sqrt{W} \YY Z c - \lambda Q \Sigma c
-        = \sqrt{W} \YY \YX^* \sqrt{W} Q \Sigma^\dagger c - \lambda Q \Sigma c . 
+        \sqrt{W} (\YY - \lambda \YX) (Z v) 
+        = \sqrt{W} \YY Z c - \lambda Q \Sigma v
+        = \sqrt{W} \YY \YX^* \sqrt{W} Q \Sigma^\dagger c - \lambda Q \Sigma v . 
     \end{equation}
     Since $\sqrt{W} \YX$ has full rank, the singular value matrix $\Sigma$ in 
     $\sqrt{W} \YX = Q \Sigma Z^*$ is invertible, and so 
     $\sqrt{W} \YY \YX^* \sqrt{W} Q \Sigma^\dagger = Q \Sigma \widehat{K}$. Inserting, we see 
     \begin{equation}
-        \sqrt{W} (\YY - \lambda \YX) (Z c) = Q \Sigma (\widehat{K} - \lambda I) c = 0 .  
+        \sqrt{W} (\YY - \lambda \YX) (Z v) = Q \Sigma (\widehat{K} - \lambda I) v = 0 .  
     \end{equation}
 \end{proof}
 
@@ -881,12 +879,12 @@ Hence $\widehat{K}^*$ is precisely the solution to the least squares problem
 This means that for a candidate eigenpair $(\lambda, c)$ of $\widehat{K}^*$, the regression 
 error is given by 
 \begin{equation}
-    \widehat{ \res }_{N,M} (\lambda, c) 
-    = \left\| \left( \widehat{ \YY } - \lambda \widehat{ \YX } \right) c \right\| . 
+    \widehat{ \res }_{N,M} (\lambda, v) 
+    = \left\| \left( \widehat{ \YY } - \lambda \widehat{ \YX } \right) v \right\| . 
 \end{equation}
 To provide a computable formulation we write
 \begin{equation}
-    \widehat{ \res }_{N,M} (\lambda, c)^2
+    \widehat{ \res }_{N,M} (\lambda, v)^2
     = \left\| \left( \YY^* - \lambda \YX^* \right) \sqrt{W}
     \left( Q \Sigma^\dagger c \right) \right\|^2 
 \end{equation}
@@ -894,14 +892,14 @@ which, after expanding the squared norm as in equation \ref{eq:reg_error}, can b
 written as 
 \begin{equation}
     \label{eq:res_hat_expanded}
-    c^* \left( \Sigma^\dagger Q^* \right) 
+    v^* \left( \Sigma^\dagger Q^* \right) 
     \left( 
         \sqrt{W} \YY \YY^* \sqrt{W} 
         - \bar{\lambda} \widehat{ A } 
         - \bar{\lambda} \widehat{ A }^* 
         + | \lambda |^2 \widehat{ G }
     \right)
-    \left( Q \Sigma^\dagger \right) c . 
+    \left( Q \Sigma^\dagger \right) v . 
 \end{equation}
 Notice $\left( \Sigma^\dagger Q^* \right) \widehat{ G } \left( Q \Sigma^\dagger \right) 
 = I$ and $\left( \Sigma^\dagger Q^* \right) \widehat{ A } \left( Q \Sigma^\dagger \right) 
@@ -915,13 +913,13 @@ Notice $\left( \Sigma^\dagger Q^* \right) \widehat{ G } \left( Q \Sigma^\dagger 
 we have that 
 \begin{equation}
     \label{eq:res_hat_min}
-    \widehat{ \res }_{N,M} (\lambda, c)^2
-    = c^* \left(\, 
+    \widehat{ \res }_{N,M} (\lambda, v)^2
+    = v^* \left(\, 
         \left( \Sigma^\dagger Q^* \right) \widehat{ J } \left( Q \Sigma^\dagger \right)
         - \bar{\lambda} \widehat{ K } 
         - \lambda \widehat{ K }^* 
         + | \lambda |^2 I
-    \,\right) c . 
+    \,\right) v . 
 \end{equation}
 
 At this point it is unclear whether $\widehat{ \res }$ has any physical meaning. It is 
@@ -949,7 +947,7 @@ with the Perron-Frobenius operator than with the Koopman operator.
             \ref{eq:J_hat} (with $\widehat{ Q }$ and $\widehat{ \Sigma }$)
         \For{$z_\nu$}
         \State Compute $\widehat{ \res } (z_\nu) 
-            \defeq \min_{\| c \| = 1} \widehat{ \res } (z_\nu, c)$, which is equivalent 
+            \defeq \min_{\| v \| = 1} \widehat{ \res } (z_\nu, v)$, which is equivalent 
             to finding the smallest eigenvalue of the matrix in \ref{eq:res_hat_min}
         \EndFor
         \State \Return $\left\{ z_\nu \mid \widehat{\res} (z_\nu) < \epsilon \right\}$
@@ -967,8 +965,8 @@ $N \leq M$ we have
         \widehat{ K }^* &= Z^* K^* Z \\
         &= Z^* A^* G^{-1} Z \\
         &= Z^* G G^{-1} A^* G^{-1} Z \\
-        &= \left( Z^* G \right) P \left( G^{-1} Z \right) \\
-        &= \left( \Sigma^2 Z^* \right) P \left( \Sigma^2 Z^* \right)^\dagger
+        &= \left( Z^* G \right) L \left( G^{-1} Z \right) \\
+        &= \left( \Sigma^2 Z^* \right) L \left( \Sigma^2 Z^* \right)^\dagger
     \end{split}
 \end{equation}
 where we used that $G$ is symmetric and (when $N \leq M$) invertible. While this may not 
@@ -982,15 +980,15 @@ $G = Z \Sigma^2 Z^*$, $\Sigma^2$ holds the norm of the features after being line
 combined into an $\scrX$-orthogonal basis. Hence $Q \Sigma^\dagger$ in 
 \begin{equation}
     \widehat{ \res }_{N,M} (\lambda)^2 = 
-    \min_{\| c \| = 1}
-    c^* \left( \Sigma^\dagger Q^* \right) 
+    \min_{\| v \| = 1}
+    v^* \left( \Sigma^\dagger Q^* \right) 
     \left( 
         \widehat{ J }
         - \bar{\lambda} \widehat{ A } 
         - \lambda \widehat{ A }^* 
         + | \lambda |^2 \widehat{ G }
     \right)
-    \left( Q \Sigma^\dagger \right) c
+    \left( Q \Sigma^\dagger \right) v
 \end{equation}
 serves the same purpose as the stiffness matrix $G$ in 
 \begin{equation}
@@ -1005,12 +1003,14 @@ serves the same purpose as the stiffness matrix $G$ in
     \right)
     \left( \YX c \right) . 
 \end{equation}
-In particular we see 
+In particular we see that there must exist $C_1, C_2$ such that 
 \begin{equation}
-    \widehat{ \res }_{N,M} (\lambda) = \widetilde{ \res }_{N,M} (\bar{\lambda}) 
+    C_1 \cdot \widehat{ \res }_{N,M} (\lambda) \leq 
+    \widetilde{ \res }_{N,M} (\bar{\lambda}) \leq
+    C_2 \cdot \widehat{ \res }_{N,M} (\lambda)
 \end{equation}
-so that algorithm \ref{alg:kresdmd} computes precisely the pseudospectrum of $P \scrL P$ 
-as in \ref{eq:PLP}. 
+so that algorithm \ref{alg:kresdmd} computes precisely the (scaled) pseudospectrum of 
+$\Pi \scrL \Pi$ as in \ref{eq:PLP}. 
 
 So what happens in the regime $N \geq M$? In this regime, $L = G^{-1} A^*$ 
 breaks down since $\YX^\dagger = \left( \YX^* \YX \right)^{-1} \YX^*$ no longer holds 

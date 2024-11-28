@@ -189,7 +189,7 @@ $H^2 (A)$ is a strict subset of $L^2 (\bbT)$.
 We note that, in its default form, algorithms \ref{alg:edmd}, \ref{alg:kedmd} 
 attempt to compute $\sigma_p \left( \left. \scrK \right|_{L^2(\bbT)} \right)$. 
 
-\subsubsection{An Initial Numerical Experiment}
+\subsubsection{An Initial Numerical Experiment}\label{sec:blaschke_L2}
 
 With this context, we use algorithm \ref{alg:resdmd} for the Blaschke product, with 
 $\mu = \frac{3}{4} e^{i \pi / 4}$. As a first attempt, we try again using Gauß-Legendre 
@@ -230,7 +230,7 @@ $\mu^n \in \sigma_p \left( \left. \scrK \right|_{H^2 (A)^*} \right)$ where
 $H^2 (A)^*$ is the Banach space adjoint of $H^2 (A)$ embedded in $L^2 (\bbT)$. We 
 therefore must investigate the structure of $H^2 (A)^*$. 
 
-\subsubsection{The Adjoint of $H^2 (A)$}
+\subsubsection{The Adjoint of $H^2 (A)$}\label{sec:blaschke_hardy}
 
 Let $\bbD_r = \left\{ z \in \bbC \mid |z| < r \right\}$ and 
 $H^2 (\bbD_r^\infty)$ be the set of functions holomorphic on 
@@ -316,21 +316,6 @@ of $\scrK - \lambda I$. This is the \emph{only} way that this can happen. An ele
 the residual spectrum can (by theorem \ref{thm:spec_relations_adjoints}) not convert into 
 continuous spectrum. 
 
-This example leads to a fundamental question in the study of operator theoretic dynamics, 
-wihch was already hinted toward in the example of the Duffing equation. When the 
-physically relevant (pseudo)eigenvectors lie outside of the space of study, as e.g. Dirac 
-distributions on equillibria and periodic orbits, or e.g. adjoint Hardy space functionals, 
-how should one know which approximated eigenvectors are "real"? 
-
-This interesting phenomenon that many discretization techniques are excited by eigenmodes of 
-Koopman operators over functions spaces which are \emph{strictly larger} than $L^2$. 
-This raises a question - which computed eigenmodes are $(1)$ "expected": 
-approximations of $L^2$ Koopman eigenmodes, $(2)$ "unexpected": approximations of 
-eigenmodes in unintended function spaces, $(3)$: "spurious": caused solely by the 
-discretization?
-
-\todo{talk about ways to answer the question: stochastic spectrum collapse, rigged DMD}
-
 \begin{figure}
     \centering
     \begin{subfigure}{0.45\textwidth}
@@ -343,7 +328,12 @@ discretization?
         \includegraphics[width=\textwidth]{blaschke_direct.pdf}
     \end{subfigure}
     \caption{
-        \todo{}
+        Left: spectrum of $L$ with residuals calculated using algorithm \ref{alg:resdmd}, 
+        when using an approximation space consisting of $40$ Legendre polynomials. 
+        Right: The same calculation using an approximation space of Fourier modes. 
+        In both cases, green: true spectrum of $\left. \scrL \right|_{H^2(A)}$, 
+        orange: spectrum of the EDMD matrix $L$. See section \ref{sec:blaschke_L2} for 
+        analysis. 
     }\label{fig:blaschke_L2}
 \end{figure}
 
@@ -359,7 +349,14 @@ discretization?
         \includegraphics[width=\textwidth]{blaschke_hardy.pdf}
     \end{subfigure}
     \caption{
-        \todo{}
+        Left: spectrum of $\widehat{ K }$ with residuals calculated using algorithm \ref{alg:kresdmd}, 
+        \emph{logarithmically scaled}. Contour lines show spproximated $\epsilon$-pseudospectrum 
+        for $\epsilon = 10^{-2}, 10^{-1}, 10^{-0.8}, 10^{-0.6}, 10^{-0.5}, 10^{-0.4}, 10^{-0.2}$.  
+        Right: residulas calculated using the inner product 
+        $\left\langle \cdot, \cdot \right\rangle_{H^2 (A)^*}$
+        In both cases, green: true spectrum of $\left. \scrL \right|_{H^2(A)}$, 
+        orange: spectrum of the approximated matrix (left $\widehat{ K }$, right $K$ using 
+        the dual Hardy inner product). See section \ref{sec:blaschke_hardy} for analysis. 
     }\label{fig:blaschke_other}
 \end{figure}
 
