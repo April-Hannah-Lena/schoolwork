@@ -338,7 +338,7 @@ From section \ref{sec:functional_minimization} we know that the Galerkin equatio
 Similarly, the \emph{regression error}
 \begin{equation}
     \label{eq:res}
-    \res (\lambda, c; M, N) \defeq \left\| \sqrt{W} (\YY - \lambda \YX) c \right\|_2^2
+    \res (\lambda, c; M, N)^2 \defeq \left\| \sqrt{W} (\YY - \lambda \YX) c \right\|_2^2
 \end{equation}
 is precisely a quadrature approximation of equation \ref{eq:true_residual}. 
 
@@ -346,7 +346,7 @@ is precisely a quadrature approximation of equation \ref{eq:true_residual}.
     \label{thm:res_M_limit}
     Let $\lambda$ and $g = \Psi c$ be a candidate eigenpair for $\scrK$. Then 
     \begin{equation}
-        \lim_{M \to \infty} \res (\lambda, c; M, N)
+        \lim_{M \to \infty} \res (\lambda, c; M, N)^2
         = \left\| (\scrK - \lambda I) g \right\|_{\scrX}^2
     \end{equation}
 \end{theorem}
@@ -1307,7 +1307,7 @@ effectiveness of the method was, until now, unknown.
             \ref{eq:J_hat} (with $\widetilde{ Q }$ and $\widetilde{ \Sigma }$)
         \For{$z_\nu$}
         \State Compute $\kres (z_\nu)$, which is equivalent 
-            to finding the smallest generalized eigenvalue 
+            to finding the square root of the smallest generalized eigenvalue 
             $\left( \widetilde{ \Sigma } \widetilde{ Q }^* \right) 
             \left( 
                 \widehat{ J }
