@@ -123,7 +123,7 @@ Another look at the second formulation of the EDMD matrix shows that
     ( \YX^* W \YX )_{i j} 
     = \sum_{k=1}^{M} w_k \overline{\psi_i (x_k)} \psi_j (x_k)
     \xrightarrow{\makebox[1.2cm]{\scriptsize{M \to \infty}}} 
-    \left\langle \psi_i, \psi_j \right\rangle 
+    \left\langle \psi_i, \psi_j \right\rangle_{L^2} 
     \eqdef \bbG_{i j} , 
 \end{equation}
 \begin{equation}
@@ -131,7 +131,7 @@ Another look at the second formulation of the EDMD matrix shows that
     A_{i j} \defeq
     ( \YX^* W \YY )_{i j} = \sum_{k=1}^{M} w_k \overline{\psi_i (x_k)} \psi_j (\, S(x_k) \,)
     \xrightarrow{\makebox[1.2cm]{\scriptsize{M \to \infty}}} 
-    \left\langle \psi_i, \scrK \psi_j \right\rangle
+    \left\langle \psi_i, \scrK \psi_j \right\rangle_{L^2}
     \eqdef \bbA_{i j} , 
 \end{equation}
 which can be computed with constant memory requirement. 
@@ -141,14 +141,34 @@ which can be computed with constant memory requirement.
 \subsubsection{Functional Minimization}\label{sec:functional_minimization}
 
 We could have arrived at equation \ref{eq:edmd} completely differently: 
-equation \ref{eq:edmd} is precisely a quadrature approximation of the functional least 
+Keeping the test space the same as the basis space i.e. $\psi_i^* = \psi_i$. Then the 
+Galerkin equation \ref{eq:galerkin} reads
+\begin{equation}
+    \label{eq:edmd_infinite_data}
+    \left\| \bbG K - \bbA \right\|_F^2 = \min_{K in \bbC^{N \times N}} !
+\end{equation}
+The question is well-posed in the sense that $\left\{ \psi_1, \ldots, \psi_N \right\}$ 
+is linearly independent and hence $\bbG$ is invertible. Thus,
+\begin{equation}
+    K = \bbG^{-1} \bbA . 
+\end{equation}
+We see that the EDMD matrix $K = G^{-1} A$ is a quadrature approximation of the "infinite 
+data" EDMD matrix $K = \bbG^{-1} \bbA$. The benefit of this viewpoint is that it is 
+\emph{ambivalent} to the inner product: as long as an one has an approximation scheme for 
+$\left\langle \psi_i, \psi_j \right\rangle_\scrX$ for \emph{some} inner product space 
+$\scrX$, then one can approximate the stiffness matrix $\bbG$ and target matrix $\bbA$ 
+with respect to $\scrX$. From this point on, $\bbG$ and $\bbA$ will be with respect to 
+the arbitrary unspecified Hilbert space $\scrX$ unless otherwise stated. 
+
+Notice that equation \ref{eq:edmd_infinite_data} can be rewritten as a functional least 
 squares minimization:
 \begin{equation}
     \label{eq:edmd_functional}
     \left\| \Psi K - \scrK \Psi \right\|_{\scrX^{1 \times N}}^2 
     = \min_{K \in \bbC^{N \times N}} !
 \end{equation}
-where $\scrK \Psi$ is understood elementwise and
+where $\scrK \Psi = \left[ \scrK \psi_1 \mid \ldots \mid \scrK \psi_N \right]$ 
+is understood elementwise and
 $\scrX^{1 \times N}$ is the space of (row) vector-valued functions with each 
 component in $\scrX$
 \begin{equation}
@@ -157,10 +177,9 @@ component in $\scrX$
 \end{equation}
 
 Let us investigate $\Psi : \bbC^N \to \scrX$ a bit closer. Decompose the Hilbert space 
-$\scrX$ into 
+$\scrX = \scrW \oplus \scrV$ where  
 \begin{equation}
-    \scrX = \spn \left\{ \psi_j \right\}_{j=1}^N \oplus \scrV, \quad 
-    \scrV = \left( \left\{ \psi_j \right\}_{j=1}^N \right)^\perp
+    \scrW = \spn \left\{ \psi_j \right\}_{j=1}^N, \quad \scrV = \scrW^\perp
 \end{equation}
 and let $\left\{ \psi_j \right\}_{j=N+1}^\infty$ be a basis of $\scrV$. 
 
@@ -207,14 +226,14 @@ Hence the adjoint quasi-matrix $\Psi^* : \scrX \to \bbC^N$ acts as
     is proven. 
 \end{proof}
 
-Using equation \ref{eq:adjoint_inverse} we see that in the infinite-data limit 
-$M \to \infty$, $K$ has the form
+Using equation \ref{eq:adjoint_inverse} we see that equation \ref{eq:edmd_functional} has 
+the solution 
 \begin{equation}
     \label{eq:functional_K}
     K = (\Psi^* \Psi)^{-1} \Psi^* (\scrK \Psi)
 \end{equation}
 Inserting the definitions of $\Psi$ and $\Psi^*$ yields $K = \bbG^{-1} \bbA$ exactly as 
-in equations \ref{eq:G} and \ref{eq:A}. 
+in equation \ref{eq:edmd_infinite_data}. 
 
 If we view the result of applying $K$ as in equation \ref{eq:functional_K} to a vector 
 $c$ as an object in $\scrX$, that is, $\Psi K c$, we see that 
@@ -224,9 +243,9 @@ $c$ as an object in $\scrX$, that is, $\Psi K c$, we see that
     = \Pi \scrK \Psi c = \Pi \scrK \Pi \Psi c . 
 \end{equation}
 Since this holds for arbitrary $c$ we have proven that (when viewed as an operator 
-on $\scrX$) $K$ is precisely the action of $P \scrK P$, the finite section of $\scrK$ 
-over $\spn \left\{ \psi_j \right\}_{j=1}^N$. In this way, EDMD can just as well be viewed 
-as a finite section method. 
+on $\scrX$) $K$ is precisely the action of $\Pi \scrK \Pi$, the finite section of $\scrK$ 
+over $\spn \left\{ \psi_j \right\}_{j=1}^N$. In this way, the Ritz-Galerkin method 
+is a special case of a finite section method. 
 
 \begin{algorithm}
     \caption{Extended Dynamic Mode Decomposition (EDMD)}
@@ -319,7 +338,7 @@ From section \ref{sec:functional_minimization} we know that the Galerkin equatio
 Similarly, the \emph{regression error}
 \begin{equation}
     \label{eq:res}
-    \res_{N,M} (\lambda_N, c_N) \defeq \left\| \sqrt{W} (\YY - \lambda_N \YX) c_N \right\|_2^2
+    \res (\lambda, c; M, N) \defeq \left\| \sqrt{W} (\YY - \lambda \YX) c \right\|_2^2
 \end{equation}
 is precisely a quadrature approximation of equation \ref{eq:true_residual}. 
 
@@ -327,7 +346,7 @@ is precisely a quadrature approximation of equation \ref{eq:true_residual}.
     \label{thm:res_M_limit}
     Let $\lambda$ and $g = \Psi c$ be a candidate eigenpair for $\scrK$. Then 
     \begin{equation}
-        \lim_{M \to \infty} \res_{N,M} (\lambda, c)
+        \lim_{M \to \infty} \res (\lambda, c; M, N)
         = \left\| (\scrK - \lambda I) g \right\|_{\scrX}^2
     \end{equation}
 \end{theorem}
@@ -399,29 +418,29 @@ From the proof we also directly see the following corollaries.
 \begin{corollary}
     Let $\lambda \in \bbC$, define
     \begin{equation}
-        \res_{N,M} (\lambda)
-        \defeq \min_{c^* G c = 1} \left\| \sqrt{W} ( \YY - \lambda \YX ) c \right\|_2 . 
+        \res (\lambda; M, N)
+        \defeq \min_{c^* G c = 1} \res (\lambda, c; M, N) . 
     \end{equation} 
     Then
     \begin{equation}
         \label{eq:resdmd_M_limit}
-        \lim_{M \to \infty} \res_{N,M} (\lambda)
+        \lim_{M \to \infty} \res (\lambda; M, N)
         = \min_{\substack{g \in \spn \left\{ \psi_1, \ldots, \psi_N \right\} \\ \| g \| = 1}}
             \left\| ( \scrK - \lambda I ) g \right\|_\scrX . 
     \end{equation}
 \end{corollary}
 
 In particular this corollary implies that if we calculate some candidate eigenpairs, 
-compute $\res_{N,M}$ for each one, and throw out eigenpairs which do not satisfy 
-a threshhold $\res_{M,N} (\lambda, c) < \epsilon$, then the remaining candidate 
+compute $\res$ for each one, and throw out eigenpairs which do not satisfy 
+a threshhold $\res (\lambda, c) < \epsilon$, then the remaining candidate 
 eignpairs really are close to eigenpairs of $\scrK$. This process is summarized in 
 algorithm \ref{alg:edmd_verified_residual}. 
 
 \begin{corollary}
-    Let $\Lambda_M (\epsilon)$ denote the set of eigenvalues returned by algorithm 
+    Let $\Lambda (\epsilon; M, N)$ denote the set of eigenvalues returned by algorithm 
     \ref{alg:edmd_verified_residual}. Then 
     \begin{equation}
-        \limsup_{M \to \infty} \max_{\lambda \in \Lambda_M (\epsilon)}
+        \limsup_{M \to \infty} \max_{\lambda \in \Lambda (\epsilon; M, N)}
         \left\| (\scrK - \lambda I)^{-1} \right\|^{-1} \leq \epsilon . 
     \end{equation}
 \end{corollary}
@@ -435,14 +454,14 @@ algorithm \ref{alg:resdmd}.
     Assume $\spn \left\{ \psi_j \right\}_{j=1}^\infty$ forms a core of $\scrK$. 
     Then
     \begin{equation}
-        \lim_{N \to \infty} \lim_{M \to \infty} \res_{N,M} (\lambda) 
+        \lim_{N \to \infty} \lim_{M \to \infty} \res (\lambda; M, N) 
         = \sigma_{\inf} (\scrK - \lambda I) . 
     \end{equation}
     Moreover the outer limit $N \to \infty$ is monotonically decreasing so that 
     \begin{equation}
         \sigma_{ap, \epsilon} (\scrK) = 
         \bigcap_{N > 0} \left\{ \lambda \in \bbC \mid 
-        \lim_{M \to \infty} \res_{N,M} (\lambda) < \epsilon \right\} . 
+        \lim_{M \to \infty} \res (\lambda; M, N) < \epsilon \right\} . 
     \end{equation}
 \end{corollary}
 
@@ -496,11 +515,11 @@ guarantees that all such eigenvalues are real).
         \State Perform algorithm \ref{alg:edmd} to obtain $G$, $A$, $K V = V \Lambda$
         \State Construct $J$ as in \ref{eq:J}
         \For{each candidate eigenpair $(\lambda, v)$}
-            \State Compute $\res_{N,M} (\lambda, v)$ as in \ref{eq:res_min}
-            \State Throw out $\lambda$ if $\res_{N,M} (\lambda, v) \geq \epsilon$
+            \State Compute $\res (\lambda, v)$ as in \ref{eq:res_min}
+            \State Throw out $\lambda$ if $\res (\lambda, v) \geq \epsilon$
         \EndFor
         \State \Return Verified Koopman (approximate-point) eigenvalues 
-        $\Lambda_M (\epsilon) = \left\{ (\lambda, v) \mid \res_{N,M} (\lambda, v) < \epsilon \right\}$
+        $\Lambda (\epsilon; M, N) = \left\{ (\lambda, v) \mid \res (\lambda, v) < \epsilon \right\}$
     \end{algorithmic}
 \end{algorithm}
 
@@ -539,7 +558,7 @@ guarantees that all such eigenvalues are real).
 
 \subsubsection{A Naive Attempt at Duality}
 
-From this point onward, we shall always assum (without loss of generality) that $\YX$ has 
+From this point onward, we shall always assume (without loss of generality) that $\YX$ has 
 full rank, that is, rank $N$ when $N \leq M$ or rank $M$ when $M \leq N$. 
 
 Algorithm \ref{alg:resdmd} provides a way to compute the approximate-point pseudospectrum 
@@ -554,7 +573,7 @@ We instead try to follow the calculations forward. Starting with $L = G^{-1} A^*
 and $g = \Psi c$ we see that the analogous regression error for a candidate eigenpair can 
 be written as 
 \begin{equation}
-    \left\| \left( \YY^* W \YX - \lambda \YX^* W \YX \right) c \right\|_{\bbC^N}^2 
+    \left\| \left( A^* - \lambda G \right) c \right\|_{\bbC^N}^2 
     = \left\| \left( \YY^* W - \lambda \YX^* W \right) \YX c \right\|_{\bbC^N}^2 . 
 \end{equation}
 Notice that $\YX^* W$ is precisely a quadrature appoximation of $\Psi^*$ from equation 
@@ -580,7 +599,7 @@ infinite data limit yields
         &= \left\| (\Pi \scrL \Pi - \bar{\lambda} I) g \right\|_{\scrX}^2
     \end{split}
 \end{equation}
-where $P$ is the orthogonal projector onto $\spn \left\{ \psi_j \right\}_{j=1}^N$. By 
+where $\Pi$ is the orthogonal projector onto $\spn \left\{ \psi_j \right\}_{j=1}^N$. By 
 the Galerkin property we know that $L$ encodes precisely the action of $\Pi \scrL \Pi$. Hence, 
 \begin{equation}
     \label{eq:PLP}
@@ -615,7 +634,7 @@ While we will not use this immediately, we still expand the first line of
 
 % -------------------------------------------------------------------------------------- %
 
-\subsubsection{The Kernel Trick}
+\subsubsection{The Kernel Trick and Reproducing Kernel Hilbert Spaces}
 
 The choice of dictionary $\left\{ \psi_j \right\}_{j=1}^N$ naturally has massive impacts 
 on the accuracy of the above methods. We will see later in section \ref{sec:benchmark} 
@@ -649,26 +668,88 @@ for the basis
 While the result is the same, computation of $(1 + w^* z)^2$ requires only $5$ 
 floating-point operations, whereas $\Psi (z) \Psi (w)^*$ requires $23$. More generally, 
 any such relation $k(w, z) = \Psi (z) \Psi (w)^*$ is called a kernel trick. 
+
 \begin{definition}
-    A function $\Psi : \Omega \to \scrY$ with 
-    $k(w, z) = \left\langle \Psi (z), \Psi (w) \right\rangle_\scrY$ is known in machine 
-    learning literature as a \emph{feature map}. 
+    Let $k : \Omega \times \Omega \to \bbC$ be 
+    \begin{enumerate}
+        \item continuous,
+        \item \emph{conjugate-symmetric}, i.e. $k(w, z) = \overline{k(z, w)}$,
+        \item \emph{finitely positive semidefinite}, i.e. for all 
+            $x_1, \ldots, x_M \in \Omega$ 
+            the matrix $\bbG = (\, k(x_j, x_k) \,)_{j,k=1}^M \in \bbC^{M \times M}$ 
+            is positive semidefinite\footnote{
+                For any $v \in \bbC^M$, $v^* \bbG v \geq 0$. 
+            }. 
+    \end{enumerate}
+    Then $k$ is called \emph{valid} or \emph{Mercer} kernel. 
+    A function $\Psi : \Omega \to \scrY$ into some Hilbert space $\scrY$ with 
+    $k(w, z) = \left\langle \Psi (z), \Psi (w) \right\rangle_\scrY$ is known as a 
+    \emph{feature map}. 
 \end{definition}
-One sees that when $k(x, \cdot)$ is an element of some Hilbert space $\scrY$, then an 
-obvious kernel is given by $\Psi (x) = k(x, \cdot)$.\footnote{
-    In fact, when $\Psi$ also satisfies the \emph{reproducing property}, that 
-    $\left\langle \Psi (x), f \right\rangle = f (x)$ for all $f \in \scrY$, then $\scrY$ 
-    is known as \emph{Reprodung Kernel Hilbert Space} and indeed 
-    $\overline{\spn \left\{ k(x, \cdot) \mid x \in \Omega \right\}}$ beomces dense in $\scrY$. 
-} Another obvious kernel is given by a basis: letting 
+
+One obvious kernel is given by a basis: letting 
 $\Psi (x) = \left[ \psi_1 (x) \mid \ldots \mid \psi_N (x) \right]$ as before, 
-$k(w, z) = \Psi (z) \Psi (w)^*$ is also a kernel. 
+$k(w, z) = \Psi (z) \Psi (w)^*$ is also a kernel. Moreover, one sees that when 
+$k(z, \cdot)$ is an element of some Hilbert space $\scrY$, then another 
+obvious feature map is given by $\Psi (z) = k(z, \cdot)$. This feature map (called 
+\emph{canonical} feature map) is of much importance. This is because the functions 
+which can be represented by the features are precisely of this form. 
+
+\begin{definition}
+    A Hilbert space $\scrY$ which enjoys the \emph{reproducing property}: 
+    \begin{enumerate}
+        \item $k (w, \cdot) \in \scrY$ for all $w \in \Omega$,
+        \item $\left\langle k(w, \cdot), f \right\rangle = f (w)$ for all 
+            $f \in \scrY$
+    \end{enumerate}
+    is called \emph{reproducing kernel Hilbert space (RKHS)} generated by $k$. 
+\end{definition}
+
+The following are immediate from the definition:
+
+\begin{lemma}
+    Let $k$ generate a RKHS $\scrY$. Then
+    \begin{enumerate}
+        \item $\left\langle k(w, \cdot), k(\cdot, z) \right\rangle_\scrY = k(w, z)$ 
+            for all $w, z \in \Omega$,
+        \item The set $\left\{ k(w, \cdot) \mid w \in \Omega \right\}$ is 
+            dense in $\scrY$ (w.r.t. the $\scrY$-norm). 
+    \end{enumerate}
+\end{lemma}
+
+We conclude the list of basic facts about RKHS with a characterization of 
+when a kernel generates an RKHS. The following is a special case of theorem 
+$4$ from \cite{RKHS_probability}. 
+
+\begin{theorem}
+    \label{thm:RKHS}
+    Let $\Omega$ be compact, $k : \Omega \times \Omega \to \bbC$ continuous on the 
+    finite measure space $(\Omega, dx)$. Then the following are equivalent: 
+    \begin{enumerate}
+        \item $k$ is finintely positive semidefinite. 
+        \item $k$ is the kernel of some RKHS $\scrH \subset \scrC^0$, where $\scrC^0$ 
+            denotes the set of continuous functions on $\Omega$. 
+        \item $k$ is of the form 
+            \begin{equation}
+                k(w, z) 
+                = \sum_{j=1}^{\infty} \mu_j^2\, \hat{\psi}_j (z) \overline{\hat{\psi}_j (w)}
+                = \Psi (z) \Psi (w)^*
+            \end{equation}
+            for $\Psi (z) = \left[ \mu_1 \hat{\psi}_1 \mid \mu_2 \hat{\psi}_2 \mid \ldots \right]$. 
+            The set $\left\{ \hat{\psi}_j \right\}_{j=1}^\infty$ forms an orthonormal 
+            basis of $L^2 (\Omega)$. 
+            The $\mu_j \geq 0$ can be ordered by decreasing magnitude and 
+            converge to $0$ as $j \to \infty$. 
+    \end{enumerate}
+    Moreover, the set $\left\{ \mu_j \hat{\psi}_j \right\}_{j=1}^\infty$
+    forms an orthonormal basis of $\scrH$. 
+\end{theorem}
 
 Entire books are written on such kernels \cite{RKHS} and their properties. Common 
 kernels include:
 
 \begin{example}
-    The polynomial kernel 
+    The \emph{polynomial kernel} 
     $k : \bbC^d \times \bbC^d \to \bbC,\ (w, z) \mapsto (1 + w^* z / c^2)^\alpha$ 
     feature map is given by all (multivariate) polynomials up to degree $\alpha$. Note 
     that computing $k(w, z)$ requires only $O(d)$ operations, but computing 
@@ -676,7 +757,7 @@ kernels include:
 \end{example}
 
 \begin{example}
-    The Gaußian kernel 
+    The \emph{Gaußian kernel} 
     $k(w, z) = \exp \left( -\frac{\left\| w - z \right\|^2}{c^2} \right)$ has a feature 
     map which is infinite-dimensional. Indeed, consider (for notational simplicity) 
     $w, z \in \bbR$: 
@@ -706,44 +787,85 @@ kernels include:
     When $w, z \in \bbC$ then the middle term in \ref{eq:gauss_kernel_calc} changes from 
     $w \cdot z$ to $\bar{w} \cdot z + \bar{z} \cdot w$, and in higher dimensions this 
     extends to all pairwise combinations of the components of $w$ and $z$. We note 
-    (and will use later) that in the specific case $\scrX = L^2 (\bbT)$ where $\bbT$ is 
-    the (complex) unit circle, $\Psi$ generates an orthogonal basis of $\scrX$, namely 
-    the Fourier basis. 
+    (and will use later) that the Gaußian kernel is \emph{universal}, meaning the RKHS 
+    $\scrH$ generated by $k$ is dense in $\scrC^0$. 
+\end{example}
+
+\begin{example}
+    The Sobolev space $H^s$ contains all functions which are square integrable and whose 
+    (weak) derivatives up to oder $s$ are also square integrable. That is, $H^s$ is the 
+    closure of the smooth functions with compact support $\scrC^\infty_c$ with respect 
+    to the norm 
+    \begin{equation}
+        \left\| f \right\|_{H^s}^2 = 
+        \sum_{| \alpha | \leq s} \left\| D^\alpha f \right\|_{L^2}^2
+    \end{equation}
+    where $\alpha \in \bbN_0^d$ are multiindices. 
+    Using the Fourier transform $\scrF$ this can readily be rewritten as 
+    $\left\| f \right\|_{H^s}^2 = \left\langle f, f \right\rangle_{H^s}$ for
+    \begin{equation}
+        \left\langle f, g \right\rangle_{H^s} = 
+        \int \left( 1 + \left| \xi \right|^2 \right)^s 
+        \,\overline{ \scrF f (\xi) }\, \scrF g (\xi) \ dx . 
+    \end{equation}
+    It can be shown \cite{RKHS} that the kernel 
+    \begin{equation}
+        k : \bbC^d \times \bbC^d \to \bbC, \quad (w, z) \mapsto 
+        (2 \pi)^{-d} \int \left( 1 + \left| \xi \right|^2 \right)^{-s} 
+        \exp \left( i (w - z) \cdot \xi \right) \,d\xi 
+    \end{equation}
+    generates $H^s$. Moreover, when $d=1$ and $\Omega = [a, b]$ is an interval, the 
+    \emph{Laplace kernel} 
+    \begin{equation}
+        k : [a,b] \times [a,b] \to \bbR, \quad (w, z) \mapsto 
+        \frac{1}{2} \exp ( - \left| w - z \right| )
+    \end{equation}
+    generates the slightly altered Sobolev norm
+    \begin{equation}
+        \left\| f \right\|_{\tilde{H}^2}^2 = \left\| f \right\|_{H^2}^2 
+        + \left| f(a) \right|^2 
+        + \left| f(b) \right|^2 . 
+    \end{equation}
+    Note that \emph{as sets}, $\tilde{H}^2 = H^2$. 
 \end{example}
 
 % -------------------------------------------------------------------------------------- %
 
 \subsubsection{Application to EDMD}
 
-Let $k$ be a kernel with associated feature map $\Psi$ that is rescaled such that 
-\begin{equation}
-    \Psi (x_j) \Psi (x_i)^* = \frac{k(x_i, x_j)}{\sqrt{w_i w_j}} \quad 
-    \text{for all } 1 \leq i, j \leq M . 
-\end{equation} 
-In most cases $w_i = 1/M$ for all $i$ so that the kernel is just scaled by a constant 
-factor $1/M$. 
+%Let $k$ be a kernel with associated feature map $\Psi$ that is rescaled such that 
+%\begin{equation}
+%    \Psi (x_j) \Psi (x_i)^* = \frac{k(x_i, x_j)}{\sqrt{w_i w_j}} \quad 
+%    \text{for all } 1 \leq i, j \leq M . 
+%\end{equation} 
+%In most cases $w_i = 1/M$ for all $i$ so that the kernel is just scaled by a constant 
+%factor $1/M$. 
 
 Notice that 
 \begin{equation}
     G = \YX^* W \YX = \sum_{i=1}^{M} w_i\, \Psi (x_i)^* \Psi (x_i), \quad
     A = \YX^* W \YY = \sum_{i=1}^{M} w_i\, \Psi (x_i)^* \Psi (S(x_i)) . 
 \end{equation}
-Each summand is a rank one matrix. 
+Each summand is a rank one matrix in $\bbC^{N \times N}$. $N$ might be infinite, in which 
+case we interpret this statement as being about "infinite matrix" type operators in $\ell^2$. 
+
 This is not in a form where one could use the kernel trick, since we have summands of the 
 form $\Psi (x_i)^* \Psi (x_i)$ instead of $\Psi (x_i) \Psi (x_i)^*$. However, if we 
 reverse the order of multiplication in $\YX^* W \YX = (\sqrt{W} \YX)^* (\sqrt{W} \YX)$ 
 then 
 \begin{equation}
     \label{eq:G_hat}
-    \widehat{G} = \sqrt{W} \Psi_X \Psi_X^* \sqrt{W}
-    = \left(\; \sqrt{w_j w_i} \Psi (x_j) \Psi (x_i)^* \;\right)_{i, j=1}^M
-    = \left(\; k(x_i, x_j) \;\right)_{i, j=1}^M . 
+    \begin{split}
+        \widehat{G} &= \sqrt{W} \Psi_X \Psi_X^* \sqrt{W} \\
+        &= \left(\; \sqrt{w_j w_i} \cdot \Psi (x_j) \Psi (x_i)^* \;\right)_{i, j=1}^M \\
+        &= \left(\; \sqrt{w_i w_j} \cdot k(x_i, x_j) \;\right)_{i, j=1}^M . 
+    \end{split}
 \end{equation}
 Analogously 
 \begin{equation}
     \label{eq:A_hat}
     \widehat{A} = \sqrt{W} \Psi_Y \Psi_X^* \sqrt{W}
-    = \left(\; k(S(x_i), x_j) \;\right)_{i, j=1}^M . 
+    = \left(\; \sqrt{w_i w_j} \cdot k(S(x_i), x_j) \;\right)_{i, j=1}^M . 
 \end{equation}
 We would now like to exploit the form of $K = \YX^\dagger \YY$ 
 to use these "flipped" matrices. The key to do so will be a (compact) singular value 
@@ -757,7 +879,8 @@ matrix, and $Q \in \bbC^{M \times r}$ and $Z \in \bbC^{N \times r}$ are semi-uni
     A tall martrix $M \in \bbC^{q \times r}$, $q \geq r$, is semi-unitary if the columns 
     form an orthonormal family. 
 }. 
-\begin{theorem}[\cite{kedmd}]
+
+\begin{theorem}
     \label{thm:K_hat}
     Let 
     \begin{equation}
@@ -765,13 +888,24 @@ matrix, and $Q \in \bbC^{M \times r}$ and $Z \in \bbC^{N \times r}$ are semi-uni
         \widehat{K} \defeq 
         \left( \Sigma^\dagger Q^* \right) \widehat{A} \left( Q \Sigma^\dagger \right) . 
     \end{equation}
-    Then $(\lambda, c)$ (for $\lambda \neq 0$) is an eigenpair of $\widehat{K}$ iff 
-    $(\lambda, Z c)$ is an eigenpair of $K$. Moreover, the eigenmodes 
-    $g = \Psi \cdot (Z c)$ can be evaluated at the data points $x_i$, $i = 1, \ldots M$. 
+    Then 
+    \begin{equation}
+        \label{eq:K_hat_K}
+        \widehat{ K } = Z^* K Z
+    \end{equation}
+    and when $N \leq M$, 
+    \begin{equation}
+        \widehat{ K }^* = \left( \Sigma^2 Z^* \right) L \left( Z \Sigma^{-2} \right) . 
+    \end{equation}
+    In particular, equation \ref{eq:K_hat_K} shows that
+    a pair $(\lambda, v) \in \bbC \times \bbC^r$ (for $\lambda \neq 0$) 
+    is an eigenpair of $\widehat{K}$ iff $(\lambda, Z v) \in \bbC \times \bbC^N$ is an 
+    eigenpair of $K$. Moreover, the eigenmodes $g = \Psi \cdot (Z v)$ can be evaluated 
+    at the data points $x_i$, $i = 1, \ldots M$. 
 \end{theorem}
 
-One should take a moment to consider that the second statement made in the theorem
-seems highly nontrivial. Often, the feature map is only given implicitly - one knows 
+One should take a moment to consider that the last statement made in the theorem
+seems highly nontrivial at first. Often, the feature map is only given implicitly - one knows 
 there exists such a $\Psi$, but does not have an explicit form. Even worse, the matrix 
 $Z$ is completely unatainable from just $\widehat{G}$ and $\widehat{A}$. 
 
@@ -793,11 +927,22 @@ since by definition
     But since $\YX^* \sqrt{W} = Z \Sigma Q^*$, this is equivalent to 
     \begin{equation}
         \label{eq:Z*_K_Z}
-        \widehat{ K } = Z^* K Z
+        \widehat{ K } = Z^* K Z . 
     \end{equation}
-    which immediately proves the first claim of the theorem. Now to evaluate 
-    $g = \Psi \cdot (Z c)$ at each $x_i$, $i = 1, \ldots, M$, observe 
-    that $\YX \cdot (Z c) = Q \Sigma c$. 
+    Now 
+    \begin{equation}
+        \begin{split}
+            \widehat{ K }^* &= Z^* K^* Z \\
+            &= Z^* A^* G^{-1} Z \\
+            &= Z^* G G^{-1} A^* G^{-1} Z \\
+            &= \left( Z^* G \right) L \left( G^{-1} Z \right) \\
+            &= \left( \Sigma^2 Z^* \right) L \left( Z \Sigma^{-2} \right)
+        \end{split}
+    \end{equation}
+    where we used that $G$ is symmetric and (when $N \leq M$) invertible.  
+
+    Finally, to evaluate $g = \Psi \cdot (Z c)$ at each $x_i$, $i = 1, \ldots, M$, 
+    observe that $\YX \cdot (Z v) = Q \Sigma v$. 
 \end{proof}
 
 \begin{algorithm}
@@ -808,13 +953,13 @@ since by definition
             $\left\{ (w_i, x_i) \right\}_{i=1}^M$, compression factor $r \leq M$
         \State Construct $\widehat{G}$, $\widehat{A}$ as in \ref{eq:G_hat}, \ref{eq:A_hat}
         \State Compute an eigendecomposition $\widehat{G} = Q \Sigma^2 Q^*$
-        \State Let $\widehat{\Sigma} = \Sigma [1:r, 1:r]$, $\widehat{Q} = Q [:, 1:r]$ be the 
+        \State Let $\widetilde{\Sigma} = \Sigma [1:r, 1:r]$, $\widetilde{Q} = Q [:, 1:r]$ be the 
             $r$ largest eigenvalues and corresponding eigenvectors
         \State Construct 
         $\widehat{K} = 
-        \left( \widehat{\Sigma}^\dagger \widehat{Q}^* \right)
+        \left( \widetilde{\Sigma}^\dagger \widetilde{Q}^* \right)
         \widehat{A}
-        \left( \widehat{Q} \widehat{\Sigma}^\dagger \right)$
+        \left( \widetilde{Q} \widetilde{\Sigma}^\dagger \right)$
         \State Compute an eigendecomposition $\widehat{K} V = V \Lambda$
         \State \Return Eigenvalues and eigenvectors $\Lambda$, $V$
     \end{algorithmic}
@@ -837,7 +982,7 @@ methods was the ability to cheaply crank $N$ up).
     Suppose $M \leq N$ and $\sqrt{W} \YX \in \bbC^{M \times N}$ has full rank. Then 
     for any eigenpair $(\lambda, v)$ of $\widehat{K}$, the residual
     \begin{equation}
-        \res_{N,M} (\lambda, Z v) = 0 . 
+        \res (\lambda, Z v; M, N) = 0 . 
     \end{equation}
 \end{proposition}
 
@@ -859,7 +1004,7 @@ methods was the ability to cheaply crank $N$ up).
 The proposition suggests that we are suffering from \emph{overfitting} of the snapshot 
 data. We therefore require a different way to associate a residual to the eigenpair. 
 
-Recall from equation \ref{eq:res} that $\res_{N,M}$ has an alternative represtnation as 
+Recall from equation \ref{eq:res} that $\res$ has an alternative representation as 
 a regression error. We could analogously ask if $\widehat{K}$ is the solution of a different 
 regression problem. 
 
@@ -879,17 +1024,17 @@ Hence $\widehat{K}^*$ is precisely the solution to the least squares problem
 \begin{equation}
     \min_{B \in \bbC^{M \times M}} \left\| \widehat{\YY} - \widehat{\YX} B \right\| . 
 \end{equation}
-This means that for a candidate eigenpair $(\lambda, c)$ of $\widehat{K}^*$, the regression 
+This means that for a candidate eigenpair $(\lambda, v)$ of $\widehat{K}^*$, the regression 
 error is given by 
 \begin{equation}
-    \widehat{ \res }_{N,M} (\lambda, v) 
-    = \left\| \left( \widehat{ \YY } - \lambda \widehat{ \YX } \right) v \right\| . 
+    \widehat{ \kres } (\lambda, v; M, N) \defeq 
+    \left\| \left( \widehat{ \YY } - \lambda \widehat{ \YX } \right) v \right\| . 
 \end{equation}
 To provide a computable formulation we write
 \begin{equation}
-    \widehat{ \res }_{N,M} (\lambda, v)^2
+    \widehat{ \kres } (\lambda, v)^2
     = \left\| \left( \YY^* - \lambda \YX^* \right) \sqrt{W}
-    \left( Q \Sigma^\dagger c \right) \right\|^2 
+    \left( Q \Sigma^\dagger v \right) \right\|^2 
 \end{equation}
 which, after expanding the squared norm as in equation \ref{eq:reg_error}, can be 
 written as 
@@ -911,12 +1056,12 @@ Notice $\left( \Sigma^\dagger Q^* \right) \widehat{ G } \left( Q \Sigma^\dagger 
     \label{eq:J_hat}
     \widehat{ J } = 
     \sqrt{W} \Psi_Y \Psi_Y^* \sqrt{W}
-    = \left(\; k(S(x_i), S(x_j)) \;\right)_{i, j=1}^M 
+    = \left(\; \sqrt{w_i w_j} \cdot k(S(x_i), S(x_j)) \;\right)_{i, j=1}^M 
 \end{equation}
 we have that 
 \begin{equation}
     \label{eq:res_hat_min}
-    \widehat{ \res }_{N,M} (\lambda, v)^2
+    \widehat{ \kres } (\lambda, v)^2
     = v^* \left(\, 
         \left( \Sigma^\dagger Q^* \right) \widehat{ J } \left( Q \Sigma^\dagger \right)
         - \bar{\lambda} \widehat{ K } 
@@ -945,15 +1090,15 @@ with the Perron-Frobenius operator than with the Koopman operator.
             tolerance $\epsilon$
         \State Construct $\widehat{G}$, $\widehat{A}$ as in \ref{eq:G_hat}, \ref{eq:A_hat}
         \State Compute an eigendecomposition $\widehat{G} = Q \Sigma^2 Q^*$
-        \State Let $\widehat{\Sigma}$, $\widehat{Q}$ be as in agorithm \ref{alg:kedmd}
+        \State Let $\widetilde{\Sigma}$, $\widetilde{Q}$ be as in agorithm \ref{alg:kedmd}
         \State Construct $\widehat{ K }$, $\widehat{ J }$ as in \ref{eq:K_hat}, 
-            \ref{eq:J_hat} (with $\widehat{ Q }$ and $\widehat{ \Sigma }$)
+            \ref{eq:J_hat} (with $\widetilde{ Q }$ and $\widetilde{ \Sigma }$)
         \For{$z_\nu$}
-        \State Compute $\widehat{ \res } (z_\nu) 
-            \defeq \min_{\| v \| = 1} \widehat{ \res } (z_\nu, v)$, which is equivalent 
+        \State Compute $\widehat{ \kres } (z_\nu) 
+            \defeq \min_{\| v \| = 1} \widehat{ \kres } (z_\nu, v)$, which is equivalent 
             to finding the smallest eigenvalue of the matrix in \ref{eq:res_hat_min}
         \EndFor
-        \State \Return $\left\{ z_\nu \mid \widehat{\res} (z_\nu) < \epsilon \right\}$
+        \State \Return $\left\{ z_\nu \mid \widehat{\kres} (z_\nu) < \epsilon \right\}$
     \end{algorithmic}
 \end{algorithm}
 
@@ -961,28 +1106,37 @@ with the Perron-Frobenius operator than with the Koopman operator.
 
 \subsubsection{The Perron-Frobenius Connection}
 
-It is worth reexamining equation \ref{eq:Z*_K_Z}. Returning for a moment to the case 
-$N \leq M$ we have 
-\begin{equation}
-    \begin{split}
-        \widehat{ K }^* &= Z^* K^* Z \\
-        &= Z^* A^* G^{-1} Z \\
-        &= Z^* G G^{-1} A^* G^{-1} Z \\
-        &= \left( Z^* G \right) L \left( G^{-1} Z \right) \\
-        &= \left( \Sigma^2 Z^* \right) L \left( \Sigma^2 Z^* \right)^\dagger
-    \end{split}
-\end{equation}
-where we used that $G$ is symmetric and (when $N \leq M$) invertible. While this may not 
-be true in $N \geq M$, there still is one connection: compare equations 
-\ref{eq:L_res_expanded} and \ref{eq:res_hat_expanded}. One sees that up to conjugation of 
+Compare equations 
+\ref{eq:L_res_expanded} and \ref{eq:res_hat_expanded}: 
+\begin{align}
+    \left( \sqrt{W} \YX c \right)^* &
+    \left( 
+        \widehat{ J } 
+        - \bar{\lambda} \widehat{ A }^* 
+        - \lambda \widehat{ A } 
+        + | \lambda |^2 \widehat{ G } 
+    \right) 
+    \left( \sqrt{W} \YX c \right) \\
+    \left( Q \Sigma^\dagger v \right)^* &
+    \left( 
+        \widehat{ J } 
+        - \lambda \widehat{ A }^* 
+        - \bar{\lambda} \widehat{ A } 
+        + | \lambda |^2 \widehat{ G } 
+    \right) 
+    \left( Q \Sigma^\dagger v \right)
+\end{align}
+
+
+One sees that up to conjugation of 
 $\lambda$ and multiplication of a factor $\Sigma^2 Z^*$ they coincide exactly. 
 
-Since $Q$ and $Z$ are both finite-dimensional isometries, they do not affect the minimal 
-value of \ref{eq:L_res_expanded} or \ref{eq:res_hat_expanded}. In the regime $N \leq M$, 
-$G = Z \Sigma^2 Z^*$, $\Sigma^2$ holds the norm of the features after being linearly 
-combined into an $\scrX$-orthogonal basis. Hence $Q \Sigma^\dagger$ in 
+Since in the regime $N \leq M$, $Z$ is unitary, it does not affect the minimal value 
+of \ref{eq:L_res_expanded} or \ref{eq:res_hat_expanded}. Moreover, when $N \leq M$ we 
+have $G = Z \Sigma^2 Z^*$ so that $\Sigma^2$ holds the (square) norm of the features 
+$\psi_1, \ldots, \psi_N$. Hence $Q \Sigma^\dagger$ in 
 \begin{equation}
-    \widehat{ \res }_{N,M} (\lambda)^2 = 
+    \widehat{ \kres } (\lambda)^2 = 
     \min_{\| v \| = 1}
     v^* \left( \Sigma^\dagger Q^* \right) 
     \left( 
@@ -995,7 +1149,8 @@ combined into an $\scrX$-orthogonal basis. Hence $Q \Sigma^\dagger$ in
 \end{equation}
 serves the same purpose as the stiffness matrix $G$ in 
 \begin{equation}
-    \widetilde{ \res }_{N,M} (\lambda)^2 \defeq 
+    \label{eq:kres_tilde}
+    \widetilde{ \kres }_{N,M} (\lambda)^2 \defeq 
     \min_{c^* G c = 1}
     \left( \YX c \right)^*
     \left( 
@@ -1008,17 +1163,164 @@ serves the same purpose as the stiffness matrix $G$ in
 \end{equation}
 In particular we see that there must exist $C_1, C_2$ such that 
 \begin{equation}
-    C_1 \cdot \widehat{ \res }_{N,M} (\lambda) \leq 
-    \widetilde{ \res }_{N,M} (\bar{\lambda}) \leq
-    C_2 \cdot \widehat{ \res }_{N,M} (\lambda)
+    C_1 \cdot \widehat{ \kres } (\lambda) \leq 
+    \widetilde{ \kres } (\bar{\lambda}) \leq
+    C_2 \cdot \widehat{ \kres } (\lambda)
 \end{equation}
 so that algorithm \ref{alg:kresdmd} computes precisely the (scaled) pseudospectrum of 
 $\Pi \scrL \Pi$ as in \ref{eq:PLP}. 
 
 So what happens in the regime $N \geq M$? In this regime, $L = G^{-1} A^*$ 
 breaks down since $\YX^\dagger = \left( \YX^* \YX \right)^{-1} \YX^*$ no longer holds 
-(rather, $\YX^\dagger = \YX^* \left( \YX \YX^* \right)^{-1}$). Nonetheless, 
-$\widehat{ \res }$ is still well-defined, it just loses its physical meaning. 
+(rather, $\YX^\dagger = \YX^* \left( \YX \YX^* \right)^{-1}$). The key lies in the 
+\emph{compression factor} $r$ from algorithm \ref{alg:kedmd}. Dropping the previous 
+definition $r = \min\left\{ M, N \right\}$, we now allow $r \leq M$ and consider the 
+truncated singular value decomposition 
+\begin{equation}
+    \YX \approx \widetilde{ Q } \widetilde{ \Sigma } \widetilde{ Z }^*
+\end{equation}
+for $\widetilde{ Q } \in \bbC^{M \times r}$, $\widetilde{ \Sigma } \in \bbC^{r \times r}$, 
+$\widetilde{ Z }^* \in \bbC^{r \times N}$. 
+
+$\widetilde{ Z }^*$ can be interpreted as an orthogonal projection onto the space spanned 
+by the $r$ largest principal components $\left\{ \widetilde{ \psi }_j \right\}_{j=1}^r$. 
+Borrowing from statistical learning theory, this subspace is spanned by observables which 
+have the largest variance when evaluated over the data points. 
+
+The benefit of truncation is that we \emph{decouple} the $N$ and $M$ limits and allow 
+performing the limit $N \to \infty$ \emph{before} $M \to \infty$, which is necessary since 
+a priori the kernel feature map may be infinite-dimensional. Indeed, fix $r$ and
+perform algorithm \ref{alg:resdmd} with the new dictionary 
+$\left\{ \widetilde{ \psi }_j \right\}_{j=1}^r$, for some $r \leq M \leq N$. This 
+yields the new data matrix 
+\begin{equation}
+    \tYX = \widetilde{ Q } \widetilde{ \Sigma } . 
+\end{equation}
+$\widetilde{ \Sigma }$ is independent of $N$ and converges uniformly to 
+\begin{equation}
+    \label{eq:G_tilde}
+    \widetilde{ \bbG } = \diag \left( 
+        \left\| \widetilde{ \psi }_1 \right\|_{L^2},
+        \ldots, \left\| \widetilde{ \psi }_r \right\|_{L^2} 
+    \right)
+\end{equation}
+as $M \to \infty$. 
+
+Reconsidering equation \ref{eq:kres_tilde} we notice that for a candidate eigenpair 
+$(\lambda, u) \in \bbC \times \bbC^r$ and associated Koopman mode 
+$h = \tY u \in \spn \left\{ \widetilde{ \psi }_j \right\}_{j=1}^r$, 
+\begin{equation}
+    \begin{split}
+        \lim_{M \to \infty} &\left\| \left( \YY^* - \lambda \YX^* \right) \tYX u \right\|_{\bbC^N}^2 \\
+        &= \left\| \left(\, (\scrK \Psi)^* - \lambda \Psi^* \,\right) h \right\|_{\bbC^N}^2 \\
+        &= \sum_{j=1}^{N} \left| \left\langle\ (\scrK - \lambda I) \psi_j, h \ \right\rangle_{L^2} \right|^2 \\
+        &= \sum_{j=1}^{N} \left| \left\langle\ \psi_j, (\scrL - \bar{\lambda} I) h \ \right\rangle_{L^2} \right|^2 
+    \end{split}
+\end{equation}
+where (depending on the kernel) $N$ may be infinite; in which case we interpret 
+the first two lines as being in $\ell^2 (\bbN)$
+
+Now if the feature map $\Psi$ is as in theorem \ref{thm:RKHS} then the features 
+$\psi_j = \mu_j \hat{\psi}_j$ are orthogonal and bounded in $L^2$. Let 
+\begin{equation}
+    \kres (\lambda, u; r, M, N) \defeq 
+    \left\| \left( \YY^* - \lambda \YX^* \right) \tYX u \right\|_{\bbC^N}^2 . 
+\end{equation}
+Using \ref{eq:G_tilde} we arrive at
+\begin{equation}
+    \lim_{M \to \infty}\ \kres (\lambda, u; r, M, N) = 
+    \sum_{j=1}^{N} \left| \left\langle\ 
+    \psi_j, (\scrL - \bar{\lambda} I) h \ \right\rangle_{L^2} \right|^2 
+\end{equation}
+and 
+\begin{align}
+    \lim_{M \to \infty}\ &\kres (\lambda; r, M, N) \\
+    &\defeq \lim_{M \to \infty}\ \left[ \min_{u^* \widetilde{ \Sigma }^2 u = 1} 
+    \left\| \left( \YY^* - \lambda \YX^* \right) \tYX u \right\|_{\bbC^N}^2 
+    \right]\label{eq:new_res_hat} \\
+    &= \min_{\substack{
+        h \in \spn \left\{ \widetilde{ \psi }_1, \ldots, \widetilde{ \psi }_r \right\} \\ 
+        \left\| h \right\| = 1
+    }}\ \sum_{j=1}^{N} \left| \left\langle\ 
+        \psi_j, (\scrL - \bar{\lambda} I) h 
+    \ \right\rangle_{L^2} \right|^2 . 
+\end{align}
+We arrive at the following theorem. 
+
+\begin{theorem}
+    Let $k$, $\Omega$ be as in theorem \ref{thm:RKHS}. Then there exists a $\mu > 0$ such 
+    that
+    \begin{equation}
+        \lim_{M \to \infty} \kres (\lambda) \leq 
+        \mu \cdot \sigma_{\inf} \left( \scrL - \bar{\lambda} I \right) . 
+    \end{equation}
+    In particular, 
+    \begin{equation}
+        \lim_{M \to \infty} \kres (\lambda, u) < \epsilon
+    \end{equation}
+    provides a \emph{necessary} condition for 
+    \begin{equation}
+        \left\| \left( \scrL - \lambda I \right) h \right\|_{L^2} < \mu \epsilon . 
+    \end{equation}
+\end{theorem}
+
+\begin{proof}
+    Appealing to theorem \ref{thm:RKHS}, we can rewite
+    \begin{equation}
+        \begin{split}
+            \sum_{j=1}^{N} & \left| \left\langle\ 
+            \psi_j, (\scrL - \bar{\lambda} I) h 
+        \ \right\rangle_{L^2} \right|^2 \\
+        &= \sum_{j=1}^{N} \left| \left\langle\ 
+            \mu_j \hat{\psi}_j, (\scrL - \bar{\lambda} I) h 
+        \ \right\rangle_{L^2} \right|^2 \\
+        &\leq \mu_1^2 \sum_{j=1}^{N} \left| \left\langle\ 
+            \hat{\psi}_j, (\scrL - \bar{\lambda} I) h 
+        \ \right\rangle_{L^2} \right|^2
+        \end{split}
+    \end{equation}
+    since the $\mu_j$ are odered by decreasing magnitude. 
+\end{proof}
+
+The theorem does not provide an explicit way to compute the pseudospectrum. Rather, 
+it provides a condition for which one can reject a candidate eigenpair as spurious. 
+In fact, due to a theorem of Yosida saying that the identity is not a Fredholm integral 
+operator, it is impossible to make the above theorem into a sufficient condition on $L^2$. 
+
+Nonetheless, this gives an operator theoretic interpretation for algorithm 
+\ref{alg:kresdmd}. In the original literature \cite{kresdmd}, the residual 
+$\widehat{ \kres }$ was presented \emph{ad hoc}. A reason for the empirically observed 
+effectiveness of the method was, until now, unknown. 
+
+\begin{algorithm}
+    \caption{Modified kernel ResDMD with an operator-theoretic interpretation}
+    \label{alg:kresdmd_correct}
+    \begin{algorithmic}[1]
+        \Require kernel $k : \Omega \times \Omega \to \bbC$, data points and weights 
+            $\left\{ (w_i, x_i) \right\}_{i=1}^M$, compression factor $r \leq M$,
+            grid $\left\{ z_\nu \right\}_{\nu=1}^T \subset \bbC$,
+            tolerance $\epsilon$
+        \State Construct $\widehat{G}$, $\widehat{A}$ as in \ref{eq:G_hat}, \ref{eq:A_hat}
+        \State Compute an eigendecomposition $\widehat{G} = Q \Sigma^2 Q^*$
+        \State Let $\widetilde{\Sigma}$, $\widetilde{Q}$ be as in agorithm \ref{alg:kedmd}
+        \State Construct $\widehat{ K }$, $\widehat{ J }$ as in \ref{eq:K_hat}, 
+            \ref{eq:J_hat} (with $\widetilde{ Q }$ and $\widetilde{ \Sigma }$)
+        \For{$z_\nu$}
+        \State Compute $\kres (z_\nu)$, which is equivalent 
+            to finding the smallest generalized eigenvalue 
+            $\left( \widetilde{ \Sigma } \widetilde{ Q }^* \right) 
+            \left( 
+                \widehat{ J }
+                - \bar{\lambda} \widehat{ A } 
+                - \lambda \widehat{ A }^* 
+                + | \lambda |^2 \widehat{ G }
+            \right)
+            \left( \widetilde{ Q } \widetilde{ \Sigma } \right) v
+            = \xi \widetilde{ \Sigma }^{2} v$
+        \EndFor
+        \State \Return $\left\{ z_\nu \mid \kres (z_\nu) < \epsilon \right\}$
+    \end{algorithmic}
+\end{algorithm}
 
 
 % -------------------------------------------------------------------------------------- %

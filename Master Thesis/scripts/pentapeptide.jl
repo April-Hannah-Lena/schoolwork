@@ -1,7 +1,7 @@
 using Chemfiles, ChemfilesViewer, BioStructures
 using LinearAlgebra, Statistics, Clustering
 using ProgressMeter, DataFrames
-using GLMakie, BioMakie
+using WGLMakie, BioMakie
 const atoms = BioStructures.atoms
 
 # data -------------------------------------------------------
@@ -98,6 +98,7 @@ dists = [norm(x - y) for x in eachcol(v), y in eachcol(v)]
 n_medoids = 4
 clusters = kmedoids(dists, n_medoids)
 medoid_indices = clusters.medoids
+assign = clusters.assignments
 
 medoids = X[:, medoid_indices]
 medoids = reshape(medoids, (3, 94, 4))
@@ -112,5 +113,7 @@ for resid in chn
     end
 end
 
-fig = Figure();
+fig = Figure(size=(1200,900));
 plotstruc!(fig, mol, markerscale=0.5)
+
+scatter(X[[1, 2, 3], :], color=assign)
