@@ -1223,18 +1223,18 @@ the first two lines as being in $\ell^2 (\bbN)$
 Now if the feature map $\Psi$ is as in theorem \ref{thm:RKHS} then the features 
 $\psi_j = \mu_j \hat{\psi}_j$ are orthogonal and bounded in $L^2$. Let 
 \begin{equation}
-    \kres (\lambda, u; r, M, N) \defeq 
+    \kres (\lambda, u; r, M, N)^2 \defeq 
     \left\| \left( \YY^* - \lambda \YX^* \right) \tYX u \right\|_{\bbC^N}^2 . 
 \end{equation}
 Using \ref{eq:G_tilde} we arrive at
 \begin{equation}
-    \lim_{M \to \infty}\ \kres (\lambda, u; r, M, N) = 
+    \lim_{M \to \infty}\ \kres (\lambda, u; r, M, N)^2 = 
     \sum_{j=1}^{N} \left| \left\langle\ 
     \psi_j, (\scrL - \bar{\lambda} I) h \ \right\rangle_{L^2} \right|^2 
 \end{equation}
 and 
 \begin{align}
-    \lim_{M \to \infty}\ &\kres (\lambda; r, M, N) \\
+    \lim_{M \to \infty}\ &\kres (\lambda; r, M, N)^2 \\
     &\defeq \lim_{M \to \infty}\ \left[ \min_{u^* \widetilde{ \Sigma }^2 u = 1} 
     \left\| \left( \YY^* - \lambda \YX^* \right) \tYX u \right\|_{\bbC^N}^2 
     \right]\label{eq:new_res_hat} \\
@@ -1254,7 +1254,7 @@ We arrive at the following theorem.
         \lim_{M \to \infty} \kres (\lambda) \leq 
         \mu \cdot \sigma_{\inf} \left( \scrL - \bar{\lambda} I \right) . 
     \end{equation}
-    In particular, 
+    for all $\lambda \in \bbC$. In particular, 
     \begin{equation}
         \lim_{M \to \infty} \kres (\lambda, u) < \epsilon
     \end{equation}

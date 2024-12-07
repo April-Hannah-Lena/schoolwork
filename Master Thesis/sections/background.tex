@@ -440,7 +440,7 @@ this breaks down, as the following example shows.
     \emph{$\epsilon$-pseudospectrum} of $M$ is 
     the smallest set in $\bbC$ which contains the spectrum of all perturbations of $M$ 
     with norm less than $\epsilon$:\footnote{
-        Some authors will deine the pseudospectrum with "$\leq$" instead of "$<$". This 
+        Some authors will define the pseudospectrum with "$\leq$" instead of "$<$". This 
         makes $\sigma_\epsilon (M)$ a closed set, but breaks theorem \ref{thm:pseudo}.}
     \begin{equation}
         \label{eq:pseudospectrum_union}
@@ -712,6 +712,20 @@ types of operators.
     the pseudospectrum. $3$ and $4$ are consequences of lemma \ref{lem:resolvent_dist}. 
 \end{proof}
 
+We will use the following theorem from Globevnik \cite{globevnik} and Daniluk 
+\cite{daniluk}, the proof of which if not very instructive. 
+
+\begin{lemma}
+    \label{lem:resolvent_norm_nonconst}
+    Let $M$ be a bounded linear operator on a Hilbert space $\scrX$. 
+    Then the resolvent norm cannot be constant on an open set. 
+\end{lemma}
+
+This lemma can be extended to $L^p$ spaces \cite{wienerhopf}, finite dimensional 
+Banach spaces \cite{Harrabi}, Banach spaces which are complex uniformly convex 
+\cite{globevnik}, but \emph{not} general infinite dimensional Banach spaces 
+\cite{Shargorodsky}. 
+
 \begin{theorem}
     \label{thm:pseudospectrum_continuous}
     The function which maps $(\epsilon, M) \mapsto \sigma_\epsilon (M)$ which sends an 
@@ -734,8 +748,9 @@ types of operators.
         stated in \cite{pseudospectrum_continuous}. 
         \item If one replaces $\sigma_\epsilon (M)$ with $\sigma_{ap, \epsilon}
         (M)$ in theorem \ref{thm:pseudospectrum_continuous}, then the proof in
-        \cite{pseudospectrum_continuous} is correct and even works for general
-        Banach spaces. To the best of this author's knowledge, there is no
+        \cite{pseudospectrum_continuous} is essentially correct (save for the 
+        bound) and even works for any space where the resolvent norm cannot be 
+        constant. To the best of this author's knowledge, there is no
         published correct proof for the general Banach space setting with 
         $\sigma_\epsilon (M)$, despite it being
         considered common knowledge in the study of pseudospectra. 
@@ -800,8 +815,10 @@ types of operators.
         & \leq \scrH \left(\, 
             \sigma_{\epsilon - \delta} (M),\ 
             \sigma_{\epsilon + \delta} (M) 
-        \,\right) \label{eq:hauss_epsilon_delta}
+        \,\right) . \label{eq:hauss_epsilon_delta}
     \end{align}
+    Appealing to lemma \ref{lem:resolvent_norm_nonconst} now yields the claim. 
+    \iffalse
     so we must investigate the difference between $\sigma_{\epsilon - \delta} (M)$ and 
     $\sigma_{\epsilon + \delta} (M)$. But 
     \begin{equation}
@@ -817,6 +834,7 @@ types of operators.
     $\lambda \mapsto \left\| (M - \lambda I)^{-1} \right\|$. Hence 
     \ref{eq:epsilon_delta_diff} collapses continuously to $\emptyset$ as $\delta \to 0$, 
     which implies \ref{eq:hauss_epsilon_delta} converges to $0$ as $\delta \to 0$. 
+    \fi
 \end{proof}
 
 We conclude the section on mathematical background by examining the interaction between 
