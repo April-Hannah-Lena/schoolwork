@@ -328,7 +328,7 @@ then we must have
 \end{equation}
 (where $\Psi = \Psi_N$ is as in \ref{eq:Psi}) or 
 \begin{equation}
-    \lim_{N \to \infty} \left\| (\scrL - \lambda_N I) \Psi c_N \right\|_{\scrX}^2 = 0 . 
+    \lim_{N \to \infty} \left\| (\scrL - \bar{\lambda}_N I) \Psi c_N \right\|_{\scrX}^2 = 0 . 
 \end{equation}
 Conversely, if neither of these tend to $0$ as $N$ grows, then we can rule out 
 $\lambda_N$ as a candidate eigenvalue. 
@@ -392,7 +392,7 @@ is precisely a quadrature approximation of equation \ref{eq:true_residual}.
             &= c^* \bbJ c \,-\, \bar{\lambda} \,c^* \bbA c \,-\, \lambda\, c^* \bbA^* c \,+\, | \lambda |^2\, c^* \bbG c \\[1.2ex]
             &= \left\langle \scrK g, \scrK g \right\rangle
             - \bar{\lambda} \left\langle g, \scrK g \right\rangle
-            - \bar{\lambda} \left\langle \scrK g, g \right\rangle
+            - \lambda \left\langle \scrK g, g \right\rangle
             + | \lambda |^2 \left\langle g, g \right\rangle \\[1.2ex]
             &= \left\langle \left( \scrK - \lambda I \right) g, 
             \left( \scrK - \lambda I \right) g \right\rangle \\[1.2ex]
@@ -732,16 +732,16 @@ $4$ from \cite{RKHS_probability}.
         \item $k$ is of the form 
             \begin{equation}
                 k(w, z) 
-                = \sum_{j=1}^{\infty} \mu_j^2\, \hat{\psi}_j (z) \overline{\hat{\psi}_j (w)}
+                = \sum_{j=1}^{\infty} \mu_j^2\, \phi_j (z) \overline{\phi_j (w)}
                 = \Psi (z) \Psi (w)^*
             \end{equation}
-            for $\Psi (z) = \left[ \mu_1 \hat{\psi}_1 \mid \mu_2 \hat{\psi}_2 \mid \ldots \right]$. 
-            The set $\left\{ \hat{\psi}_j \right\}_{j=1}^\infty$ forms an orthonormal 
+            for $\Psi (z) = \left[ \mu_1 \phi_1 \mid \mu_2 \phi_2 \mid \ldots \right]$. 
+            The set $\left\{ \phi_j \right\}_{j=1}^\infty$ forms an orthonormal 
             basis of $L^2 (\Omega)$. 
             The $\mu_j \geq 0$ can be ordered by decreasing magnitude and 
             converge to $0$ as $j \to \infty$. 
     \end{enumerate}
-    Moreover, the set $\left\{ \mu_j \hat{\psi}_j \right\}_{j=1}^\infty$
+    Moreover, the set $\left\{ \psi_j \defeq \mu_j \phi_j \right\}_{j=1}^\infty$
     forms an orthonormal basis of $\scrH$. 
 \end{theorem}
 
@@ -1189,10 +1189,13 @@ have the largest variance when evaluated over the data points.
 
 The benefit of truncation is that we \emph{decouple} the $N$ and $M$ limits and allow 
 performing the limit $N \to \infty$ \emph{before} $M \to \infty$, which is necessary since 
-a priori the kernel feature map may be infinite-dimensional. Indeed, fix $r$ and
-perform algorithm \ref{alg:resdmd} with the new dictionary 
-$\left\{ \widetilde{ \psi }_j \right\}_{j=1}^r$, for some $r \leq M \leq N$. This 
-yields the new data matrix 
+a priori the kernel feature map may be infinite-dimensional. 
+
+Let $\psi_j = \mu_j \phi_j$, $j = 1, 2, \ldots$ be the Mercer features from theorem 
+\ref{thm:RKHS}. Fix $r$ and perform algorithm \ref{alg:resdmd} with the new dictionary 
+$\left\{ \widetilde{ \psi }_j \right\}_{j=1}^r$ and some $M \geq r$. 
+
+This yields the new data matrix 
 \begin{equation}
     \tYX = \widetilde{ Q } \widetilde{ \Sigma } . 
 \end{equation}
@@ -1211,37 +1214,35 @@ $(\lambda, u) \in \bbC \times \bbC^r$ and associated Koopman mode
 $h = \tY u \in \spn \left\{ \widetilde{ \psi }_j \right\}_{j=1}^r$, 
 \begin{equation}
     \begin{split}
-        \lim_{M \to \infty} &\left\| \left( \YY^* - \lambda \YX^* \right) \tYX u \right\|_{\bbC^N}^2 \\
-        &= \left\| \left(\, (\scrK \Psi)^* - \lambda \Psi^* \,\right) h \right\|_{\bbC^N}^2 \\
-        &= \sum_{j=1}^{N} \left| \left\langle\ (\scrK - \lambda I) \psi_j, h \ \right\rangle_{L^2} \right|^2 \\
-        &= \sum_{j=1}^{N} \left| \left\langle\ \psi_j, (\scrL - \bar{\lambda} I) h \ \right\rangle_{L^2} \right|^2 
+        \lim_{M \to \infty} &\left\| \left( \YY^* - \lambda \YX^* \right) \tYX u \right\|_{\ell^2}^2 \\
+        &= \left\| \left(\, (\scrK \Psi)^* - \lambda \Psi^* \,\right) h \right\|_{\ell^2}^2 \\
+        &= \sum_{j=1}^{\infty} \left| \left\langle\ (\scrK - \lambda I) \psi_j, h \ \right\rangle_{L^2} \right|^2 \\
+        &= \sum_{j=1}^{\infty} \left| \left\langle\ \psi_j, (\scrL - \bar{\lambda} I) h \ \right\rangle_{L^2} \right|^2 . 
     \end{split}
 \end{equation}
-where (depending on the kernel) $N$ may be infinite; in which case we interpret 
-the first two lines as being in $\ell^2 (\bbN)$
 
-Now if the feature map $\Psi$ is as in theorem \ref{thm:RKHS} then the features 
-$\psi_j = \mu_j \hat{\psi}_j$ are orthogonal and bounded in $L^2$. Let 
+Recall from theorem \ref{thm:RKHS} that the features $\psi_j$ are orthogonal and bounded 
+in $L^2$. Let 
 \begin{equation}
-    \kres (\lambda, u; r, M, N)^2 \defeq 
-    \left\| \left( \YY^* - \lambda \YX^* \right) \tYX u \right\|_{\bbC^N}^2 . 
+    \kres (\lambda, u; r, M)^2 \defeq 
+    \left\| \left( \YY^* - \lambda \YX^* \right) \tYX u \right\|_{\ell^2}^2 . 
 \end{equation}
 Using \ref{eq:G_tilde} we arrive at
 \begin{equation}
-    \lim_{M \to \infty}\ \kres (\lambda, u; r, M, N)^2 = 
-    \sum_{j=1}^{N} \left| \left\langle\ 
+    \lim_{M \to \infty}\ \kres (\lambda, u; r, M)^2 = 
+    \sum_{j=1}^{\infty} \left| \left\langle\ 
     \psi_j, (\scrL - \bar{\lambda} I) h \ \right\rangle_{L^2} \right|^2 
 \end{equation}
 and 
 \begin{align}
-    \lim_{M \to \infty}\ &\kres (\lambda; r, M, N)^2 \\
+    \lim_{M \to \infty}\ &\kres (\lambda; r, M)^2 \\
     &\defeq \lim_{M \to \infty}\ \left[ \min_{u^* \widetilde{ \Sigma }^2 u = 1} 
     \left\| \left( \YY^* - \lambda \YX^* \right) \tYX u \right\|_{\bbC^N}^2 
     \right]\label{eq:new_res_hat} \\
     &= \min_{\substack{
         h \in \spn \left\{ \widetilde{ \psi }_1, \ldots, \widetilde{ \psi }_r \right\} \\ 
         \left\| h \right\| = 1
-    }}\ \sum_{j=1}^{N} \left| \left\langle\ 
+    }}\ \sum_{j=1}^{\infty} \left| \left\langle\ 
         \psi_j, (\scrL - \bar{\lambda} I) h 
     \ \right\rangle_{L^2} \right|^2 . 
 \end{align}
@@ -1251,12 +1252,13 @@ We arrive at the following theorem.
     Let $k$, $\Omega$ be as in theorem \ref{thm:RKHS}. Then there exists a $\mu > 0$ such 
     that
     \begin{equation}
-        \lim_{M \to \infty} \kres (\lambda) \leq 
+        \lim_{r \to \infty} \lim_{M \to \infty} \kres (\lambda; r, M) \leq 
         \mu \cdot \sigma_{\inf} \left( \scrL - \bar{\lambda} I \right) . 
     \end{equation}
-    for all $\lambda \in \bbC$. In particular, 
+    for all $\lambda \in \bbC$. The outer limit $r \to \infty$ is monotonically decreasing. 
+    Moreover, 
     \begin{equation}
-        \lim_{M \to \infty} \kres (\lambda, u) < \epsilon
+        \lim_{M \to \infty} \kres (\lambda, u; r, M) < \epsilon
     \end{equation}
     provides a \emph{necessary} condition for 
     \begin{equation}
@@ -1268,14 +1270,14 @@ We arrive at the following theorem.
     Appealing to theorem \ref{thm:RKHS}, we can rewite
     \begin{equation}
         \begin{split}
-            \sum_{j=1}^{N} & \left| \left\langle\ 
+            \sum_{j=1}^{\infty} & \left| \left\langle\ 
             \psi_j, (\scrL - \bar{\lambda} I) h 
         \ \right\rangle_{L^2} \right|^2 \\
-        &= \sum_{j=1}^{N} \left| \left\langle\ 
-            \mu_j \hat{\psi}_j, (\scrL - \bar{\lambda} I) h 
+        &= \sum_{j=1}^{\infty} \left| \left\langle\ 
+            \mu_j \phi_j, (\scrL - \bar{\lambda} I) h 
         \ \right\rangle_{L^2} \right|^2 \\
-        &\leq \mu_1^2 \sum_{j=1}^{N} \left| \left\langle\ 
-            \hat{\psi}_j, (\scrL - \bar{\lambda} I) h 
+        &\leq \mu_1^2 \sum_{j=1}^{\infty} \left| \left\langle\ 
+            \phi_j, (\scrL - \bar{\lambda} I) h 
         \ \right\rangle_{L^2} \right|^2
         \end{split}
     \end{equation}
@@ -1292,6 +1294,30 @@ Nonetheless, this gives an operator theoretic interpretation for algorithm
 $\widehat{ \kres }$ was presented \emph{ad hoc}. A reason for the empirically observed 
 effectiveness of the method was, until now, unknown. 
 
+We conclude by demonstrating how to compute $\kres (\lambda)$. We have 
+\begin{align}
+    \min_{u^* \widetilde{ \Sigma }^2 u = 1} &\kres (\lambda, u)^2 \\
+    &= \min_{u^* \widetilde{ \Sigma }^2 u = 1} \left( \tYX u \right)^* \left( 
+        \widehat{ J } 
+        - \bar{\lambda} \widehat{ A } 
+        - \lambda \widehat{ A }^* 
+        + | \lambda |^2 \widehat{ G }
+    \right) \left( \tYX u \right) . \label{eq:kres_1}
+\end{align}
+Letting $w = \widetilde{ \Sigma } u$ and noting that by assumption 
+$\widetilde{ \Sigma }_{i i} \neq 0$ for all $1 \leq i \leq r$, \ref{eq:kres_1} becomes 
+\begin{equation}
+    \min_{w^* w = 1} w^* \underbrace{\left( 
+        \widetilde{ Q }^* \widehat{ J } \widetilde{ Q }
+        - \bar{\lambda} \widetilde{ \Sigma } \widehat{ K } \widetilde{ \Sigma }
+        - \lambda \widetilde{ \Sigma } \widehat{ K }^* \widetilde{ \Sigma }
+        + | \lambda |^2 \widetilde{ \Sigma }^2
+    \right)}_{
+        \eqdef \widehat{ U }
+    } w \label{eq:kres_2}
+\end{equation}
+which can be solved by computing the smallest eigenvalue of $\widehat{ U }$. 
+
 \begin{algorithm}
     \caption{Modified kernel ResDMD with an operator-theoretic interpretation}
     \label{alg:kresdmd_correct}
@@ -1307,16 +1333,8 @@ effectiveness of the method was, until now, unknown.
             \ref{eq:J_hat} (with $\widetilde{ Q }$ and $\widetilde{ \Sigma }$)
         \For{$z_\nu$}
         \State Compute $\kres (z_\nu)$, which is equivalent 
-            to finding the square root of the smallest generalized eigenvalue 
-            $\left( \widetilde{ \Sigma } \widetilde{ Q }^* \right) 
-            \left( 
-                \widehat{ J }
-                - \bar{\lambda} \widehat{ A } 
-                - \lambda \widehat{ A }^* 
-                + | \lambda |^2 \widehat{ G }
-            \right)
-            \left( \widetilde{ Q } \widetilde{ \Sigma } \right) v
-            = \xi \widetilde{ \Sigma }^{2} v$
+            to finding the square root of the smallest 
+            eigenvalue of $\widehat{ U }$ as in \ref{eq:kres_2}
         \EndFor
         \State \Return $\left\{ z_\nu \mid \kres (z_\nu) < \epsilon \right\}$
     \end{algorithmic}
