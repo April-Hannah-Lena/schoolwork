@@ -1237,7 +1237,7 @@ and
 \begin{align}
     \lim_{M \to \infty}\ &\kres (\lambda; r, M)^2 \\
     &\defeq \lim_{M \to \infty}\ \left[ \min_{u^* \widetilde{ \Sigma }^2 u = 1} 
-    \left\| \left( \YY^* - \lambda \YX^* \right) \tYX u \right\|_{\bbC^N}^2 
+    \left\| \left( \YY^* - \lambda \YX^* \right) \tYX u \right\|_{\ell^2}^2 
     \right]\label{eq:new_res_hat} \\
     &= \min_{\substack{
         h \in \spn \left\{ \widetilde{ \psi }_1, \ldots, \widetilde{ \psi }_r \right\} \\ 
@@ -1248,6 +1248,7 @@ and
 \end{align}
 We arrive at the following theorem. 
 
+\iffalse
 \begin{theorem}
     Let $k$, $\Omega$ be as in theorem \ref{thm:RKHS}. Then there exists a $\mu > 0$ such 
     that
@@ -1263,6 +1264,28 @@ We arrive at the following theorem.
     provides a \emph{necessary} condition for 
     \begin{equation}
         \left\| \left( \scrL - \lambda I \right) h \right\|_{L^2} < \mu \epsilon . 
+    \end{equation}
+\end{theorem}
+\fi
+
+\begin{definition}
+    Let $k$, $\Omega$ be as in theorem \ref{thm:RKHS}. We say $k$ is \emph{universal
+    w.r.t. $\scrK$} if the Mercer features $\psi_j = \mu_j \phi_j$, $j = 1, 2, \ldots$ 
+    form a core of $\scrK$. 
+\end{definition}
+
+\begin{theorem}
+    Let $k$, $\Omega$ again be as in theorem \ref{thm:RKHS}. Then there exists a 
+    $\mu > 0$ such that 
+    \begin{equation}
+        \left\| \left( \scrL - \lambda I \right) h \right\|_{L^2} < \mu \epsilon
+        \implies 
+        \lim_{M \to \infty} \kres (\lambda, u; r, M) < \epsilon . 
+    \end{equation}
+    Assume additionally that $k$ is universal w.r.t. $\scrK$. Then 
+    \begin{equation}
+        \lim_{r \to \infty} \lim_{M \to \infty} \kres (\lambda; r, M) \leq 
+        \mu \cdot \sigma_{\inf} \left( \scrL - \bar{\lambda} I \right) . 
     \end{equation}
 \end{theorem}
 
@@ -1281,10 +1304,13 @@ We arrive at the following theorem.
         \ \right\rangle_{L^2} \right|^2
         \end{split}
     \end{equation}
-    since the $\mu_j$ are odered by decreasing magnitude. 
+    since the $\mu_j$ are odered by decreasing magnitude. Hence the desired $\mu$ 
+    is precisely $\mu_1$. 
 \end{proof}
 
 The theorem does not provide an explicit way to compute the pseudospectrum. Rather, 
+it provides a \emph{necessary} condition that an eigenpair is 
+$\mu \epsilon$-pseudospectral. Equivalently, 
 it provides a condition for which one can reject a candidate eigenpair as spurious. 
 In fact, due to a theorem of Yosida saying that the identity is not a Fredholm integral 
 operator, it is impossible to make the above theorem into a sufficient condition on $L^2$. 
@@ -1296,7 +1322,8 @@ effectiveness of the method was, until now, unknown.
 
 We conclude by demonstrating how to compute $\kres (\lambda)$. We have 
 \begin{align}
-    \min_{u^* \widetilde{ \Sigma }^2 u = 1} &\kres (\lambda, u)^2 \\
+    \kres (\lambda)^2
+    &= \min_{u^* \widetilde{ \Sigma }^2 u = 1} \kres (\lambda, u)^2 \label{eq:kres_0} \\
     &= \min_{u^* \widetilde{ \Sigma }^2 u = 1} \left( \tYX u \right)^* \left( 
         \widehat{ J } 
         - \bar{\lambda} \widehat{ A } 
@@ -1307,16 +1334,29 @@ We conclude by demonstrating how to compute $\kres (\lambda)$. We have
 Letting $w = \widetilde{ \Sigma } u$ and noting that by assumption 
 $\widetilde{ \Sigma }_{i i} \neq 0$ for all $1 \leq i \leq r$, \ref{eq:kres_1} becomes 
 \begin{equation}
-    \min_{w^* w = 1} w^* \underbrace{\left( 
+    \min_{w^* w = 1} w^* \left( 
         \widetilde{ Q }^* \widehat{ J } \widetilde{ Q }
-        - \bar{\lambda} \widetilde{ \Sigma } \widehat{ K } \widetilde{ \Sigma }
-        - \lambda \widetilde{ \Sigma } \widehat{ K }^* \widetilde{ \Sigma }
+        - \bar{\lambda} \widetilde{ Q }^* \widehat{ A } \widetilde{ Q }
+        - \lambda \widetilde{ Q }^* \widehat{ A }^* \widetilde{ Q }
         + | \lambda |^2 \widetilde{ \Sigma }^2
-    \right)}_{
-        \eqdef \widehat{ U }
-    } w \label{eq:kres_2}
+    \right) w . \label{eq:kres_2}
 \end{equation}
-which can be solved by computing the smallest eigenvalue of $\widehat{ U }$. 
+Now with 
+\begin{equation}
+    \widetilde{ J } = \widetilde{ Q }^* \widehat{ J } \widetilde{ Q }, \quad
+    \widetilde{ A } = \widetilde{ Q }^* \widehat{ A } \widetilde{ Q }, \quad
+    \widetilde{ G } = \widetilde{ \Sigma }^2,
+\end{equation}
+it follows that \ref{eq:kres_0} can be solved by computing the smallest eigenvalue 
+of 
+\begin{equation}
+    \label{eq:kres_3}
+    \widetilde{ U } \,( = \widetilde{ U } (\lambda) )\, =
+        \widetilde{ J } 
+        - \bar{\lambda} \widetilde{ A } 
+        - \lambda \widetilde{ A }^*
+        + | \lambda |^2 \widetilde{ G } . 
+\end{equation}
 
 \begin{algorithm}
     \caption{Modified kernel ResDMD with an operator-theoretic interpretation}
@@ -1334,7 +1374,7 @@ which can be solved by computing the smallest eigenvalue of $\widehat{ U }$.
         \For{$z_\nu$}
         \State Compute $\kres (z_\nu)$, which is equivalent 
             to finding the square root of the smallest 
-            eigenvalue of $\widehat{ U }$ as in \ref{eq:kres_2}
+            eigenvalue of $\widetilde{ U }$ as in \ref{eq:kres_3}
         \EndFor
         \State \Return $\left\{ z_\nu \mid \kres (z_\nu) < \epsilon \right\}$
     \end{algorithmic}
