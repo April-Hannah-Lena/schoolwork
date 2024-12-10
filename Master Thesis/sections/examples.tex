@@ -332,8 +332,11 @@ continuous spectrum.
         when using an approximation space consisting of $40$ Legendre polynomials. 
         Right: The same calculation using an approximation space of Fourier modes. 
         In both cases, green: true spectrum of $\left. \scrL \right|_{H^2(A)}$, 
-        orange: spectrum of the EDMD matrix $L$. See section \ref{sec:blaschke_L2} for 
-        analysis. 
+        orange: spectrum of the EDMD matrix $L$. Contour lines are 
+        \emph{logarithmically scaled}, i.e. they show the approximated 
+        $\epsilon$-pseudospectrum for e.g. 
+        $\epsilon = 10^{-0.4},\, 10^{-0.3},\, 10^{-0.2},\, 10^{-0.1}$, etc.
+        See section \ref{sec:blaschke_L2} for analysis. 
     }\label{fig:blaschke_L2}
 \end{figure}
 
@@ -350,13 +353,15 @@ continuous spectrum.
     \end{subfigure}
     \caption{
         Left: spectrum of $\widehat{ K }$ with residuals calculated using algorithm \ref{alg:kresdmd}, 
-        \emph{logarithmically scaled}. Contour lines show spproximated $\epsilon$-pseudospectrum 
-        for $\epsilon = 10^{-2}, 10^{-1}, 10^{-0.8}, 10^{-0.6}, 10^{-0.5}, 10^{-0.4}, 10^{-0.2}$.  
         Right: residulas calculated using the inner product 
         $\left\langle \cdot, \cdot \right\rangle_{H^2 (A)^*}$
         In both cases, green: true spectrum of $\left. \scrL \right|_{H^2(A)}$, 
         orange: spectrum of the approximated matrix (left $\widehat{ K }$, right $K$ using 
-        the dual Hardy inner product). See section \ref{sec:blaschke_hardy} for analysis. 
+        the dual Hardy inner product). Contour lines are 
+        \emph{logarithmically scaled}, i.e. they show the approximated 
+        $\epsilon$-pseudospectrum for e.g. 
+        $\epsilon = 10^{-2},\, 10^{-1},\, 10^{-0.5},\, 10^{-0.2}$, etc.
+        See section \ref{sec:blaschke_hardy} for analysis. 
     }\label{fig:blaschke_other}
 \end{figure}
 
