@@ -16,12 +16,13 @@ physically relevant (pseudo)eigenvectors lie outside of the space of study, as e
 distributions on equillibria and periodic orbits, or e.g. adjoint Hardy space functionals, 
 how should one know which approximated eigenvectors are "real"? 
 
-This interesting phenomenon that many discretization techniques are excited by eigenmodes of 
-Koopman operators over functions spaces which are \emph{strictly larger} than $L^2$. 
+This interesting phenomenon that many discretization techniques are excited by eigenmodes 
+of Koopman operators over functions spaces which are \emph{strictly larger} than $L^2$. 
 This raises a question - which computed eigenmodes are $(1)$ "expected": 
 approximations of $L^2$ Koopman eigenmodes, $(2)$ "unexpected": approximations of 
 eigenmodes in unintended function spaces, $(3)$: "spurious": caused solely by the 
-discretization?
+discretization? What is the "right" function space for Koopman / Perron-Frobenius 
+operator analysis? 
 
 The current state of research holds two potential answers to this question, the first of 
 which has already been mentioned in section \ref{sec:validation}: one can make a 
@@ -35,7 +36,7 @@ not robust to perturbation is changed, e.g. fixed points become absolutely conti
 invariant measures with (potentially) support on the entire phase space. 
 
 Another approach \cite{rigged} considers only measure preserving dynamical systems 
-(thereby restricting to the case that $\scrK$ is an isometry) but tackles continuous and 
+(thereby restricting to the case that $\scrK$ is an unitary) but tackles continuous and 
 point spectrum simultaneously by embedding some space $\scrX$ into a \emph{rigged Hilbert 
 space} structure, $\scrX \subset L^2 (\Omega) \subset \scrX^*$. By carefully choosing this 
 approximation space, one can guarantee a existence of a full spectral decomposition of 

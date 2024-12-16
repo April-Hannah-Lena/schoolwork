@@ -2,10 +2,6 @@
 
 \section{Appendix}
 
-When $N \geq M$ and the kernel has orthogonal features, 
-\begin{equation}
-    P = \Sigma^{-2} \widehat{ K }^* \Sigma^2
-\end{equation}
 
 \subsection{Transfer Operator for Blaschke Products}
 
@@ -202,9 +198,10 @@ We interpret the first equation as
     regression\ error \stackrel{M \to \infty}{\approx} operator\ residual .
 \end{equation}
 
-The function $\lambda \mapsto \res (\lambda) = \min_z \res (\lambda, z)$ is shown in 
+The function $\lambda \mapsto \res (\lambda) = \min_{z^* G z = 1} \res (\lambda, z)$ is shown in 
 \ref{fig:resdmd}
 
+\iffalse
 \textbf{kResDMD:} We apply idea \ref{idea} to $\hat{K}$: 
 
 \begin{equation}
@@ -278,8 +275,8 @@ and hence whenever $\YX$ has the same number of zero singular values (we assume 
 are none i.e. $s_{min} (\YX) > 0$),
 
 \begin{equation}
-    \hat{\res} (\lambda) := \min_z\ \hat{\res} (\lambda, z) 
-    = \min_\xi\ \tilde{\res} (\lambda, \xi) =: \tilde{\res} (\lambda) . 
+    \hat{\res} (\lambda) := \min_{z^* G z = 1}\ \hat{\res} (\lambda, z) 
+    = \min_{\xi^* \xi = 1}\ \tilde{\res} (\lambda, \xi) =: \tilde{\res} (\lambda) . 
 \end{equation}
 
 The function $\hat{\res}$ is shown in \ref{fig:poly}, \ref{fig:gauss}. 
@@ -329,5 +326,60 @@ if $c$ is kept constant and $M$ grows, the Gram matrix slowly becomes the all-on
         Idea behind equation \ref{limfunc}
     }
 \end{figure}
+
+
+\subsection{ResDMD on (Fractional) Sobolev Spaces}
+
+\fi
+
+\textbf{Fractional Sobolev Spaces}
+
+The Sobolev space $H^s$ contains all functions which are square integrable and whose 
+(weak) derivatives up to oder $s$ are also square integrable. That is, $H^s$ is the 
+closure of the smooth functions with compact support $\scrC^\infty_c$ with respect 
+to the norm 
+\begin{equation}
+    \left\| f \right\|_{H^s}^2 = 
+    \sum_{| \alpha | \leq s} \left\| D^\alpha f \right\|_{L^2}^2
+\end{equation}
+where $\alpha \in \bbN_0^d$ are multiindices. 
+Using the Fourier transform $\scrF$ this can readily be rewritten as 
+$\left\| f \right\|_{H^s}^2 = \left\langle f, f \right\rangle_{H^s}$ for
+\begin{equation}
+    \left\langle f, g \right\rangle_{H^s} = 
+    \int \left( 1 + \left| \xi \right|^2 \right)^s 
+    \,\overline{ \scrF f (\xi) }\, \scrF g (\xi) \ dx . 
+\end{equation}
+When the phase space is a compact subset of $\bbC^d$, this further reduces to 
+\begin{equation}
+    \left\langle f, g \right\rangle_{H^s} = 
+    \sum_{\xi \in \bbZ} \left( 1 + \left| \xi \right|^2 \right)^s 
+    \,\overline{ \hat{f} (\xi) }\, \hat{g} (\xi) 
+\end{equation}
+where $\hat{f} (\xi)$ is the $\xi$'th Fourier coefficient. Using this representation 
+the inner product matrices $G$, $A$, and $L$ can be computed by computing the fast 
+Fourier transforms of $\psi_j$ and $\scrK \psi_j$, $j = 1, \ldots, N$. This is shown in 
+figure \ref{fig:blaschke_sobolev}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{blaschke_sobolev_H-1.pdf}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{blaschke_sobolev_H-5.pdf}
+    \end{subfigure}
+    \caption{
+        Green: true spectrum of $\left. \scrL \right|_{H^2(A)}$, 
+        orange: spectrum of the EDMD matrix $K$. Contour lines are 
+        \emph{logarithmically scaled}, i.e. they show the approximated 
+        $\epsilon$-pseudospectrum for e.g. 
+        $\epsilon = 10^{-0.4},\, 10^{-0.3},\, 10^{-0.2},\, 10^{-0.1}$, etc. 
+    }\label{fig:blaschke_sobolev}
+\end{figure}
+
 
 % -------------------------------------------------------------------------------------- %

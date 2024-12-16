@@ -17,7 +17,7 @@ We apply algorithm \ref{alg:resdmd} on the unforced duffing equation \cite{duffi
 \end{equation}
 using the paramters $\alpha = 1$, $\beta = -1$, $\delta = 1/2$ as in \cite{edmd}. Viewing 
 this as a two-dimensional first order ODE in the coordinates $x$ and $\dot{x}$, the system 
-has two basins of attraction, see figure \ref{fig:duffing_streamplot}. We use a cartesian 
+has two open basins of attraction, see figure \ref{fig:duffing_streamplot}. We use a cartesian 
 grid quadrature scheme consisting $500$ Gauß-Legendre nodes and weights in each 
 dimension (transplanted onto the domain $[-2,2]$), resulting in a total of $M = 2500$ 
 nodes. For a dictionary we use products of Legendre polynomials
@@ -40,7 +40,7 @@ Finally, an almost-invariant set is seen tracing
 the boundary of the two basins. Indeed, the basin of attraction for the unstable 
 equillibrium  at the origin is precisely the two trajectories tracing the boundaries of the 
 basins for the other equillibria. This infinitesimal basin is approximated by smooth 
-functions, resulting in an artificial widening of the numerically computed basin. Not visible 
+functions, resulting in an artificial "widening" of the single trajectories. Not visible 
 is the Dirac eigendistribution at the unstable equillibrium. This is because there was not 
 a data point centered at this equillibrium, and its instability caused points to be mapped 
 away too quickly. 
@@ -71,7 +71,7 @@ Alanine dipeptide is a biomolecule which is used as a standard nontrivial test c
 for macroscopic dynamics \cite{entropic}. Typical energy-optimization based methods 
 to determine stable conformations are difficult to use due to many local minima 
 existing \cite{molecule}. It is shown in \cite{molecule} that the shape (and therefore 
-chemical reaction properties) are determined primarily by only two \emph{diherdral angles} 
+chemical reaction properties) are determined primarily by only two \emph{dihedral angles} 
 in the backbone of the molecule (see figure \ref{fig:molecule_skeleton_spectrum}). 
 
 We use trajectory data of the heavy atoms gathered from experiments in 
@@ -146,7 +146,9 @@ which can be analytically extended to the annulus
 $A_\mu = \left\{ z \in \bbC \mid |\mu| < |z| < |\mu|^{-1} \right\}$. The Perron-Frobenius 
 operator spectrum has been studied analytically in \cite{Slipantschuk}. It is shown 
 (with much effort) that on a subspace of $L^2 (\bbT)$ containing certain holomorphic 
-functions, $\scrL$ is compact and has a simple spectrum. More specifically, let 
+functions, $\scrL$ is compact and has a simple spectrum. 
+
+More specifically, let 
 $H (A_r)$ denote the set of holomorphic functions on an annulus $A_r$, $r < 1$, and $H^2 (A_r)$ 
 the subspace of holomorphic functions which are square integrable on the boundary 
 $\partial A = \left\{ z \in \bbC \mid |z| = r \text{ or } 1/r \right\}$. 
@@ -241,7 +243,7 @@ $\partial \bbD_r$ and vanish at infinity, that is
     \left\langle f, f \right\rangle_{H^2(\bbD_r)} = 
     \lim_{\rho \nearrow r} \int_{\partial B_\rho} \overline{f (z)} f(z) \frac{dz}{z} < \infty \right\} \\
     \begin{split}
-        H^2 (\bbD_r^\infty) &= \left\{ f \in H(\bbC \setminus \bbD_r) \mid 
+        H^2 (\bbD_r^\infty) &= \left\{ f \in H(\bbC \setminus \overline{\bbD_r}) \mid 
         \lim_{|z| \to \infty} f(z) = 0 \text{ and } \right.\\
         &\quad\quad\quad\quad\quad\quad
         \left.\left\langle f, f \right\rangle_{H^2(\bbD_r^\infty)} = 
@@ -262,7 +264,7 @@ Some elementary complex analysis shows that
 \end{equation}
 and analogously
 \begin{equation}
-    H^2 (\bbD_{\frac{1}{r}}^\infty) = \left\{ f = \sum_{n=1}^{\infty} c_{-n} z^{-n} \in H(\bbD_r) \mid 
+    H^2 (\bbD_{\frac{1}{r}}^\infty) = \left\{ f = \sum_{n=1}^{\infty} c_{-n} z^{-n} \in H(\bbC \setminus \overline{\bbD_r}) \mid 
     \sum_{n=1}^{\infty} |c_{-n}|^2 r^{2n} < \infty\right\} . 
 \end{equation}
 Hence the space $\scrX = H^2 (\bbD_r) \oplus H^2 (\bbD_{\frac{1}{r}}^\infty)$ can be 
@@ -278,8 +280,8 @@ strictly larger than $L^2 (\bbT)$.
 
 Knowing that 
 \begin{equation}
-    \sigma \left( \left. \scrL \right|_{H^2 (A)} \right) \setminus \left\{ 0 \right\} = 
-    \sigma_p \left( \left. \scrL \right|_{H^2 (A)} \right) \setminus \left\{ 0 \right\} \subset
+    \sigma \left( \left. \scrL \right|_{H^2 (A)} \right) = 
+    \sigma_p \left( \left. \scrL \right|_{H^2 (A)} \right) \subset
     \sigma_r \left( \left. \scrK \right|_{L^2 (\bbT)} \right)
 \end{equation}
 and that 

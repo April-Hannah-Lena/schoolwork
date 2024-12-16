@@ -115,7 +115,7 @@ contour!(xs, ys, log10.(residuals.+1e-20),
 savefig(p1, "../figures/blaschke_direct.pdf")
 
 
-M = 100_000
+M = 1_000
 dθ = 1/M
 θs = dθ:dθ:1
 circ = exp.(2π*im .* θs)
@@ -271,7 +271,7 @@ G̃ = zeros(ComplexF64, 2N+1, 2N+1)
 Ã = zeros(ComplexF64, 2N+1, 2N+1)
 J̃ = zeros(ComplexF64, 2N+1, 2N+1)
 
-ss = -10:0.1:5
+ss = -8:0.1:5
 prog = Progress(length(ss))
 anim = @animate for s in ss
 
@@ -322,30 +322,33 @@ anim = @animate for s in ss
     next!(prog)
 
 
-    p3 = contourf(xs, ys, residuals̃,#log10.(residuals̃.+1e-20), 
+    p3 = contourf(xs, ys, #=residuals̃,=#log10.(residuals̃.+1e-20), 
         colormap=:acton, linewidth=2,
         #clabels=true, cbar=false,
         #levels=-2:0.2:0,
-        clims=(0,1),
+        clims=(-2,0),
         title="residuals in H^$s",
-        alpha=0.5
+        alpha=0.7,
+        colorbar_title="log-scaled residuals"
     )
     plot!(circ, 
-        style=:dash, aspectratio=1., leg=false, color=:blue, size=(600,500)
+        style=:dash, aspectratio=1., leg=false, color=:blue, size=(700,500)
     )
     scatter!(λ̃, 
         marker=:+, 
         xlabel="", ylabel="", 
         markersize=5, markerstrokewidth=1.5, 
-        color=2
+        color=2,
+        lab="computed eigs"
     )
     scatter!(λ_true, 
         marker=:x, 
         xlabel="", ylabel="", 
         markersize=5, markerstrokewidth=1.5, 
-        color=3
+        color=3,
+        lab="True (Hardy space) eigs"
     )
 
 end
 
-gif(anim, fps=5)
+mp4(anim, fps=5)
