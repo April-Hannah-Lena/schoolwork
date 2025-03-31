@@ -271,9 +271,10 @@ G̃ = zeros(ComplexF64, 2N+1, 2N+1)
 Ã = zeros(ComplexF64, 2N+1, 2N+1)
 J̃ = zeros(ComplexF64, 2N+1, 2N+1)
 
-ss = -8:0.1:5
-prog = Progress(length(ss))
-anim = @animate for s in ss
+#ss = -8:0.1:5
+s = -6.
+#prog = Progress(length(ss))
+#anim = @animate for s in ss
 
     #prog = Progress(length(G̃), desc="Computing matrices...")
     @threads for cartesian in CartesianIndices(G̃)
@@ -315,40 +316,44 @@ anim = @animate for s in ss
 
     # H^s matrix transponieren und dann mal H^-s matrix
 
-    residuals̃ = #= @showprogress =# map(z->res(z, G̃, Ã, J̃), grid)
+    residuals̃ = @showprogress map(z->res(z, G̃, Ã, J̃), grid)
 
     λ̃, eṽ = eigen(Ã, G̃)
 
-    next!(prog)
+    #next!(prog)
 
 
-    p3 = contourf(xs, ys, #=residuals̃,=#log10.(residuals̃.+1e-20), 
-        colormap=:acton, linewidth=2,
-        #clabels=true, cbar=false,
-        #levels=-2:0.2:0,
-        clims=(-2,0),
-        title="residuals in H^$s",
-        alpha=0.7,
-        colorbar_title="log-scaled residuals"
+    p5 = plot(circ, 
+        style=:dash, aspectratio=1., leg=false, color=:blue, size=(400,400)
     )
-    plot!(circ, 
-        style=:dash, aspectratio=1., leg=false, color=:blue, size=(700,500)
+    contour!(xs, ys, #=residuals̃,=#log10.(residuals̃.+1e-20), 
+        colormap=:acton, linewidth=2,
+        clabels=true, cbar=false,
+        levels=[-2:0.2:0;],
+        clims=(-1.8,0),
+        #title="residuals in H^$s",
+        leg=false,
+        alpha=0.7,
+        #colorbar_title="log-scaled residuals"
     )
     scatter!(λ̃, 
         marker=:+, 
         xlabel="", ylabel="", 
         markersize=5, markerstrokewidth=1.5, 
         color=2,
-        lab="computed eigs"
+        #lab="computed eigs"
     )
     scatter!(λ_true, 
         marker=:x, 
         xlabel="", ylabel="", 
         markersize=5, markerstrokewidth=1.5, 
         color=3,
-        lab="True (Hardy space) eigs"
+        #lab="True (Hardy space) eigs"
     )
 
-end
+    savefig(p5, "../figures/blaschke_H-6.pdf")
 
-mp4(anim, fps=5)
+
+#end
+
+#mp4(anim, fps=5)
