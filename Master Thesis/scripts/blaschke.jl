@@ -257,9 +257,6 @@ residuals = @showprogress map(z->res(z, G, A, J), grid)
 
 λ, ev = eigen(A, G)
 
-sort!(λ, by=abs, rev=true)
-λ[2] += -sign(imag(λ[2])) * 0.15im
-λ[3] += -sign(imag(λ[3])) * 0.15im
 
 p4 = plot(circ, 
     style=:dash, aspectratio=1., leg=false, color=:blue, size=(450,400),
