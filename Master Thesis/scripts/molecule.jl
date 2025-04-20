@@ -24,14 +24,18 @@ Ĵ = @showprogress [k(yj, yk, 0.01) for yj in eachcol(Y), yk in eachcol(Y)]
 σ, Q = eigen(Ĝ)
 r = 100#sum(σ .> 1e-4)
 
-Σ̂ = Diagonal( sqrt.(σ[end-r+1:end]) )
-Q̂ = Q[:, end-r+1:end]
+Σ̃ = Diagonal( sqrt.(σ[end-r+1:end]) )
+Q̃ = Q[:, end-r+1:end]
 
-Σ̂⁺ = inv(Σ̂)
+Σ̂⁺ = inv(Σ̃)
 K̂ = (Σ̂⁺*Q̂') * Â * (Q̂*Σ̂⁺)
 M̂ = (Q̂*Σ̂⁺)' * Ĵ * (Q̂*Σ̂⁺)
 
-function res(z, G=I(r), A=K̂, J=M̂)
+G̃ = Σ̃^2   # == Q̃' * Ĝ * Q̃
+Ã = Q̃' * Â * Q̃
+J̃ = Q̃' * Ĵ * Q̃
+
+function res(z, G=G̃, A=Ã, J=J̃)
     U = J - z' * A - z * A' + z'z * G
     ξ = real.( eigvals(U, G) )
     return ξ[1] < 0 ? 0 : sqrt(ξ[1])
@@ -46,16 +50,17 @@ residuals = @showprogress map(res, z_grid)
 
 p1 = plot(exp.(im .* (-π:0.001:π)), 
     style=:dash, aspectratio=1., leg=false, color=:blue,
-    size=(400,400)
+    size=(400,400),
 )
 scatter!(λ, 
     marker=:+, 
-    xlabel="", ylabel="", 
+    #xlabel="", ylabel="", 
+    xlabel=L"Re (\lambda)", ylabel=L"Im (\lambda)",
     markersize=5, markerstrokewidth=1.5, 
     color=2
 )
 contour!(xs, ys, residuals, 
-    colormap=:acton, linewidth=2,
+    colormap=:acton, linewidth=2, alpha=0.8,
     xlims=(-1.2,1.2), ylims=(-1.2,1.2),
     clabels=true, cbar=false,
     levels=[0.05:0.1:0.35; 0.5:0.25:1]
@@ -96,34 +101,36 @@ savefig(p, "../figures/molecule.pdf")
 
 
 
-clusters = kmeans(v', 3)
+clusters = kmeans(v', 4)
 assignments = clusters.assignments
 p4 = scatter(
     α1[assignments .== 1], α2[assignments .== 1], 
     lab="", alpha=0.8,
     xlabel=L"\varphi", ylabel=L"\psi",
     xlims=(-3.2,1.8), ylims=(-3.3,3.3),
-    color=1
+    color=1,
+    #size=(600,400)
 )
-p5 = scatter(
+p4 = scatter!(
     α1[assignments .== 2], α2[assignments .== 2], 
     lab="", alpha=0.8,
-    xlabel=L"\varphi", ylabel=L"\psi",
-    xlims=(-3.2,1.8), ylims=(-3.3,3.3),
+    #xlabel=L"\varphi", ylabel=L"\psi",
+    #xlims=(-3.2,1.8), ylims=(-3.3,3.3),
     color=2
 )
-p6 = scatter(
+p4 = scatter!(
     α1[assignments .== 3], α2[assignments .== 3], 
     lab="", alpha=0.8,
-    xlabel=L"\varphi", ylabel=L"\psi",
-    xlims=(-3.2,1.8), ylims=(-3.3,3.3),
+    #xlabel=L"\varphi", ylabel=L"\psi",
+    #xlims=(-3.2,1.8), ylims=(-3.3,3.3),
     color=3
 )
-
-p = plot(p4, p5, p6, 
-    layout=(1,3), 
-    size=(800,300), 
-    left_margin=2mm, bottom_margin=2mm
+p4 = scatter!(
+    α1[assignments .== 4], α2[assignments .== 4], 
+    lab="", alpha=0.8,
+    #xlabel=L"\varphi", ylabel=L"\psi",
+    #xlims=(-3.2,1.8), ylims=(-3.3,3.3),
+    color=4
 )
 
-savefig(p, "../figures/kmeans.pdf")
+savefig(p4, "../figures/kmeans.pdf")

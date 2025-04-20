@@ -1,7 +1,9 @@
 using LinearAlgebra
 using Polynomials, FastGaussQuadrature, LegendrePolynomials
-using Plots, ProgressMeter, Base.Threads
+using Plots, LaTeXStrings, Measures, ProgressMeter, Base.Threads
 using FFTW, FFTViews
+
+default(fontfamily="Computer Modern")
 
 r = 0.755
 μ = 0.75*exp(2π*im/8)
@@ -32,41 +34,51 @@ Ĵ = [k(S(yj), S(yk)) for yj in circ, yk in circ] / M
 σ, Q = eigen(Ĝ)
 r̂ = 50#sum(σ .> 1e-4)
 
-Σ̂ = Diagonal( sqrt.(σ[end-r̂+1:end]) )
-Q̂ = Q[:, end-r̂+1:end]
+Σ̃ = Diagonal( sqrt.(σ[end-r̂+1:end]) )
+Q̃ = Q[:, end-r̂+1:end]
 
-Σ̂⁺ = inv(Σ̂)
-K̂ = (Σ̂⁺*Q̂') * Â * (Q̂*Σ̂⁺)
-M̂ = (Q̂*Σ̂⁺)' * Ĵ * (Q̂*Σ̂⁺)
+G̃ = Q̃' * Ĝ * Q̃
+Ã = Q̃' * Â * Q̃
+J̃ = Q̃' * Ĵ * Q̃
 
-residualŝ = @showprogress map(z->res(z, I(r̂), K̂, M̂), grid)
+K̂ = (inv(Σ̃) * Q̃') * Â * (Q̃ * inv(Σ̃))
+
+residualŝ = @showprogress map(z->res(z, G̃, Ã, J̃), grid)
 
 λ̂, ev̂ = eigen(K̂)
 
 p2 = plot(circ, 
-    style=:dash, aspectratio=1., leg=false, color=:blue, size=(400,400)
+    style=:dash, aspectratio=1., leg=false, color=:blue, size=(450,400),
+    title="Kernel ResDMD"
 )
 contour!(xs, ys, log10.(residualŝ.+1e-20), 
     colormap=:acton, linewidth=2, 
-    clabels=true, cbar=false,
+    clabels=true, cbar=true,
     levels=[-5:1:0; -0.5;],
     clims=(-5.1,1),
     alpha=0.8
 )
 scatter!(λ̂, 
     marker=:+, 
-    xlabel="", ylabel="", 
+    #xlabel="", ylabel="", 
     markersize=5, markerstrokewidth=1.5, 
     color=2
 )
 scatter!(λ_true, 
     marker=:x, 
-    xlabel="", ylabel="", 
     markersize=5, markerstrokewidth=1.5, 
     color=3
 )
+contourf!(
+    xs, ys, fill(NaN, length(xs), length(ys)),
+    colormap=:acton, linewidth=2,
+    clims=(-5.1,0),
+    alpha=0.8,
+    rightmargin=4mm,
+    xlabel=L"Re (\lambda)", ylabel=L"Im (\lambda)", 
+)
 
-savefig(p2, "../figures/blaschke_kernel.pdf")
+savefig(p2, "../figures/blaschke_kernel_title.pdf")
 
 
 basis(z, n) = z^n
@@ -90,26 +102,34 @@ residuals = @showprogress map(z->res(z, G, A, J), grid)
 
 
 p1 = plot(circ, 
-    style=:dash, aspectratio=1., leg=false, color=:blue, size=(400,400)
+    style=:dash, aspectratio=1., leg=false, color=:blue, size=(450,400),
+    title="Fourier Dictionary"
+)
+contour!(xs, ys, log10.(residuals.+1e-20), 
+    colormap=:acton, linewidth=2,
+    clabels=true, cbar=true,
+    levels=[-0.5:0.1:0; -1;],
+    clims=(-0.8,0),
+    alpha=0.8
 )
 scatter!(λ, 
     marker=:+, 
-    xlabel="", ylabel="", 
+    #xlabel="", ylabel="", 
     markersize=5, markerstrokewidth=1.5, 
     color=2
 )
 scatter!(λ_true, 
     marker=:x, 
-    xlabel="", ylabel="", 
     markersize=5, markerstrokewidth=1.5, 
     color=3
 )
-contour!(xs, ys, log10.(residuals.+1e-20), 
+contourf!(
+    xs, ys, fill(NaN, length(xs), length(ys)),
     colormap=:acton, linewidth=2,
-    clabels=true, cbar=false,
-    levels=[-0.5:0.1:0; -1;],
     clims=(-0.8,0),
-    alpha=0.8
+    alpha=0.8,
+    rightmargin=4mm,
+    xlabel=L"Re (\lambda)", ylabel=L"Im (\lambda)", 
 )
 
 savefig(p1, "../figures/blaschke_direct.pdf")
@@ -169,11 +189,12 @@ residuals̃ = @showprogress map(z->res(z, G̃, Ã, J̃), grid)
 
 
 p3 = plot(circ, 
-    style=:dash, aspectratio=1., leg=false, color=:blue, size=(400,400)
+    style=:dash, aspectratio=1., leg=false, color=:blue, size=(450,400),
+    title=""#L"Hardy Space $H^2 (A)$"
 )
 contour!(xs, ys, log10.(residuals̃.+1e-20), 
     colormap=:acton, linewidth=2,
-    clabels=true, cbar=false,
+    clabels=true, cbar=true,
     levels=[-2, -1.5, -1, -0.5, -0.2],
     #levels=-6:0.4:0,
     clims=(-2.1,0),
@@ -191,13 +212,21 @@ scatter!(λ_true,
     markersize=5, markerstrokewidth=1.5, 
     color=3
 )
+contourf!(
+    xs, ys, fill(NaN, length(xs), length(ys)),
+    colormap=:acton, linewidth=2,
+    clims=(-2.1,0),
+    alpha=0.8,
+    rightmargin=4mm,
+    xlabel=L"Re (\lambda)", ylabel=L"Im (\lambda)", 
+)
 
 
-savefig(p3, "../figures/blaschke_hardy.pdf")
+savefig(p3, "../figures/blaschke_hardy_no_title.pdf")
 
-p = plot(p1, p2, p3, layout=(1,3), size=(900,300))
+#p = plot(p1, p2, p3, layout=(1,3), size=(900,300))
 
-savefig(p, "../figures/blasckhe_comaprison.pdf")
+#savefig(p, "../figures/blasckhe_comaprison.pdf")
 
 
 
@@ -228,9 +257,20 @@ residuals = @showprogress map(z->res(z, G, A, J), grid)
 
 λ, ev = eigen(A, G)
 
+sort!(λ, by=abs, rev=true)
+λ[2] += -sign(imag(λ[2])) * 0.15im
+λ[3] += -sign(imag(λ[3])) * 0.15im
 
 p4 = plot(circ, 
-    style=:dash, aspectratio=1., leg=false, color=:blue, size=(400,400)
+    style=:dash, aspectratio=1., leg=false, color=:blue, size=(450,400),
+    title="Legendre Polynomial Dictionary"
+)
+contour!(xs, ys, log10.(residuals.+1e-20), 
+    color=:acton, linewidth=2,
+    clabels=true, cbar=true,
+    levels=[-0.5:0.1:0; -1;],
+    clims=(-0.4,0),
+    alpha=0.8
 )
 scatter!(λ, 
     marker=:+, 
@@ -244,13 +284,15 @@ scatter!(λ_true,
     markersize=5, markerstrokewidth=1.5, 
     color=3
 )
-contour!(xs, ys, log10.(residuals.+1e-20), 
-    color=:acton, linewidth=2,
-    clabels=true, cbar=false,
-    levels=[-0.5:0.1:0; -1;],
+contourf!(
+    xs, ys, fill(NaN, length(xs), length(ys)),
+    colormap=:acton, linewidth=2,
     clims=(-0.4,0),
-    alpha=0.8
+    alpha=0.8,
+    rightmargin=4mm,
+    xlabel=L"Re (\lambda)", ylabel=L"Im (\lambda)", 
 )
+
 
 savefig(p4, "../figures/blaschke_legendre.pdf")
 
@@ -324,11 +366,12 @@ s = -6.
 
 
     p5 = plot(circ, 
-        style=:dash, aspectratio=1., leg=false, color=:blue, size=(400,400)
+        style=:dash, aspectratio=1., leg=false, color=:blue, size=(450,400),
+        title=L"Sobolev Space $H^{-6}$"
     )
     contour!(xs, ys, #=residuals̃,=#log10.(residuals̃.+1e-20), 
         colormap=:acton, linewidth=2,
-        clabels=true, cbar=false,
+        clabels=true, cbar=true,
         levels=[-2:0.2:0;],
         clims=(-1.8,0),
         #title="residuals in H^$s",
@@ -349,6 +392,14 @@ s = -6.
         markersize=5, markerstrokewidth=1.5, 
         color=3,
         #lab="True (Hardy space) eigs"
+    )
+    contourf!(
+        xs, ys, fill(NaN, length(xs), length(ys)),
+        colormap=:acton, linewidth=2,
+        clims=(-1.8,0),
+        alpha=0.8,
+        rightmargin=4mm,
+        xlabel=L"Re (\lambda)", ylabel=L"Im (\lambda)", 
     )
 
     savefig(p5, "../figures/blaschke_H-6.pdf")
