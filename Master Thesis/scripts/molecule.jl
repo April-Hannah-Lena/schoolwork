@@ -2,6 +2,8 @@ using LinearAlgebra, Clustering
 using Plots, ProgressMeter, Logging, LaTeXStrings, Measures
 using NPZ
 
+default(fontfamily="Computer Modern")
+
 scale(x, γ=1e-2) = sign(x) * (log10(abs(x) + γ) - log10(γ))
 
 subsamp = 50
@@ -28,8 +30,8 @@ r = 100#sum(σ .> 1e-4)
 Q̃ = Q[:, end-r+1:end]
 
 Σ̂⁺ = inv(Σ̃)
-K̂ = (Σ̂⁺*Q̂') * Â * (Q̂*Σ̂⁺)
-M̂ = (Q̂*Σ̂⁺)' * Ĵ * (Q̂*Σ̂⁺)
+K̂ = (Σ̂⁺*Q̃') * Â * (Q̃*Σ̂⁺)
+#M̂ = (Q̂*Σ̂⁺)' * Ĵ * (Q̂*Σ̂⁺)
 
 G̃ = Σ̃^2   # == Q̃' * Ĝ * Q̃
 Ã = Q̃' * Â * Q̃
@@ -50,20 +52,27 @@ residuals = @showprogress map(res, z_grid)
 
 p1 = plot(exp.(im .* (-π:0.001:π)), 
     style=:dash, aspectratio=1., leg=false, color=:blue,
-    size=(400,400),
+    size=(450,400),
+)
+contour!(xs, ys, log10.(residuals .+ 1e-20), 
+    colormap=:acton, linewidth=2, alpha=0.8,
+    xlims=(-1.2,1.2), ylims=(-1.2,1.2),
+    clabels=true, cbar=true,
+    #levels=[0.05:0.1:0.35; 0.5:0.25:1]
+    levels=[-1.5, -1.25, -1.0, -0.75, -0.5, -0.25, -0.1]
 )
 scatter!(λ, 
     marker=:+, 
-    #xlabel="", ylabel="", 
-    xlabel=L"Re (\lambda)", ylabel=L"Im (\lambda)",
     markersize=5, markerstrokewidth=1.5, 
     color=2
 )
-contour!(xs, ys, residuals, 
-    colormap=:acton, linewidth=2, alpha=0.8,
-    xlims=(-1.2,1.2), ylims=(-1.2,1.2),
-    clabels=true, cbar=false,
-    levels=[0.05:0.1:0.35; 0.5:0.25:1]
+contourf!(
+    xs, ys, fill(NaN, length(xs), length(ys)),
+    colormap=:acton, linewidth=2,
+    clims=(-1.6,0),
+    alpha=0.8,
+    rightmargin=4mm,
+    xlabel=L"Re (\lambda)", ylabel=L"Im (\lambda)", 
 )
 
 savefig(p1, "../figures/molecule_spectrum.pdf")
