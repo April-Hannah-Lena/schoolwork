@@ -1,12 +1,12 @@
 using LinearAlgebra, Clustering
-using Plots, ProgressMeter, Logging, LaTeXStrings, Measures
+using Plots, Colors, ProgressMeter, Logging, LaTeXStrings, Measures
 using NPZ
 
-default(fontfamily="Computer Modern")
+default(fontfamily="Computer Modern", framestyle=:box)
 
 scale(x, γ=1e-2) = sign(x) * (log10(abs(x) + γ) - log10(γ))
 
-subsamp = 50
+subsamp = 40
 lag = 10 
 dim = 30
 data = npzread("./alanine-dipeptide-3x250ns-heavy-atom-positions.npz")
@@ -24,7 +24,7 @@ Â = @showprogress [k(yj, xk, 0.01) for yj in eachcol(Y), xk in eachcol(X)]
 Ĵ = @showprogress [k(yj, yk, 0.01) for yj in eachcol(Y), yk in eachcol(Y)]
 
 σ, Q = eigen(Ĝ)
-r = 100#sum(σ .> 1e-4)
+r = 150#sum(σ .> 1e-4)
 
 Σ̃ = Diagonal( sqrt.(σ[end-r+1:end]) )
 Q̃ = Q[:, end-r+1:end]
@@ -50,24 +50,35 @@ residuals = @showprogress map(res, z_grid)
 
 λ, ev = eigen(K̂)
 
+#sort!(λ, by=abs, rev=true)
+
 p1 = plot(exp.(im .* (-π:0.001:π)), 
     style=:dash, aspectratio=1., leg=false, color=:blue,
     size=(450,400),
 )
 contour!(xs, ys, log10.(residuals .+ 1e-20), 
     colormap=:acton, linewidth=2, alpha=0.8,
-    xlims=(-1.2,1.2), ylims=(-1.2,1.2),
     clabels=true, cbar=true,
     #levels=[0.05:0.1:0.35; 0.5:0.25:1]
     levels=[-1.5, -1.25, -1.0, -0.75, -0.5, -0.25, -0.1]
 )
-scatter!(λ, 
+scatter!(λ[1:3], 
     marker=:+, 
-    markersize=5, markerstrokewidth=1.5, 
-    color=2
+    xlabel="", ylabel="", 
+    markersize=8, markerstrokewidth=2.2, 
+    color=2,
+    markeralpha=0.9
+)
+scatter!(λ[4:end], 
+    marker=:+, 
+    xlabel="", ylabel="", 
+    markersize=8, markerstrokewidth=1.5, 
+    color=2,
+    markeralpha=0.9
 )
 contourf!(
     xs, ys, fill(NaN, length(xs), length(ys)),
+    xlims=(-1.2,1.2), ylims=(-1.2,1.2),
     colormap=:acton, linewidth=2,
     clims=(-1.6,0),
     alpha=0.8,
@@ -83,14 +94,14 @@ perm = sortperm(
 
 λ = λ[perm]
 ev = ev[:, perm]
-ψ = real.(Q̂*Σ̂ * ev)
+ψ = real.(Q̃*Σ̃ * ev)
 
-v = ψ[:, 2:3]
+v = -ψ[:, 2:3]
 mid = ( maximum(v) + minimum(v) ) / 2
 clims = (-1, 1)
 p2 = scatter(
     α[:, 1], α[:, 2], 
-    zcolor=-sign.(v[:,1]) .- mid, 
+    zcolor=sign.(v[:,1]) .- mid, 
     m=(:berlin, 0.8), lab="",
     clims=clims,
     cbar=false,
@@ -113,19 +124,13 @@ savefig(p, "../figures/molecule.pdf")
 clusters = kmeans(v', 4)
 assignments = clusters.assignments
 p4 = scatter(
-    α1[assignments .== 1], α2[assignments .== 1], 
+    α1[assignments .== 2], α2[assignments .== 2], 
     lab="", alpha=0.8,
     xlabel=L"\varphi", ylabel=L"\psi",
     xlims=(-3.2,1.8), ylims=(-3.3,3.3),
-    color=1,
-    #size=(600,400)
-)
-p4 = scatter!(
-    α1[assignments .== 2], α2[assignments .== 2], 
-    lab="", alpha=0.8,
-    #xlabel=L"\varphi", ylabel=L"\psi",
-    #xlims=(-3.2,1.8), ylims=(-3.3,3.3),
-    color=2
+    color=4,
+    aspectratio=0.75,
+    size=(400,400)
 )
 p4 = scatter!(
     α1[assignments .== 3], α2[assignments .== 3], 
@@ -139,7 +144,14 @@ p4 = scatter!(
     lab="", alpha=0.8,
     #xlabel=L"\varphi", ylabel=L"\psi",
     #xlims=(-3.2,1.8), ylims=(-3.3,3.3),
-    color=4
+    color=2
+)
+p4 = scatter!(
+    α1[assignments .== 1], α2[assignments .== 1], 
+    lab="", alpha=0.8,
+    #xlabel=L"\varphi", ylabel=L"\psi",
+    #xlims=(-3.2,1.8), ylims=(-3.3,3.3),
+    color=1
 )
 
 savefig(p4, "../figures/kmeans.pdf")
