@@ -100,7 +100,7 @@ basis(z, n) = z^n
 basis(n) = z -> z^n
 
 M = 10_000
-N = 60
+N = 50
 dictionary = basis.(-N:N)
 
 ΨX = [ψ(z) for z in circ, ψ in dictionary]
@@ -156,7 +156,7 @@ contourf!(
 savefig(p1, "../figures/blaschke_direct.pdf")
 
 
-M = 10_000
+M = 18_000
 dθ = 1/M
 θs = dθ:dθ:1
 circ = exp.(2π*im .* θs)
@@ -219,7 +219,7 @@ p3 = plot(circ,
 contour!(xs, ys, log10.(residuals̃.+1e-20), 
     colormap=:acton, linewidth=2,
     clabels=true, cbar=true,
-    levels=[-4:1:0; -0.1; -3.5; -0.5],
+    levels=[-4:1:0; -0.1; -3.5; -3.3; -0.5; -2.5;],
     #levels=-6:0.4:0,
     clims=(-4.1,0),
     alpha=0.8
@@ -250,8 +250,16 @@ contourf!(
     rightmargin=4mm,
     xlabel=L"Re (\lambda)", ylabel=L"Im (\lambda)", 
 )
+lens!(
+    [0.4, 0.8], [0.2, 0.5], 
+    inset = (1, bbox(0.05, 0.05, 0.32, 0.3)), 
+    levels=[-4:0.25:-3.5; -3:0.5:0; -0.2; -0.1; -0.00001],
+    cbar=false, clabels=false, 
+    clims=(-4,0), 
+    tickfontcolor=RGBA(0.,0.,0.,0.)
+)
 
-savefig(p3, "../figures/blaschke_other_hardy.pdf")
+savefig(p3, "../figures/blaschke_other_hardy_zoom.pdf")
 
 #p = plot(p1, p2, p3, layout=(1,3), size=(900,300))
 
