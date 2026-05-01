@@ -26,7 +26,7 @@ end
 xs = ys = -1.2:0.02:1.2
 grid = xs' .+ ys .* im
 
-M = 1_000
+M = 4_000
 dθ = 1/M
 θs = dθ:dθ:1
 circ = exp.(2π*im .* θs)
@@ -40,8 +40,8 @@ Ĝ = [k(xj, xk) for xj in [circ; 0.85*ξ .* circ; 1.15/ξ .* circ], xk in [circ
 Â = [k(S(yj), xk) for yj in [circ; 0.85*ξ .* circ; 1.15/ξ .* circ], xk in [circ; 0.85*ξ .* circ; 1.15/ξ .* circ]] / (3M)
 Ĵ = [k(S(yj), S(yk)) for yj in [circ; 0.85*ξ .* circ; 1.15/ξ .* circ], yk in [circ; 0.85*ξ .* circ; 1.15/ξ .* circ]] / (3M)
 
-σ, Q = eigen(Ĝ)
-r̂ = 200#sum(σ .> 1e-4)
+σ, Q = eigen(Symmetric(Ĝ))
+r̂ = 150#sum(σ .> 1e-4)
 
 Σ̃ = Diagonal( sqrt.(σ[end-r̂+1:end]) )
 Q̃ = Q[:, end-r̂+1:end]
@@ -58,7 +58,7 @@ residualŝ = @showprogress map(z->res(z, G̃, Ã, J̃), grid)
 
 p2 = plot(circ, 
     style=:dash, aspectratio=1., leg=false, color=:blue, size=(550,500),
-    #title="Kernel ResDMD"
+    title="Kernel ResDMD"
 )
 contour!(xs, ys, log10.(residualŝ.+1e-20), 
     colormap=:acton, linewidth=2, 
@@ -93,7 +93,7 @@ contourf!(
     xlabel=L"Re (\lambda)", ylabel=L"Im (\lambda)", 
 )
 
-savefig(p2, "../figures/blaschke_kernel.pdf")
+savefig(p2, "figures/blaschke_kernel.pdf")
 
 
 basis(z, n) = z^n
