@@ -53,4 +53,7 @@ precompile_plots.jl
 *.DS_Store
 Master\ Thesis/scripts/villin/PROJ3036
 Master\ Thesis/scripts/villin/PROJ3037
+Master\ Thesis/scripts/villin/gromacs
 Master\ Thesis/env
+Master\ Thesis/scripts/ocean/dataset
+Master\ Thesis/scripts/ocean/distances

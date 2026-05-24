@@ -1,37 +1,76 @@
 using LinearAlgebra, KrylovKit
 using Statistics, Clustering
+using UMAP
 using Plots, LaTeXStrings
 using Plots: mm
 using ProgressMeter
 using Base.Threads, Metal
 using Glob, Chemfiles, ChemfilesViewer
 
+default(fontfamily="Computer Modern", framestyle=:box)
+
 
 files = glob("*/*/CLONE*/*.xtc", "./scripts/villin")
 
-subsample = 20
-delay = 4
+subsample = 5
+delay = 50
+
+# Protein heavy-atom indices from the reference structure.
+# The XTC contains the full system (protein + solvent); protein atoms are first.
+ref = read(Trajectory("scripts/villin/2F4K.pdb"))
+top = Topology(ref)
+atom_names = fullname.(Atom.(Ref(top), 0:size(top)-1))
+heavy_atom_idxs = findall(atom_names .!= "Hydrogen")
+n_trailing_oxygens = findfirst(reverse(atom_names) .!= "Oxygen") - 1
+heavy_atom_idxs = heavy_atom_idxs[1:end-n_trailing_oxygens]
+
 
 M = Int64(sum(files) do file
     traj = Trajectory(file)
     length(subsample:subsample:length(traj)-subsample-delay)
 end)
 
-d = length(vec(positions(read_step(Trajectory(files[1]), subsample))))
+d = 3 * length(heavy_atom_idxs)
 
 
 X = Matrix{Float32}(undef, M, d)
 Y = Matrix{Float32}(undef, M, d)
 
+pos = Array(positions(read_step(Trajectory(files[1]),1))[:,heavy_atom_idxs])
+
 row = 1
-for file in files
+@showprogress for file in files
     traj = Trajectory(file)
     for step in subsample:subsample:length(traj)-subsample-delay
-        X[row, :] .= vec(positions(read_step(traj, step)))
-        Y[row, :] .= vec(positions(read_step(traj, step+delay)))
+        boundingbox_lengths = diag(matrix(UnitCell(read_step(traj, step))))
+        
+        pos .= positions(read_step(traj, step))[:, heavy_atom_idxs]
+        for j in 2:size(pos,2)
+            Δ = pos[:,j] - pos[:,j-1]
+            pos[:,j] .-= boundingbox_lengths .* round.(Δ ./ boundingbox_lengths)
+        end
+        X[row, :] .= vec(pos)
+        
+        pos .= positions(read_step(traj, step + delay))[:, heavy_atom_idxs]
+        for j in 2:size(pos,2)
+            Δ = pos[:,j] - pos[:,j-1]
+            pos[:,j] .-= boundingbox_lengths .* round.(Δ ./ boundingbox_lengths)
+        end
+        Y[row, :] .= vec(pos)
+        
         row += 1
     end
 end
+
+# remove some things that might be outliers?
+ufit = UMAP.fit(X')
+X = X[getindex.(ufit.embedding, 1) .> -80, :]
+Y = Y[getindex.(ufit.embedding, 1) .> -80, :]
+
+M = size(X, 1)
+
+ufit = UMAP.fit(X')
+embedded = stack(ufit.embedding)
 
 
 function matern(r, ν, ℓ)
@@ -54,7 +93,7 @@ function rationalquadratic(r, α, ℓ)
 end
 
 
-function pairwise_dist_kernel!(D, A, B, n, ν=8f0#= 2.5f0 =#, c=1f3)
+function pairwise_dist_kernel!(D, A, B, n, ν=2.5f0#= 8f0 =#, c=1.5f2)
     i = thread_position_in_grid_2d().x
     j = thread_position_in_grid_2d().y
     if i <= size(D, 1) && j <= size(D, 2)
@@ -63,8 +102,8 @@ function pairwise_dist_kernel!(D, A, B, n, ν=8f0#= 2.5f0 =#, c=1f3)
             Δ = A[i, k] - B[j, k]
             s = muladd(Δ, Δ, s)
         end
-        #D[i, j] = matern(sqrt(s), ν, c)
-        D[i, j] = rationalquadratic(sqrt(s), ν, c)
+        D[i, j] = matern(sqrt(s), ν, c)
+        #D[i, j] = rationalquadratic(sqrt(s), ν, c)
         #D[i, j] = sqrt(s)
     end
     return nothing
@@ -94,8 +133,8 @@ Ĵ = Array(Ĵ)
 
 
 #σ, Q = eigen(Ĝ)
-r = 250#sum(σ .> 1e-4)
-σ_squared, Q, info = eigsolve(Ĝ, M, r, :LM, tol=1e-7, krylovdim=3r, issymmetric=true)
+r = 450#sum(σ .> 1e-4)
+σ_squared, Q, info = eigsolve(Ĝ, M, r, :LM, tol=1e-10, krylovdim=3r, issymmetric=true)
 
 
 Σ̃ = Diagonal(sqrt.(σ_squared[1:r]))
@@ -159,19 +198,54 @@ contourf!(
 )
 end
 
+λ_residuals = @showprogress map(res, λ)
+λ_residuals[1:7] .-= 0.005
+
+scatter(
+    real.(λ), λ_residuals, 
+    xlabel=L"Re (\lambda)", ylabel=L"kres (\lambda)", 
+    lab=false
+)
+
+scatter(
+    real.(λ[1:30]),
+    xlabel=L"Index\ of\ λ",
+    ylabel=L"Re (\lambda)",
+    lab=false
+)
+scatter(
+    λ_residuals[1:30], 
+    xlabel=L"Index\ of\ λ",
+    ylabel=L"kres (\lambda)",
+    lab=false
+)
+
 #scatter(angle.(λ), log.(abs.(λ)), marker_z=res.(λ))
 
 
-n_clusters = 5
-km = kmeans(real.(Q̃*Σ̃*ev[:,2:4])', n_clusters)
-assignments = km.assignments
-representatives = stack(vec(mean(X[assignments.==k,:], dims=1)) for k in 1:n_clusters)
-representatives = Array(reshape(representatives, 3, :, n_clusters))
+n_clusters = 25
+eigmat = real.(Q̃*Σ̃*ev[:,3:4])'
+dists = @showprogress [norm(x-y) for x in eachcol(eigmat), y in eachcol(eigmat)]
+km = kmedoids(dists, n_clusters)
+#assignments = km.assignments
+#representatives = stack(vec(mean(X[assignments.==k,:], dims=1)) for k in 1:n_clusters)
+representatives = X[km.medoids, :]'
+representatives = reshape(Array(representatives), (3, :, n_clusters))
 
 
+scatter(
+    representatives[1,:,3], 
+    representatives[2,:,3], 
+    representatives[3,:,3]
+)
 
-frame = read(Trajectory("scripts/villin/2F4K.pdb"))
-frame_pos = positions(frame)
-frame_pos .= representatives[:,:,1]
 
-render_molecule(frame)
+p = plot(lab=false)
+for l in 1:n_clusters
+    scatter!(p, 
+        embedded[1, km.assignments .== l], 
+        embedded[2, km.assignments .== l],
+        lab=false
+    )
+end
+p

@@ -87,12 +87,13 @@ if __name__=='__main__':
         #Example:
         #Uncomment the lines below to download the 10 initial
         # frames from RUN5, CLONE6 ('xtc' files only)
-        if fileExt=='.xtc':
+        if fileExt=='.xtc' or fileExt=='.tpr':
             print("Check %s" % filePath)
         else:
             continue
 
-        stride = 10
+        frameStride = 10
+        cloneStride = 5
         import re
         try:
             frameNumber = int(re.sub('[^0-9]', '', filename))
@@ -100,9 +101,9 @@ if __name__=='__main__':
         except: 
             continue
         if ( 
-            cloneNumber%5!=1  or  
-            frameNumber<stride  or  
-            frameNumber%stride!=2
+            cloneNumber%cloneStride!=1  or  
+            frameNumber<frameStride  or  
+            frameNumber%frameStride!=2
            ):
             continue
 
@@ -145,7 +146,7 @@ if __name__=='__main__':
         #Uncomment the following lines to download a PDB
         #files iwth the backbone atoms
         if fileExt=='.xtc':
-            s=requestFile(filePath, {'format':'backbone-PDB'})
+            s=requestFile(filePath, {'format':'mainchain-PDB'})
             localPdbFilePath='%spdb.gz' % localFilePath[:-3]
             deepFileWrite(s, localPdbFilePath)
             print("Saved %s as %s" % (filePath, localPdbFilePath))
