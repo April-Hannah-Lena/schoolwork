@@ -12,10 +12,11 @@ from tqdm.auto import tqdm
 base_dir = Path(__file__).resolve().parent
 dataset_dir = Path("/Volumes/Extreme SSD/oceandata").resolve()
 files = sorted(glob.glob(str(dataset_dir / "*.nc")))
+max_workers = min(8, os.cpu_count() or 1)
 # %%
 ds = xr.open_mfdataset(files, chunks={"time": 30}, engine="netcdf4", combine="by_coords")
 # %%
-vel = ds[["EVEL", "NVEL", "WVEL"]].sel(
+vel = ds[["EVEL", "NVEL"]].sel(
     Z=slice(0, -10),    # only surface water (top level)
     time=slice("1990-01-01", "2020-01-31")
 )
@@ -24,7 +25,7 @@ vel = vel.where(vel.time.dt.month.isin([4, 5, 6, 7, 8, 9]), drop=True)
 def day_to_datavec(data, time_idx, z_idx=0):
     one_day = data.isel(time=time_idx, Z=z_idx, drop=True)
     vector = (
-        one_day[["EVEL", "NVEL", "WVEL"]]
+        one_day[["EVEL", "NVEL"]]
         .to_array(dim="component")
         .transpose(..., "component")
         .to_numpy()
@@ -36,7 +37,7 @@ def day_to_datavec(data, time_idx, z_idx=0):
 
 # %%
 stride = 1
-delay = 1
+delay = 14
 time_indices = range(0, vel.sizes["time"], stride)
 M = len(time_indices) - delay
 
@@ -48,7 +49,6 @@ time_indices = list(time_indices)
 first_vector = day_to_datavec(vel, time_indices[0])
 dimension = first_vector.size
 block_size = 32
-max_workers = min(4, os.cpu_count() or 1)
 
 #%%
 vectors = np.memmap(
@@ -58,6 +58,7 @@ vectors = np.memmap(
     shape=(M+delay, dimension),
 )
 
+#%%
 with tqdm(total=M+delay, desc="Caching day vectors") as progress:
     vectors[0] = first_vector
     progress.update()
@@ -138,4 +139,9 @@ np.savetxt(distances_dir / "distances_YY.csv", distances_YY, delimiter=",")
 pd.DataFrame(distances_XY).to_csv(base_dir / "distances/distances_XY.csv", index=False, header=False)
 pd.DataFrame(distances_YY).to_csv(base_dir / "distances/distances_YY.csv", index=False, header=False)
  """
+# %%
+# %%
+candidates = np.loadtxt(base_dir / "candidates.csv", delimiter=",", dtype=np.float32)
+candidates_spatial = candidates @ vectors
+np.savetxt(base_dir / "candidates_spatial.csv", candidates_spatial, delimiter=",")
 # %%
