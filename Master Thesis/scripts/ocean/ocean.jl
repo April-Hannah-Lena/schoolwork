@@ -6,6 +6,8 @@ using ProgressMeter
 using DelimitedFiles
 using Base.Threads, Metal
 
+include("seba.jl")
+
 default(fontfamily="Computer Modern", framestyle=:box)
 
 
@@ -33,9 +35,9 @@ Ĝ = mtl(readdlm("distances/distances_XX.csv", ',', Float32))
 Â = mtl(readdlm("distances/distances_XY.csv", ',', Float32))
 Ĵ = mtl(readdlm("distances/distances_YY.csv", ',', Float32))
 
-map!(r -> matern(r, 2.5f0, 50), Ĝ, Ĝ)
-map!(r -> matern(r, 2.5f0, 50), Â, Â)
-map!(r -> matern(r, 2.5f0, 50), Ĵ, Ĵ)
+map!(r -> matern(r, 2.5f0, 70), Ĝ, Ĝ)
+map!(r -> matern(r, 2.5f0, 70), Â, Â)
+map!(r -> matern(r, 2.5f0, 70), Ĵ, Ĵ)
 
 
 Ĝ = Array(Ĝ)
@@ -44,7 +46,7 @@ Ĵ = Array(Ĵ)
 
 M = size(Ĝ, 1)
 #σ, Q = eigen(Ĝ)
-r = 350#sum(σ .> 1e-4)
+r = 450#sum(σ .> 1e-4)
 σ_squared, Q, info = eigsolve(Ĝ, M, r, :LM, tol=1e-10, krylovdim=3r, issymmetric=true)
 
 
@@ -63,20 +65,30 @@ G̃ = I(r)
 Ã = (Σ̂⁺*Q̃') * Â * (Q̃*Σ̂⁺)
 J̃ = (Σ̂⁺*Q̃') * Ĵ * (Q̃*Σ̂⁺)
 
-function res(z, G=G̃, A=Ã, J=J̃)
+function res(z, G=G̃, A=Ã, J=J̃; vector=false)
     U = J - z * A - z' * A' + z'z * G
     ξ, c, info = eigsolve(U, r, 2, :SR, tol=1e-10, krylovdim=r, ishermitian=true)
     info.converged == 0  &&  @error "eigsolve did not converge"
+    vector  &&  return c[1]
     return ξ[1] < 0 ? 0 : sqrt(ξ[1])
 end
 
-xs = ys = -1.2:0.1:1.2
+xs = ys = -1.2:0.05:1.2
 z_grid = xs' .+ ys .* im
 
 residuals = @showprogress map(res, z_grid)
 
 λ, ev, info = eigsolve(K̂, r, 6#= r÷2 =#, :LM, tol=1e-10, krylovdim=r)
 ev = stack(ev)
+
+function is_local_minimum(ind, residuals=residuals, xs=xs, ys=ys)
+    i,j = Tuple(ind)
+    ( min(i,j) == 1  ||  i == length(xs)  ||  j == length(ys) )  &&  return false
+    all(residuals[i,j] ≤ residuals[k,l] for k in i-1:i+1, l in j-1:j+1)
+end
+
+local_minima = z_grid[is_local_minimum.(CartesianIndices(z_grid))]
+res_ev = stack(res.(local_minima, vector=true))
 
 #sort!(λ, by=abs, rev=true)
 
@@ -85,11 +97,11 @@ p1 = plot(exp.(im .* (-π:0.001:π)),
     style=:dash, aspectratio=1., leg=false, color=:blue,
     size=(450,400),
 )
-contour!(xs, ys, log10.(residuals .+ 1e-20), 
+contour!(xs, ys, residuals,#log10.(residuals .+ 1e-20), 
     colormap=:acton, linewidth=2, alpha=0.8,
     #clabels=true, 
     cbar=true,
-    levels=20
+    levels=15
 )
 scatter!(λ, 
     marker=:+, 
@@ -98,18 +110,25 @@ scatter!(λ,
     color=2,
     markeralpha=0.9
 )
+scatter!(local_minima,
+    marker=:x,
+    markersize=6, markerstrokewidth=2, 
+    color=9, 
+    markeralpha=0.9
+)
 contourf!(
     xs, ys, fill(NaN, length(xs), length(ys)),
     xlims=(-1.2,1.2), ylims=(-1.2,1.2),
     #xlims=(0.8,1.2), ylims=(-0.2,0.2),
     colormap=:acton, linewidth=2,
-    #clims=(-1.6,0),
-    levels=20,
+    clims=(0,0.5),#(-1.6,0),
+    levels=15,
     alpha=0.8,
     rightmargin=4mm,
     xlabel=L"Re (\lambda)", ylabel=L"Im (\lambda)", 
 )
-plot!(0.16 .+ 0.8 .* exp.(im .* (-π:0.001:π)))
+#plot!(0.16 .+ 0.8 .* exp.(im .* (-π:0.001:π)))
+
 end
 
 
@@ -121,8 +140,9 @@ mask = (abs.(λ .- 0.16) .> 0.8)  .&  (imag.(λ) .> 0)
 
 # sum conjugate pairs
 vecs = [
-    real.(ev[:,mask]);;
-    imag.(ev[:,mask]);;
+    real.(res_ev[:,1]);;
+    real.(res_ev[:,2]);;
+    imag.(res_ev[:,2]);;
 ]
 vecs = Q̃ * Σ̃ * vecs
 vecs = [vecs; zeros((14, size(vecs,2)))]
@@ -172,7 +192,7 @@ figs_x = [
         #plotmatrix = reshape(sum(candidates_spatial[2, k:3:end]' for k in 1:3), (length(longitude), length(latitude)))
         plotmatrix = clip.(reshape(candidates_spatial[k, 1:2:end]', (length(longitude), length(latitude))), -0.8, 0.8)
         #plotmatrix = clip.(reshape(S[1:2:end,k], (length(longitude), length(latitude))), -0.5, 0.5)
-        p = heatmap(longitude, latitude, plotmatrix', cmap=:redsblues, clims=(-0.8,0.8), levels=50)
+        p = heatmap(longitude, latitude, plotmatrix', cmap=:redsblues, levels=50, clims=(-0.8,0.8))
         p = heatmap!(p,
             longitude,
             latitude,
@@ -193,7 +213,7 @@ figs_y = [
         #plotmatrix = reshape(sum(candidates_spatial[2, k:3:end]' for k in 1:3), (length(longitude), length(latitude)))
         plotmatrix = clip.(reshape(candidates_spatial[k, 2:2:end]', (length(longitude), length(latitude))), -0.8, 0.8)
         #plotmatrix = clip.(reshape(S[2:2:end,k], (length(longitude), length(latitude))), -0.5, 0.5)
-        p = heatmap(longitude, latitude, plotmatrix', cmap=:redsblues, clims=(-0.8,0.8), levels=50)
+        p = heatmap(longitude, latitude, plotmatrix', cmap=:redsblues, levels=50, clims=(-0.8,0.8))
         p = heatmap!(p,
             longitude,
             latitude,
@@ -209,7 +229,7 @@ figs_y = [
     for k in axes(S,2)
 ]
 
-interesting = [1,3,6]
+interesting = [1,2,3]
 
 layout = @layout [grid(3,2) a{0.19w}]
 p = plot(
